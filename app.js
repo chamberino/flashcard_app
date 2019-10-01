@@ -15,7 +15,6 @@ var app = express();
 //Import the mongoose module
 var mongoose = require('mongoose');
 //Set up default mongoose connection
-// var mongoDB = 'mongodb+srv://admin:admin@cluster0-4vk4u.mongodb.net/flashcard_app?retryWrites=true&w=majority';
 mongoose.connect(mongoDB, { userNewUrlParser: true });
 //Get the default connect
 var db = mongoose.connection;

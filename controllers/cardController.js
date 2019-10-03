@@ -2,7 +2,15 @@ const Card = require('../models/card');
 
 // Display list of all Cards. ??? for specific deck
 exports.card_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Card list');
+
+    Card.find()
+    .populate('deck')
+    .exec(function (err, list_cards) {
+      if (err) { return next(err); }
+      // Successful, so render
+      res.render('card_list', { title: 'Card List', card_list: list_cards });
+    });
+    
 };
 
 // Display detail page for a specific Card.

@@ -8,12 +8,14 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
 
-import mongoDB from './config.js'
+// const mongoDB = require('./config.js');
 
 var app = express();
 
 //Import the mongoose module
 var mongoose = require('mongoose');
+// Mongo Atlas Connection String
+const mongoDB = 'mongodb+srv://admin:admin@cluster0-4vk4u.mongodb.net/flashcard_app?retryWrites=true&w=majority';
 //Set up default mongoose connection
 mongoose.connect(mongoDB, { userNewUrlParser: true });
 //Get the default connect

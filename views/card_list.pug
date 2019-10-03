@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each val in card_list
+      li 
+        a(href=val.url) #{val.deck.title} : #{val.imprint} - #{val.hint}

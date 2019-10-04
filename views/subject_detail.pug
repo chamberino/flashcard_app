@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 Subject: #{subject.name}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Decks
+    
+    dl
+      each deck in subject_decks
+        dt 
+          a(href=deck.url) #{deck.name}
+        //- dd #{deck.summary}
+
+      else
+        p This subject has no decks

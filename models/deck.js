@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const DeckSchema = new Schema({
   title: {type: String, required: true, maxlength: 50},
   user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-  subject: [{type: Schema.Types.ObjectId, ref: 'Subject'}]
+  subject: [{type: Schema.Types.ObjectId, ref: 'Subject', required: true}]
 });
 
 // Virtual for Deck's URL

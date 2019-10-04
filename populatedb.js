@@ -62,11 +62,10 @@ function subjectCreate(name, cb) {
 function deckCreate(title, user, subject, cb) {
   deckdetail = { 
     title: title,
-    user: user
+    user: user,
+    subject: subject
   }
 
-  if (subject != false) deckdetail.subject = subject
-    
   var deck = new Deck(deckdetail);    
   deck.save(function (err) {
     if (err) {
@@ -154,7 +153,7 @@ function createDecks(cb) {
         deckCreate('Some name 6', users[4], [subjects[0],subjects[1]], callback);
       },
       function(callback) {
-        deckCreate('Some name 7', users[4], false, callback);
+        deckCreate('Some name 7', users[4], [subjects[0],subjects[1]], callback);
       },
       ],
       // optional callback

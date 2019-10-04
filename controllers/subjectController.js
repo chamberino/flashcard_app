@@ -1,13 +1,41 @@
 const Subject = require('../models/subject');
+const Book = require('../models/deck');
+const async = require('async');
 
-// Display list of all Genre.
-exports.subject_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject list');
+// Display list of all Subjects.
+exports.subject_list = (req, res, next) => {
+    Subject.find()
+    .sort([['name', 'ascending']])
+    .exec(function (err, list_subjects) {
+      if (err) { return next(err); }
+      //Successful, so render
+      res.render('subject_list', { title: 'Subject List', subject_list: list_subjects });
+    });
 };
 
 // Display detail page for a specific Subject.
-exports.subject_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject detail: ' + req.params.id);
+exports.subject_detail = function(req, res, next) {
+    async.parallel({
+        subject: function(callback) {
+            Subject.findById(req.params.id)
+              .exec(callback);
+        },
+
+        subject_decks: function(callback) {
+            Deck.find({ 'subject': req.params.id })
+              .exec(callback);
+        },
+
+    }, function(err, results) {
+        if (err) { return next(err); }
+        if (results.subject==null) { // No results.
+            var err = new Error('Subject not found');
+            err.status = 404;
+            return next(err);
+        }
+        // Successful, so render
+        res.render('subject_detail', { title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
+    });
 };
 
 // Display Subject create form on GET.

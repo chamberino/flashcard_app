@@ -6,11 +6,15 @@ var deck_controller = require('../controllers/deckController');
 var user_controller = require('../controllers/userController');
 var subject_controller = require('../controllers/subjectController');
 var card_controller = require('../controllers/cardController');
+var test_controller = require('../controllers/testController');
 
 /// DECK ROUTES ///
 
 // GET catalog home page.
 router.get('/', deck_controller.index);
+
+// TEST
+router.get('/test', test_controller.test_route);
 
 // GET request for creating a Deck. NOTE This must come before routes that display Deck (uses id).
 router.get('/deck/create', deck_controller.deck_create_get);

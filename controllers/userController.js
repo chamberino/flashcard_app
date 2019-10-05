@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const Deck = require('../models/deck');
+const async = require('async');
+var mongoose = require('mongoose');
 
 // Display list of all users
 exports.user_list = (req, res) => {
@@ -13,7 +16,28 @@ exports.user_list = (req, res) => {
 
 // Display detail page for a specific User.
 exports.user_detail = (req, res) => {
-    res.send('NOT IMPLEMENTED: User detail: ');
+    const id = mongoose.Types.ObjectId(req.params.id);
+    async.parallel({
+        user: function(callback) {
+            User.findById(id)
+              .exec(callback)
+        },
+        user_decks: function(callback) {
+          Deck.find({ 'user': id },'title')
+            .populate('subject')
+            .exec(callback)
+        },
+    }, function(err, results) {
+        if (err) { return next(err); } // Error in API usage.
+        if (results.user==null) { // No results.
+            var err = new Error('User not found');
+            err.status = 404;
+            return next(err);
+        }
+        console.log('results: ' + results.user_decks)
+        // Successful, so render.
+        res.render('user_detail', { title: 'User Detail', user: results.user, user_decks: results.user_decks } );
+    });
 };
 
 // Display User create form on GET.

@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+var mongoose = require('mongoose');
 
 // Display list of all Cards. ??? for specific deck
 exports.card_list = function(req, res) {
@@ -14,8 +15,20 @@ exports.card_list = function(req, res) {
 };
 
 // Display detail page for a specific Card.
-exports.card_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: Card detail: ' + req.params.id);
+exports.card_detail = function(req, res, next) {
+    const id = mongoose.Types.ObjectId(req.params.id);
+    Card.findById(id)
+    .populate('deck')
+    .exec(function (err, card) {
+      if (err) { return next(err); }
+      if (card==null) { // No results.
+          var err = new Error('Card not found');
+          err.status = 404;
+          return next(err);
+        }
+      // Successful, so render.
+      res.render('card_detail', { title: 'Copy: '+card.deck.title, card: card});
+    })
 };
 
 // Display card create form on GET.

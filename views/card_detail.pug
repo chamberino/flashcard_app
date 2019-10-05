@@ -1,0 +1,11 @@
+extends layout
+
+block content
+
+  p #[strong Deck:] 
+    a(href=card.deck.url) #{card.deck.title}
+
+  h1 Question: #{card.question}
+  h2 Answer: #{card.answer}
+  h3 Hint: #{card.hint}
+  

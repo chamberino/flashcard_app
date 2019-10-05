@@ -1,6 +1,7 @@
 const Subject = require('../models/subject');
-const Book = require('../models/deck');
+const Deck = require('../models/deck');
 const async = require('async');
+var mongoose = require('mongoose');
 
 // Display list of all Subjects.
 exports.subject_list = (req, res, next) => {
@@ -13,16 +14,28 @@ exports.subject_list = (req, res, next) => {
     });
 };
 
+// Display list of all Subjects.
+exports.subject_test = (req, res, next) => {
+    Subject.find()
+    .sort([['name', 'ascending']])
+    .exec(function (err, list_subjects) {
+      if (err) { return next(err); }
+      //Successful, so render
+      res.render('subject_list', { title: 'Subject List', subject_list: list_subjects });
+    });
+};
+
 // Display detail page for a specific Subject.
 exports.subject_detail = function(req, res, next) {
+    const id = mongoose.Types.ObjectId(req.params.id);
     async.parallel({
         subject: function(callback) {
-            Subject.findById(req.params.id)
+            Subject.findById(id)
               .exec(callback);
         },
 
         subject_decks: function(callback) {
-            Deck.find({ 'subject': req.params.id })
+            Deck.find({ 'subject': id })
               .exec(callback);
         },
 
@@ -34,9 +47,11 @@ exports.subject_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render
+        console.log('subject: ' + results.subject + 'subject_decks: ' + results.subject_decks)
         res.render('subject_detail', { title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
     });
 };
+
 
 // Display Subject create form on GET.
 exports.subject_create_get = function(req, res) {

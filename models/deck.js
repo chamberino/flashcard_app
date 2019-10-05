@@ -14,7 +14,7 @@ const DeckSchema = new Schema({
 DeckSchema
 .virtual('url')
 .get(function () {
-  return '/deck/' + this._id;
+  return '/catalog/deck/' + this._id;
 });
 
 //Export function to create "User" model class

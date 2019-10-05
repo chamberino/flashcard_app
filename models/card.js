@@ -17,7 +17,7 @@ const CardSchema = new Schema(
 CardSchema
 .virtual('url')
 .get(function () {
-  return '/:deck/' + this._id;
+  return '/catalog/card/' + this._id;
 });
 
 //Export function to create "Card" model class

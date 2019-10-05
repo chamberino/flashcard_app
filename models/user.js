@@ -22,7 +22,7 @@ UserSchema
 UserSchema
 .virtual('url')
 .get(function() {
-    return '/user/' + this._id;
+    return '/catalog/user/' + this._id;
 });
 
 //Export function to create "User" model class

@@ -1,0 +1,21 @@
+extends layout
+
+block content
+
+  h1 Deck: #{deck.title}
+  p User: #{deck.user.name}
+
+  each subject in deck.subject
+    a(href=subject.url) #{subject.name}, 
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Cards
+
+    dl
+      each card in cards
+        dt
+          a(href=card.url) Card #{cards.indexOf(card)+1}
+    
+      else
+        p This deck has no cards

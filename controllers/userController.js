@@ -53,12 +53,17 @@ exports.user_create_get = (req, res) => {
 
 // Handle User create on POST
 exports.user_create_post = [
-
     // Validate fields.
-    body('first_name').isLength({ min: 1 }).trim().withMessage('First name must be specified.')
-        .isAlphanumeric().withMessage('First name has non-alphanumeric characters.'),
-    body('last_name').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
-        .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
+    check('first_name')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('First name must be specified.')
+        .isAlphanumeric()
+        .withMessage('First name has non-alphanumeric characters.'),
+    check('last_name')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Last name must be specified.')
+        .isAlphanumeric()
+        .withMessage('Last name has non-alphanumeric characters.'),
     check('email')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a valid email'),
@@ -87,22 +92,36 @@ exports.user_create_post = [
             // res.render('author_form', { title: 'Create Author', author: req.body, errors: errors.array() });
             // return;
         }
-        else {
-            
-            // Data from form is valid.
-
-            // Create a User object with escaped and trimmed data.
-            var user = new User(
-                {
-                    first_name: req.body.first_name,
-                    last_name: req.body.last_name,
-                    email: req.body.email,
-                    password: req.body.password
-                });
-            user.save(function (err) {
-                if (err) { return next(err); }
-                // Successful - redirect to new user record.
-                res.redirect(user.url);
+        else if (!emailRegEx.test(req.body.email)) {
+            const error = ['Please enter a valid address. Example: foo@bar.com'];
+            res.status(400);
+            return res.json(error);
+        } else {
+            User.findOne({ 'email': req.body.email })
+            .exec( function(err, found_user) {
+               if (err) { return next(err); }
+    
+               if (found_user) {
+                 // User exists, redirect to its detail page.
+                 res.status(400);
+                 res.json('User already registered');
+               }
+               else {     
+                    // Create a User object with escaped and trimmed data.
+                    var user = new User(
+                        {
+                            first_name: req.body.first_name,
+                            last_name: req.body.last_name,
+                            email: req.body.email,
+                            password: req.body.password
+                        });
+                    user.save(function (err) {
+                        if (err) { return next(err); }
+                        // set location header, set status code and close response returning no data
+                        res.location('/');
+                        res.status(201).end();
+                    });    
+               }    
             });
         }
     }

@@ -1,7 +1,9 @@
 const Subject = require('../models/subject');
 const Deck = require('../models/deck');
 const async = require('async');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const validator = require('express-validator');
+
 
 // Display list of all Subjects.
 exports.subject_list = (req, res, next) => {
@@ -55,13 +57,60 @@ exports.subject_detail = function(req, res, next) {
 
 // Display Subject create form on GET.
 exports.subject_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject create GET');
+    res.render('subject_form', { title: 'Create Subject' });
 };
 
 // Handle Subject create on POST.
-exports.subject_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject create POST');
-};
+exports.subject_create_post = [
+   
+    // Validate that the name field is not empty.
+    validator.body('name', 'Subject name required').isLength({ min: 1 }).trim(),
+    
+    // Sanitize (escape) the name field.
+    validator.sanitizeBody('name').escape(),
+  
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+  
+      // Extract the validation errors from a request.
+      const errors = validator.validationResult(req);
+  
+      // Create a genre object with escaped and trimmed data.
+      var subject = new Subject(
+        { name: req.body.name }
+      );
+  
+  
+      if (!errors.isEmpty()) {
+        // There are errors. Render the form again with sanitized values/error messages.
+        res.render('subject_form', { title: 'Create Subject', subject: subject, errors: errors.array()});
+        return;
+      }
+      else {
+        // Data from form is valid.
+        // Check if Subject with same name already exists.
+        Subject.findOne({ 'name': req.body.name })
+          .exec( function(err, found_subject) {
+             if (err) { return next(err); }
+  
+             if (found_subject) {
+               // Subject exists, redirect to its detail page.
+               res.redirect(found_subject.url);
+             }
+             else {
+  
+               subject.save(function (err) {
+                 if (err) { return next(err); }
+                 // Subject saved. Redirect to subject detail page.
+                 res.redirect(subject.url);
+               });
+  
+             }
+  
+           });
+      }
+    }
+  ];
 
 // Display Subject delete form on GET.
 exports.subject_delete_get = function(req, res) {

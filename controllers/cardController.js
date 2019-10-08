@@ -1,5 +1,8 @@
 const Card = require('../models/card');
+var Deck = require('../models/deck');
 var mongoose = require('mongoose');
+const { body,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all Cards. ??? for specific deck
 exports.card_list = function(req, res) {
@@ -33,13 +36,73 @@ exports.card_detail = function(req, res, next) {
 
 // Display card create form on GET.
 exports.card_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Card create GET');
+    Deck.find({},'title')
+    .exec(function (err, decks) {
+      if (err) { return next(err); }
+      // Successful, so render.
+      res.render('card_form', {title: 'Create Card', deck_list: decks});
+    });
+    
 };
 
-// Handle Card create on POST.
-exports.card_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Card create POST');
+// Display card create form on GET using id param.
+exports.card_create_get_byID = function(req, res) {
+    Deck.findById(req.params.id)
+    .exec(function (err, decks) {
+      if (err) { return next(err); }
+      // Successful, so render.
+      res.render('card_form_byID', {title: 'Create Card', deck_list: decks});
+    });
+    
 };
+
+exports.card_create_post = [
+
+    // Validate fields.
+    body('question', 'Question must be specified').isLength({ min: 1 }).trim(),
+    body('hint', 'Hint must be specified').isLength({ min: 1 }).trim(),
+    body('answer', 'Answer must be specified').isLength({ min: 1 }).trim(),
+    
+    // Sanitize fields.
+    sanitizeBody('question').escape(),
+    sanitizeBody('hint').escape(),
+    sanitizeBody('answer').trim().escape(),
+    
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a BookInstance object with escaped and trimmed data.
+        var card = new Card(
+          { 
+            deck: req.params.id,
+            question: req.body.question,
+            hint: req.body.hint,
+            answer: req.body.answer
+           });
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values and error messages.
+            Deck.findById(req.params.id)
+                .exec(function (err, decks) {
+                    if (err) { return next(err); }
+                    // Successful, so render.
+                    res.render('card_form_byID', { title: 'Create Card', deck_list: decks, selected_deck: card.deck._id , errors: errors.array(), card: card });
+            });
+            return;
+        }
+        else {
+            // Data from form is valid.
+            card.save(function (err) {
+                if (err) { return next(err); }
+                   // Successful - redirect to new record.
+                   res.redirect(card.url);
+                });
+        }
+    }
+];
 
 // Display Card delete form on GET.
 exports.card_delete_get = function(req, res) {

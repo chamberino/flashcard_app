@@ -95,6 +95,13 @@ router.get('/subjects', subject_controller.subject_list);
 
 /// CARD ROUTES ///
 
+// get request for creating card using decks id
+router.get('/deck/:id/create', card_controller.card_create_get_byID);
+
+// post route for creating card using decks id
+router.post('/deck/:id/create', card_controller.card_create_post);
+
+
 // GET request for creating a Card. NOTE This must come before route that displays Card (uses id).
 router.get('/card/create', card_controller.card_create_get);
 

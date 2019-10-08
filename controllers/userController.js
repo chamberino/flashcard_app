@@ -2,6 +2,12 @@ const User = require('../models/user');
 const Deck = require('../models/deck');
 const async = require('async');
 var mongoose = require('mongoose');
+const { body,check,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
+var bcrypt = require('bcryptjs');
+var auth = require('basic-auth');
+
+const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 // Display list of all users
 exports.user_list = (req, res) => {
@@ -42,13 +48,66 @@ exports.user_detail = (req, res) => {
 
 // Display User create form on GET.
 exports.user_create_get = (req, res) => {
-    res.send('NOT IMPLEMENTED: User create GET');
+    res.render('user_form', { title: 'Create User'});
 };
 
 // Handle User create on POST
-exports.user_create_post = (req, res) => {
-    res.send('NOT IMPLEMENTED: User create POST');
-};
+exports.user_create_post = [
+
+    // Validate fields.
+    body('first_name').isLength({ min: 1 }).trim().withMessage('First name must be specified.')
+        .isAlphanumeric().withMessage('First name has non-alphanumeric characters.'),
+    body('last_name').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
+        .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
+    check('email')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a valid email'),
+    check('password')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a password'),    
+
+    // Sanitize fields.
+    sanitizeBody('first_name').escape(),
+    sanitizeBody('last_name').escape(),
+    sanitizeBody('email').escape(),
+    sanitizeBody('password').escape(),
+
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        // If there are validation errors...
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            const errorMessages = errors.array().map(error => error.msg);
+            res.status(400);
+            return res.json(errorMessages);
+            // res.render('author_form', { title: 'Create Author', author: req.body, errors: errors.array() });
+            // return;
+        }
+        else {
+            
+            // Data from form is valid.
+
+            // Create a User object with escaped and trimmed data.
+            var user = new User(
+                {
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
+                    email: req.body.email,
+                    password: req.body.password
+                });
+            user.save(function (err) {
+                if (err) { return next(err); }
+                // Successful - redirect to new user record.
+                res.redirect(user.url);
+            });
+        }
+    }
+];
+
 
 // Display User delete form on GET.
 exports.user_delete_get = function(req, res) {

@@ -63,9 +63,8 @@ exports.subject_create_get = function(req, res) {
 // Handle Subject create on POST.
 exports.subject_create_post = [
    
-    // Validate that the name field is not empty.
-    validator.body('name', 'Subject name required').isLength({ min: 1 }).trim(),
-    
+    // Validate that the name field is not empty.    
+    validator.body('name', 'Subject name required').isLength({ min: 1 }).trim(),    
     // Sanitize (escape) the name field.
     validator.sanitizeBody('name').escape(),
   
@@ -83,8 +82,12 @@ exports.subject_create_post = [
   
       if (!errors.isEmpty()) {
         // There are errors. Render the form again with sanitized values/error messages.
-        res.render('subject_form', { title: 'Create Subject', subject: subject, errors: errors.array()});
-        return;
+        // Use the Array `map()` method to get a list of error messages.
+        const errorMessages = errors.array().map(error => error.msg);
+        res.status(400);
+        return res.json(errorMessages);
+        // res.render('subject_form', { title: 'Create Subject', subject: subject, errors: errors.array()});
+        // return;
       }
       else {
         // Data from form is valid.

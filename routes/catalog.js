@@ -7,6 +7,7 @@ var user_controller = require('../controllers/userController');
 var subject_controller = require('../controllers/subjectController');
 var card_controller = require('../controllers/cardController');
 var test_controller = require('../controllers/testController');
+const mid = require('../middleware/index');
 
 /// DECK ROUTES ///
 
@@ -17,7 +18,7 @@ router.get('/', deck_controller.index);
 router.get('/test', test_controller.test_route);
 
 // GET request for creating a Deck. NOTE This must come before routes that display Deck (uses id).
-router.get('/deck/create', deck_controller.deck_create_get);
+router.get('/deck/create', mid.requiresLogin, deck_controller.deck_create_get);
 
 // POST request for creating Deck.
 router.post('/deck/create', deck_controller.deck_create_post);
@@ -43,8 +44,20 @@ router.get('/decks', deck_controller.deck_list);
 
 // USER ROUTES ///
 
+// GET PROFILE
+router.get('/profile', user_controller.user_profile);
+
+// GET LOGOUT
+router.get('/user/logout', user_controller.user_logout);
+
+// GET LOGIN
+router.get('/user/login', mid.loggedOut, user_controller.user_login_get);
+
+// POST LOGIN
+router.post('/user/login', user_controller.user_login_post);
+
 // GET request for creating User. NOTE This must come before route for id (i.e. display user).
-router.get('/user/create', user_controller.user_create_get);
+router.get('/user/create', mid.loggedOut, user_controller.user_create_get);
 
 // POST request for creating User.
 router.post('/user/create', user_controller.user_create_post);
@@ -96,7 +109,7 @@ router.get('/subjects', subject_controller.subject_list);
 /// CARD ROUTES ///
 
 // get request for creating card using decks id
-router.get('/deck/:id/create', card_controller.card_create_get_byID);
+router.get('/deck/:id/create', mid.requiresLogin, card_controller.card_create_get_byID);
 
 // post route for creating card using decks id
 router.post('/deck/:id/create', card_controller.card_create_post);

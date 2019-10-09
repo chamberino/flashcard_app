@@ -1,27 +1,46 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
 
 // const mongoDB = require('./config.js');
 
-var app = express();
+const app = express();
 
 //Import the mongoose module
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 // Mongo Atlas Connection String
 const mongoDB = 'mongodb+srv://admin:admin@cluster0-4vk4u.mongodb.net/flashcard_app?retryWrites=true&w=majority';
 //Set up default mongoose connection
 mongoose.connect(mongoDB, { userNewUrlParser: true });
 //Get the default connect
-var db = mongoose.connection;
+const db = mongoose.connection;
 //Bind connection to error event (to get notification of connection erros)
 db.on('error', console.error.bind(console, 'MongoDB connection error'));
+
+app.use(session({
+  secret: 'flashcardAppSecret',
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db,
+  })
+}));
+
+// make user ID available in templates
+// Locals provides a way for you to add information to the response object
+// All views have access to the response's locals object
+app.use( (req, res, next) => {
+  res.locals.currentUser = req.session.userId;
+  next();
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

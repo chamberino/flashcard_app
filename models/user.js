@@ -1,14 +1,13 @@
-// Require Mongoose
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcryptjs')
 // Define a schema
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  first_name: {type: String, required: true, maxlength: 50},
-  last_name: {type: String, required: true, maxlength: 50},
-  email: {type: String, required: true, maxlength: 50},
-  password: {type: String, required: true, minlength: 4}
+  first_name: {type: String, required: true, maxlength: 50, trim: true},
+  last_name: {type: String, required: true, maxlength: 50, trim: true},
+  email: {type: String, required: true, maxlength: 50, trim: true},
+  password: {type: String, unique: true, required: true, minlength: 4}
 });
 
 // Virtual for user's full name
@@ -25,5 +24,40 @@ UserSchema
     return '/catalog/user/' + this._id;
 });
 
+// authenticate input against database documents
+UserSchema.statics.authenticate = function(email, password, callback) {
+    User.findOne({ email: email })
+        .exec( function(error, user) {
+            if (error) {
+                return callback(error)
+            } else if ( !user ) {
+                const err = new Error('User not found.');
+                err.status = 401;
+                return callback(err);
+            }
+            bcrypt.compare(password, user.password, function(error, result) {
+                if (result === true) {
+                    return callback(null, user)
+                } else {
+                    return callback(error);
+                }
+            })
+        })
+}
+
+// hash password before saving to database 
+UserSchema
+.pre('save', function(next) {    
+    const user = this;
+    bcrypt.hash(user.password, 10, function(err, hash) {
+        if (err) {
+            return next(err);
+        }
+        user.password = hash;
+        next();
+    })
+});
+
 //Export function to create "User" model class
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+module.exports = User;

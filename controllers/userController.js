@@ -46,9 +46,68 @@ exports.user_detail = (req, res) => {
     });
 };
 
+// Display profile page for a specific User.
+exports.user_profile = function(req, res, next) {
+    if (!req.session.userId) {
+        const err = new Error("You are not authorized to view this page");
+        err.status = 403;
+        return next(err);
+    }
+    User.findById(req.session.userId)
+        .exec(function (error, user) {
+          if (error) {
+            return next(error);
+          } else {
+            return res.render('profile', { title: 'Profile', name: user.name });
+          }
+        });
+  }
+
+// Display User create form on GET.
+exports.user_login_get = (req, res) => {
+    res.render('user_login', { title: 'Log In'});
+};
+
+// Display User create form on GET.
+exports.user_login_post = [
+    (req, res, next) => {
+        if (req.body.email && req.body.password) {
+          User.authenticate(req.body.email, req.body.password, function(error, user) {
+            if (error || !user) {
+              const err = new Error('Credentials do not match')
+              err.status = 401;
+              return next(err);
+            } else {
+              // user._id is what we get back from the authenticate method when credentials match
+              req.session.userId = user._id;
+            //   return res.redirect('/profile');
+                return res.redirect('/catalog/user/' + user._id)
+            }
+          });
+        } else {
+          const err = new Error('Email and password are required');
+          err.status = 401;
+          return next(err);
+        }
+      }
+]
+
+exports.user_logout = (req, res, next) => {
+    if (req.session) {
+      // delete session object
+      req.session.destroy( (err) => {
+        if (err) {
+          return next(err)
+        } else {
+          return res.redirect('/');
+        }
+      })
+    }
+  }
+
 // Display User create form on GET.
 exports.user_create_get = (req, res) => {
-    res.render('user_form', { title: 'Create User'});
+    res.render('user_form', { title: 'Sign Up'});
 };
 
 // Handle User create on POST
@@ -107,6 +166,9 @@ exports.user_create_post = [
                  res.json('User already registered');
                }
                else {     
+                    // Hash the new user's password before persisting to the database.
+                    // var hash = bcrypt.hashSync(req.body.password);
+                    // req.body.password = hash;
                     // Create a User object with escaped and trimmed data.
                     var user = new User(
                         {
@@ -115,12 +177,19 @@ exports.user_create_post = [
                             email: req.body.email,
                             password: req.body.password
                         });
-                    user.save(function (err) {
-                        if (err) { return next(err); }
-                        // set location header, set status code and close response returning no data
-                        res.location('/');
-                        res.status(201).end();
-                    });    
+                    // user.save(function (err) {
+                    //     if (err) { return next(err); }
+                    //     // set location header, set status code and close response returning no data
+                    //     res.location('/');
+                    //     res.status(201).end();
+                    // }); 
+                    User.create(user, (error, user) => {
+                        if (error) {
+                            return next(error)
+                        } else {
+                            return res.redirect('/')
+                        }
+                    })   
                }    
             });
         }

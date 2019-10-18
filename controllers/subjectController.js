@@ -74,7 +74,7 @@ exports.subject_create_post = [
       // Extract the validation errors from a request.
       const errors = validator.validationResult(req);
   
-      // Create a genre object with escaped and trimmed data.
+      // Create a subject object with escaped and trimmed data.
       var subject = new Subject(
         { name: req.body.name }
       );

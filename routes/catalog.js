@@ -29,9 +29,6 @@ router.get('/deck/create', deck_controller.deck_create_get);
 // GET request for one Deck.
 router.get('/deck/:id', deck_controller.deck_detail);
 
-// POST request for creating Deck.
-router.post('/deck/create', deck_controller.deck_create_post);
-
 // GET request to delete Deck.
 router.get('/deck/:id/delete', deck_controller.deck_delete_get);
 
@@ -112,17 +109,10 @@ router.get('/subjects', subject_controller.subject_list);
 /// CARD ROUTES ///
 
 // get request for creating card using decks id
-router.get('/deck/:id/create', mid.requiresLogin, card_controller.card_create_get_byID);
+router.get('/deck/:id/create', card_controller.card_create_get_byID);
 
 // post route for creating card using decks id
 router.post('/deck/:id/create', card_controller.card_create_post);
-
-
-// GET request for creating a Card. NOTE This must come before route that displays Card (uses id).
-router.get('/card/create', card_controller.card_create_get);
-
-// POST request for creating Card. 
-router.post('/card/create', card_controller.card_create_post);
 
 // GET request to delete Card.
 router.get('/card/:id/delete', card_controller.card_delete_get);

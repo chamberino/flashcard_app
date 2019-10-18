@@ -46,12 +46,16 @@ exports.card_create_get = function(req, res) {
 };
 
 // Display card create form on GET using id param.
-exports.card_create_get_byID = function(req, res) {
+exports.card_create_get_byID = function(req, res, next) {
     Deck.findById(req.params.id)
     .exec(function (err, decks) {
-      if (err) { return next(err); }
+      if (err) { 
+        const error = new Error('Could not find associated deck'); // custom error message
+        error.status = 404;
+        return next(error) // pass error along to global error handler
+        }
       // Successful, so render.
-      res.render('card_form_byID', {title: 'Create Card', deck_list: decks});
+      res.json({title: 'Create Card', deck_list: decks});
     });
     
 };
@@ -86,10 +90,10 @@ exports.card_create_post = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
             Deck.findById(req.params.id)
-                .exec(function (err, decks) {
+                .exec(function (err, deck) {
                     if (err) { return next(err); }
                     // Successful, so render.
-                    res.render('card_form_byID', { title: 'Create Card', deck_list: decks, selected_deck: card.deck._id , errors: errors.array(), card: card });
+                    res.json({ title: 'Create Card', deck: deck, selected_deck: card.deck._id , errors: errors.array(), card: card });
             });
             return;
         }

@@ -24,11 +24,11 @@ const app = express();
 const mongoose = require('mongoose');
 // Mongo Atlas Connection String
 const mongoDB = process.env.mongoURI;
-//Set up default mongoose connection
+// Set up default mongoose connection
 mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
-//Get the default connect
+// Get the default connect
 const db = mongoose.connection;
-//Bind connection to error event (to get notification of connection erros)
+// Bind connection to error event (to get notification of connection erros)
 db.on('error', console.error.bind(console, 'MongoDB connection error'));
 
 app.use(session({

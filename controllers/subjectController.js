@@ -12,18 +12,7 @@ exports.subject_list = (req, res, next) => {
     .exec(function (err, list_subjects) {
       if (err) { return next(err); }
       //Successful, so render
-      res.render('subject_list', { title: 'Subject List', subject_list: list_subjects });
-    });
-};
-
-// Display list of all Subjects.
-exports.subject_test = (req, res, next) => {
-    Subject.find()
-    .sort([['name', 'ascending']])
-    .exec(function (err, list_subjects) {
-      if (err) { return next(err); }
-      //Successful, so render
-      res.render('subject_list', { title: 'Subject List', subject_list: list_subjects });
+      res.json({ title: 'Subject List', subject_list: list_subjects });
     });
 };
 
@@ -50,14 +39,14 @@ exports.subject_detail = function(req, res, next) {
         }
         // Successful, so render
         console.log('subject: ' + results.subject + 'subject_decks: ' + results.subject_decks)
-        res.render('subject_detail', { title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
+        res.json({ title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
     });
 };
 
 
 // Display Subject create form on GET.
 exports.subject_create_get = function(req, res) {
-    res.render('subject_form', { title: 'Create Subject' });
+    res.json({ title: 'Create Subject' });
 };
 
 // Handle Subject create on POST.

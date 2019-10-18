@@ -19,7 +19,7 @@ exports.user_list = (req, res) => {
     .exec(function (err, list_users) {
       if (err) { return next(err); }
       //Successful, so render
-      res.render('user_list', { title: 'User List', user_list: list_users });
+      res.json({ title: 'User List', user_list: list_users });
     });
 };
 
@@ -33,7 +33,7 @@ exports.user_detail = (req, res) => {
         },
         user_decks: function(callback) {
           Deck.find({ 'user': id },'title')
-            .populate('subject')
+            .populate('subject')
             .exec(callback)
         },
     }, function(err, results) {
@@ -45,7 +45,7 @@ exports.user_detail = (req, res) => {
         }
         console.log('results: ' + results.user_decks)
         // Successful, so render.
-        res.render('user_detail', { title: 'User Detail', user: results.user, user_decks: results.user_decks } );
+        res.json({ title: 'User Detail', user: results.user, user_decks: results.user_decks } );
     });
 };
 
@@ -61,64 +61,64 @@ exports.user_profile = function(req, res, next) {
           if (error) {
             return next(error);
           } else {
-            return res.render('profile', { title: 'Profile', name: user.name });
+            return res.json({ title: 'Profile', name: user.name });
           }
         });
   }
 
 // Display User create form on GET.
 exports.user_login_get = (req, res) => {
-    res.render('user_login', { title: 'Log In'});
+    res.json({ title: 'Log In'});
 };
 
 // Display User create form on GET.
 // helpful video on jwt web tokens
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-exports.user_login_post = [
-    (req, res, next) => {
-        if (req.body.email && req.body.password) {
-          User.authenticate(req.body.email, req.body.password, function(error, user) {
-            if (error || !user) {
-              const err = new Error('Credentials do not match')
-              err.status = 401;
-              return next(err);
-            } else {
-              // user._id is what we get back from the authenticate method when credentials match
-              // req.session.userId = user._id;
+// exports.user_login_post = [
+//     (req, res, next) => {
+//         if (req.body.email && req.body.password) {
+//           User.authenticate(req.body.email, req.body.password, function(error, user) {
+//             if (error || !user) {
+//               const err = new Error('Credentials do not match')
+//               err.status = 401;
+//               return next(err);
+//             } else {
+//               // user._id is what we get back from the authenticate method when credentials match
+//               // req.session.userId = user._id;
               
-              return res.redirect('/profile');
-            // const user = {
-            //   email: req.body.email
-            // }
-            // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-            // res.json( { accessToken: accessToken} )
-            // return res.redirect('/catalog/user/' + user._id)
-            }
-          });
-        } else {
-          const err = new Error('Email and password are required');
-          err.status = 401;
-          return next(err);
-        }
-      }
-]
+//               return res.redirect('/profile');
+//             // const user = {
+//             //   email: req.body.email
+//             // }
+//             // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+//             // res.json( { accessToken: accessToken} )
+//             // return res.redirect('/catalog/user/' + user._id)
+//             }
+//           });
+//         } else {
+//           const err = new Error('Email and password are required');
+//           err.status = 401;
+//           return next(err);
+//         }
+//       }
+// ]
 
-exports.user_logout = (req, res, next) => {
-    if (req.session) {
-      // delete session object
-      req.session.destroy( (err) => {
-        if (err) {
-          return next(err)
-        } else {
-          return res.redirect('/');
-        }
-      })
-    }
-  }
+// exports.user_logout = (req, res, next) => {
+//     if (req.session) {
+//       // delete session object
+//       req.session.destroy( (err) => {
+//         if (err) {
+//           return next(err)
+//         } else {
+//           return res.redirect('/');
+//         }
+//       })
+//     }
+//   }
 
 // Display User create form on GET.
 exports.user_create_get = (req, res) => {
-    res.render('user_form', { title: 'Sign Up'});
+    res.json({ title: 'Sign Up'});
 };
 
 // Handle User create on POST

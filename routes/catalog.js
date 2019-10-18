@@ -47,14 +47,14 @@ router.post('/deck/:id/update', deck_controller.deck_update_post);
 // GET PROFILE
 router.get('/profile', user_controller.user_profile);
 
-// GET LOGOUT
-router.get('/user/logout', user_controller.user_logout);
+// // GET LOGOUT
+// router.get('/user/logout', user_controller.user_logout);
 
-// GET LOGIN
-router.get('/user/login', mid.loggedOut, user_controller.user_login_get);
+// // GET LOGIN
+// router.get('/user/login', mid.loggedOut, user_controller.user_login_get);
 
-// POST LOGIN
-router.post('/user/login', auth_controller.user_login_post);
+// // POST LOGIN
+// router.post('/user/login', auth_controller.user_login_post);
 
 // GET request for creating User. NOTE This must come before route for id (i.e. display user).
 router.get('/user/create', mid.loggedOut, user_controller.user_create_get);
@@ -128,9 +128,6 @@ router.post('/card/:id/update', card_controller.card_update_post);
 
 // GET request for one Card.
 router.get('/card/:id', card_controller.card_detail);
-
-// GET request for list of all Card.
-router.get('/cards', card_controller.card_list);
 
 router.get('/getUser', mid.auth, auth_controller.getUser)
 

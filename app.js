@@ -10,6 +10,12 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
 
+require('dotenv').config();
+const User = require('./models/user'); //temporarily being used for authentication tutorial
+const mid = require('./middleware/index');
+const jwt = require('jsonwebtoken');
+
+
 // const mongoDB = require('./config.js');
 
 const app = express();
@@ -17,9 +23,9 @@ const app = express();
 //Import the mongoose module
 const mongoose = require('mongoose');
 // Mongo Atlas Connection String
-const mongoDB = 'mongodb+srv://admin:admin@cluster0-4vk4u.mongodb.net/flashcard_app?retryWrites=true&w=majority';
+const mongoDB = process.env.mongoURI;
 //Set up default mongoose connection
-mongoose.connect(mongoDB, { userNewUrlParser: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 //Get the default connect
 const db = mongoose.connection;
 //Bind connection to error event (to get notification of connection erros)
@@ -34,13 +40,20 @@ app.use(session({
   })
 }));
 
+app.use( (req, res, next) => {
+    res.locals.currentUser = req.session.userId;
+    console.log(req.session.userId)
+    console.log(req.session.token)
+    next();
+  })
+
 // make user ID available in templates
 // Locals provides a way for you to add information to the response object
 // All views have access to the response's locals object
-app.use( (req, res, next) => {
-  res.locals.currentUser = req.session.userId;
-  next();
-})
+// app.use( (req, res, next) => {
+//   res.locals.currentUser = req.session.userId;
+//   next();
+// })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,8 +67,47 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/catalog', catalogRouter);  // Add catalog routes to middleware chain.
+
+// route uses authenticateToken middleware to check for valid user
+// user information is returned if successful
+app.get('/posts', mid.authenticateToken, (req, res)=>{
+  req.user;
+  console.log(req.user)
+  res.send(req.user);
+})
+
+app.post('/login', (req, res, next) => {
+  // user info is expected to be sent in body of the request
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  }
+
+  // token is created using users information, signed with token secret
+  // and returned to user.
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+  res.json( { accessToken: accessToken} )
+
+  // if (user.email && user.password) {
+  //   User.authenticate(user.email, user.password, function(error, user) {
+  //     if (error || !user) {
+  //       const err = new Error('Credentials do not match')
+  //       err.status = 401;
+  //       return next(err);
+  //     } else {
+  //       // user._id is what we get back from the authenticate method when credentials match
+  //       req.session.userId = user._id;
+  //     //   return res.redirect('/profile');
+  //         return res.redirect('/catalog/user/' + user._id)
+  //     }
+  //   });
+  // } else {
+  //   const err = new Error('Email and password are required');
+  //   err.status = 401;
+  //   return next(err);
+  // }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

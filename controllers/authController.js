@@ -1,107 +1,60 @@
-const User = require('../models/user');
-const Deck = require('../models/deck');
-const async = require('async');
-var mongoose = require('mongoose');
-const { body,check,validationResult } = require('express-validator');
+const { check,validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 var bcrypt = require('bcryptjs');
-var auth = require('basic-auth');
+const { auth } = require('../middleware/index');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const User = require('../models/user');
 
 const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
-// Display list of all users
-exports.user_list = (req, res) => {
-    User.find()
-    .sort([['last_name', 'ascending']])
-    .exec(function (err, list_users) {
-      if (err) { return next(err); }
-      //Successful, so render
-      res.render('user_list', { title: 'User List', user_list: list_users });
-    });
-};
-
-// Display detail page for a specific User.
-exports.user_detail = (req, res) => {
-    const id = mongoose.Types.ObjectId(req.params.id);
-    async.parallel({
-        user: function(callback) {
-            User.findById(id)
-              .exec(callback)
-        },
-        user_decks: function(callback) {
-          Deck.find({ 'user': id },'title')
-            .populate('subject')
-            .exec(callback)
-        },
-    }, function(err, results) {
-        if (err) { return next(err); } // Error in API usage.
-        if (results.user==null) { // No results.
-            var err = new Error('User not found');
-            err.status = 404;
-            return next(err);
-        }
-        console.log('results: ' + results.user_decks)
-        // Successful, so render.
-        res.render('user_detail', { title: 'User Detail', user: results.user, user_decks: results.user_decks } );
-    });
-};
-
-// Display profile page for a specific User.
-exports.user_profile = function(req, res, next) {
-    if (!req.session.userId) {
-        const err = new Error("You are not authorized to view this page");
-        err.status = 403;
-        return next(err);
-    }
-    User.findById(req.session.userId)
-        .exec(function (error, user) {
-          if (error) {
-            return next(error);
-          } else {
-            return res.render('profile', { title: 'Profile', name: user.name });
-          }
-        });
-  }
 
 // Display User create form on GET.
 exports.user_login_get = (req, res) => {
     res.render('user_login', { title: 'Log In'});
 };
 
-// Display User create form on GET.
+
+// Post route for loggin in an existing user
 // helpful video on jwt web tokens
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-exports.user_login_post = [
-    (req, res, next) => {
-        if (req.body.email && req.body.password) {
-          User.authenticate(req.body.email, req.body.password, function(error, user) {
-            if (error || !user) {
-              const err = new Error('Credentials do not match')
-              err.status = 401;
-              return next(err);
-            } else {
-              // user._id is what we get back from the authenticate method when credentials match
-              // req.session.userId = user._id;
-              
-              return res.redirect('/profile');
-            // const user = {
-            //   email: req.body.email
-            // }
-            // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-            // res.json( { accessToken: accessToken} )
-            // return res.redirect('/catalog/user/' + user._id)
-            }
-          });
-        } else {
-          const err = new Error('Email and password are required');
+exports.user_login_post = (req, res) => {
+    if (req.body.email && req.body.password) {
+      User.authenticate(req.body.email, req.body.password, function(error, user) {
+        if (error || !user) {
+          const err = new Error('Credentials do not match')
           err.status = 401;
-          return next(err);
+          res.json(err);
+        } else {
+            jwt.sign(
+                { id: user._id },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: '10m' },
+                // callback
+                (err, token) => {
+                  if(err) {
+                    res.json(err)
+                  } 
+                  req.session.token = token;
+                  res.json({
+                    token,
+                    user: {
+                      id: user._id,
+                      name: user.name,
+                      email: user.email
+                    }
+                  })
+                }
+            )  
         }
-      }
-]
+      });
+    } else {
+      const err = new Error('Email and password are required');
+      err.status = 401;
+      res.json(err);
+    }
+  };
+
 
 exports.user_logout = (req, res, next) => {
     if (req.session) {
@@ -121,7 +74,7 @@ exports.user_create_get = (req, res) => {
     res.render('user_form', { title: 'Sign Up'});
 };
 
-// Handle User create on POST
+// // Post route for creating a new user
 exports.user_create_post = [
     // Validate fields.
     check('first_name')
@@ -177,10 +130,8 @@ exports.user_create_post = [
                  res.json('User already registered');
                }
                else {     
-                    // Hash the new user's password before persisting to the database.
-                    // var hash = bcrypt.hashSync(req.body.password);
-                    // req.body.password = hash;
                     // Create a User object with escaped and trimmed data.
+                    // Note that User model hashed the user password before persisting to the database
                     var user = new User(
                         {
                             first_name: req.body.first_name,
@@ -226,6 +177,12 @@ exports.user_create_post = [
     }
 ];
 
+
+exports.getUser = (req, res) => {
+    User.findById(req.user.id)
+        .select('-password')
+        .then(user => res.json(user))
+}
 
 // Display User delete form on GET.
 exports.user_delete_get = function(req, res) {

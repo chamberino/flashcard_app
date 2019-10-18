@@ -1,8 +1,8 @@
 const Card = require('../models/card');
 var Deck = require('../models/deck');
 var mongoose = require('mongoose');
-const { body,validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body,validationResult } = require('express-validator');
+const { sanitizeBody } = require('express-validator');
 
 // Display list of all Cards. ??? for specific deck
 exports.card_list = function(req, res) {

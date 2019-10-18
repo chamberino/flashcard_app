@@ -53,6 +53,7 @@ UserSchema
         if (err) {
             return next(err);
         }
+        // change password to hashed password
         user.password = hash;
         next();
     })

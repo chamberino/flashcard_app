@@ -14,7 +14,7 @@ _An app that provides a way for users to create sets of flashcards and persist t
 * Run npm install: `npm install`
 * Seed database: `node populatedb {your mongodb location}`
 * Run nodemon: `nodemon`
-* Open http://localhost:3000 in the browser
+* Open http://localhost:5000 in the browser
 
 ## Known Bugs
 

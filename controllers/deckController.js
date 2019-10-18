@@ -3,8 +3,8 @@ var User = require('../models/user');
 var Subject = require('../models/subject');
 var Card = require('../models/card');
 var mongoose = require('mongoose');
-const { body,check,validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body,check,validationResult } = require('express-validator');
+const { sanitizeBody } = require('express-validator');
 
 var async = require('async');
 
@@ -24,7 +24,8 @@ exports.index = function(req, res) {
             Subject.countDocuments({}, callback);
         }
     }, function(err, results) {
-        res.render('index', { title: 'FlashCard Home', error: err, data: results });
+        res.json({ title: 'FlashCard Home', error: err, data: results });
+        // res.render('index', { title: 'FlashCard Home', error: err, data: results });
     });
 };
 // Display list of all decks.
@@ -33,9 +34,15 @@ exports.deck_list = function(req, res) {
     Deck.find({}, 'title user')
     .populate('user')
     .exec(function (err, list_decks) {
-      if (err) { return next(err); }
+      if (err) { 
+            // Log error and set status code if there's a problem retrieving the decks
+            const error = new Error('There was an error retrieving the decks'); //throw custom error    
+            error.status = 400;
+            next(error); // pass error along to global error handler
+       }
       //Successful, so render
-      res.render('deck_list', { title: 'List of Decks', deck_list: list_decks });
+      res.json({title: 'List of Decks', deck_list: list_decks});
+    //   res.render('deck_list', { title: 'List of Decks', deck_list: list_decks });
     });
 
 };
@@ -81,6 +88,16 @@ exports.deck_create_get = function(req, res) {
             },
         }, function(err, results) {
             if (err) { return next(err); }
+            // if (results.users == null) { // No results.
+            //                 var err = new Error('No users found');
+            //                 err.status = 404;
+            //                 return next(err);
+            // }
+            // if (results.subjects == null) { // No results.
+            //                 var err = new Error('No subjects found');
+            //                 err.status = 404;
+            //                 return next(err);
+            // }
             res.status(200);
             res.render('deck_form', { users: results.users, subjects: results.subjects })
             // res.json({ users: results.users, subjects: results.subjects });

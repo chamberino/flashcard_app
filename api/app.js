@@ -5,10 +5,27 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
+
+// const options = {
+//   dialect: 'sqlite',
+//   storage: './fsjstd-restapi.db',
+//   // This option configures Sequelize to always force the synchronization
+//   // of our models by dropping any existing tables.
+//   sync: { force: true },
+//   define: {
+//     // This option removes the `createdAt` and `updatedAt` columns from the tables
+//     // that Sequelize generates from our models. These columns are often useful
+//     // with production apps, so we'd typically leave them enabled, but for our
+//     // purposes let's keep things as simple as possible.
+//     timestamps: false,
+//   },
+// };
+
 
 require('dotenv').config();
 const User = require('./models/user'); //temporarily being used for authentication tutorial
@@ -19,6 +36,21 @@ const jwt = require('jsonwebtoken');
 // const mongoDB = require('./config.js');
 
 const app = express();
+
+//allow OPTIONS on all resources
+app.options('*', cors())
+
+//CORS
+app.use(function(req, res, next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Location");
+  if(req.method === "OPTIONS") {
+      res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH,OPTIONS");
+      return res.status(200).json({});
+  }
+  next();
+});
 
 //Import the mongoose module
 const mongoose = require('mongoose');

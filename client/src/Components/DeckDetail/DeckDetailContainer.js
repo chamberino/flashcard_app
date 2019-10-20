@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+
+import Card from '../Card'
 
 // DeckDetailContainer Component receives props from DeckDetail and renders the jsx
 
@@ -30,17 +32,7 @@ const DeckDetailContainer = props => {
                     </div>
                 </div>
             </div>
-
-            <div className="bounds card--detail">
-                <div className="grid-66">
-                    <div className="card">
-                    <h3 className="card--question">{props.deck.cards[0].question}</h3>
-                    <button className="remove-player" >✖</button>
-                    </div>
-                    <div className="course--description">
-                    </div>
-                </div>
-            </div>
+            <Card props={props}/>
         </div> 
     );
 }

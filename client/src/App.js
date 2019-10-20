@@ -11,6 +11,7 @@ import {
 import Header from './Components/Header';
 import Decks from './Components/Decks/Decks';
 import DeckDetail from './Components/DeckDetail/DeckDetail';
+import Card from './Components/Card/Card';
 import UserSignUp from './Components/UserSignUp';
 import UserSignIn from './Components/UserSignIn';
 import ErrorPage from './Components/Error';
@@ -37,6 +38,7 @@ export default class App extends Component {
 
           <Route exact path="/decks" component={Decks} />
           <Route path="/decks/:id" component={DeckDetail} />
+          <Route exact path="/decks/:id/:cardId" component={Card} />
 
           <Route exact path="/notfound" component={NotFound}/>
           <Route exact path="/error" component={ErrorPage}/>

@@ -12,11 +12,27 @@ import Header from './Components/Header';
 import Decks from './Components/Decks/Decks';
 import DeckDetail from './Components/DeckDetail/DeckDetail';
 import Card from './Components/Card/Card';
+import CreateDeck from './Components/CreateDeck';
+import UpdateDeck from './Components/UpdateDeck';
 import UserSignUp from './Components/UserSignUp';
 import UserSignIn from './Components/UserSignIn';
+import UserSignOut from './Components/UserSignOut';
 import ErrorPage from './Components/Error';
 import Forbidden from './Components/Forbidden'
 import NotFound from './Components/NotFound';
+
+// Connect the App Component to Context
+import withContext from './Components/Context';
+// Import the PrivateRoute Component
+import PrivateRoute from './PrivateRoute';
+
+const HeaderWithContext = withContext(Header);
+const UserSignInWithContext = withContext(UserSignIn);
+const UserSignOutWithContext = withContext(UserSignOut);
+const DecksWithContext = withContext(Decks);
+const DeckDetailWithContext = withContext(DeckDetail);
+const CreateDeckWithContext = withContext(CreateDeck);
+const UpdateDeckWithContext = withContext(UpdateDeck);
 
 export default class App extends Component {
   // Constructor initializes state //
@@ -28,16 +44,19 @@ export default class App extends Component {
     return (         
       <div>
       <BrowserRouter>
-        <Header />
+        <HeaderWithContext />
         <Switch>     
           <Route exact path="/" render={ () => <Redirect to="/decks/" /> } />
 
-          <Route path="/signin" component={UserSignIn} />
+          <Route path="/signin" component={UserSignInWithContext} />
           <Route path="/signup" component={UserSignUp} />
+          <Route path="/signout" component={UserSignOutWithContext} />
 
 
-          <Route exact path="/decks" component={Decks} />
-          <Route path="/decks/:id" component={DeckDetail} />
+          <PrivateRoute exact path="/decks/create/" component={CreateDeckWithContext}/>
+          <Route exact path="/decks" component={DecksWithContext} />
+          <PrivateRoute path="/decks/:id/update/" component={UpdateDeckWithContext} />
+          <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
 
           <Route exact path="/notfound" component={NotFound}/>

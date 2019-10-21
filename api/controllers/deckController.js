@@ -36,7 +36,7 @@ exports.index = function(req, res) {
 // Display list of all decks.
 exports.deck_list = function(req, res) {
     Deck.find({}, 'title user')
-    .populate('user')
+    .populate('user', '_id first_name last_name')
     .exec(function (err, list_decks) {
       if (err) { 
             // Log error and set status code if there's a problem retrieving the decks
@@ -57,7 +57,7 @@ exports.deck_detail = function(req, res) {
             deck: function(callback) {
     
                 Deck.findById(id)
-                  .populate('user')
+                  .populate('user', '_id first_name last_name')
                   .populate('subject')
                   .exec(callback);
             },

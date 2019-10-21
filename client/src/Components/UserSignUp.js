@@ -126,7 +126,7 @@ export default class UserSignUp extends Component {
         } else {
           context.actions.signIn(emailAddress, password)
           .then( () => {
-            this.props.history.push('/courses')
+            this.props.history.push('/decks')
           }).catch((err)=>{
             this.props.history.push('/error'); // push to history stack
           })

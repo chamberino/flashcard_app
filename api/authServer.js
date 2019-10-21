@@ -11,8 +11,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const bcrypt = require('bcryptjs')
 const { body,check,validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
+const cors = require('cors');
+
 
 require('dotenv').config();
 const User = require('./models/user'); //temporarily being used for authentication tutorial
@@ -20,6 +23,21 @@ const mid = require('./middleware/index');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+
+//allow OPTIONS on all resources
+app.options('*', cors())
+
+//CORS
+app.use(function(req, res, next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Location");
+  if(req.method === "OPTIONS") {
+      res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH,OPTIONS");
+      return res.status(200).json({});
+  }
+  next();
+});
 
 //Import the mongoose module
 const mongoose = require('mongoose');
@@ -104,7 +122,114 @@ app.post('/login', (req, res, next) => {
     }
   });
 
-app.post('/user/login', auth_controller.user_login_post);
+app.post('/user/login', [
+  check('email')
+    .exists({ checkNull: true, checkFalsy: true })
+    .withMessage('Email required'),
+  check('password')
+    .exists({ checkNull: true, checkFalsy: true })
+    .withMessage('Password required'),
+], (req, res, next) => {
+    // Attempt to get the validation result from the Request object.
+  const errors = validationResult(req);
+  // If there are validation errors...
+  if (!errors.isEmpty()) {
+      // Use the Array `map()` method to get a list of error messages.
+      const errorMessages = errors.array().map(error => error.msg);
+      // Create custom error with 400 status code
+      res.status(400);
+      return res.json(errorMessages);
+  } else {
+    User.findOne({email: req.body.email})
+    
+    .then((user)=>{
+      if (!user) {        
+        const errorMessages = [];
+        errorMessages.push("User not found")
+        return res.json(errorMessages)
+      }
+      if (user) {
+        bcrypt.compare(req.body.password, user.password, function(error, result) {
+          if (result === true) {
+            jwt.sign(
+              { id: user._id },
+              process.env.ACCESS_TOKEN_SECRET,
+              { expiresIn: '10m' },
+              // callback
+              (err, token) => {
+                if(err) {
+                  res.json(err)
+                } 
+                req.session.token = token;
+                res.json({
+                  token,
+                  user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                  }
+                })
+              }
+          )  
+          } else {
+            const errorMessages = [];
+            errorMessages.push("Credentials don't match")
+            return res.json(errorMessages)
+          }
+      })
+      }
+    }).catch((error) => {  
+      // catch any other errors and pass errors to global error handler
+      next(error);
+  });
+      // User.findOne({ where: {email: req.body.email} })
+      // .then((user) => {
+      //     if (user) {
+      //         res.status(400);
+      //         const errorMessages = [];
+      //         errorMessages.push("A user")
+      //         return res.json(errorMessages);
+      //     } else {
+      //         //req.body contains a json object with the values of the form which maps 1:1 to the Course model.
+      //         req.body.userId = req.currentUser.id;                
+      //         Course.create(req.body)
+      //         .then((course)=>{
+      //             if(!course){
+      //                 const error = new Error('There was a problem posting the course'); //throw custom error
+      //                 error.status =400;
+      //                 next(error); // pass error along to global error handler
+      //             } else {
+      //                 res.locals.courseId = course.Id;
+      //                 res.location(`/api/courses/${course.id}`);                        
+      //                 res.status(201)                    
+      //                 res.json({course: 100});                      
+      //             }
+      //         }).catch((error)=> {  // check for errors within body
+      //             if (error.name === "SequelizeValidationError") {
+      //                 // Use Sequelize ORM to catch any validation errors
+      //                 // If errors exist, map over array of error objects and return array
+      //                 // with error messages
+      //                 const errorsArray = error.errors.map((error) => {
+      //                     return error.message;                
+      //                 })
+      //                 const err = new Error(errorsArray); //custom error message
+      //                 err.status = 400;
+      //                 next(err) // pass error along to global error handler
+      //             } else {
+      //                 // catch any other errors and pass errors to global error handler
+      //                 next(error);
+      //             }
+      //         });
+      //         return null;
+      //     };
+      // }).catch((error) => {
+      //     // catch any other errors and pass errors to global error handler
+      //     next(error);
+      // });
+  };      
+});
+
+// app.post('/user/login', auth_controller.user_login_post);
 
 app.post('/user/create',  auth_controller.user_create_post);
 

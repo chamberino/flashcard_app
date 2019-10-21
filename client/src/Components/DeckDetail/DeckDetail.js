@@ -4,11 +4,11 @@ import {
   Switch
 } from 'react-router-dom';
 import axios from 'axios';
-// import withContext from '../Context';
+import withContext from '../Context';
 import DeckDetailContainer from './DeckDetailContainer';
 // import NotFound from '../NotFound';
 
-// const DeckDetailContainerWithContext = withContext(DeckDetailContainer);
+const DeckDetailContainerWithContext = withContext(DeckDetailContainer);
 
 
 /* 
@@ -48,7 +48,8 @@ export default class DeckDetail extends Component {
         
         this.setState( prevState => ({
         score: prevState.score + 1,
-        sideOfCard: 'question'
+        sideOfCard: 'question',
+        hint: null
         }));
     }   
 }
@@ -57,7 +58,8 @@ export default class DeckDetail extends Component {
     if (this.state.score > 0) {  
         this.setState( prevState => ({  
         score: prevState.score - 1,
-        sideOfCard: 'question'
+        sideOfCard: 'question',
+        hint: null
         }));
     }
 }
@@ -86,41 +88,45 @@ showHint = () => {
   }
 }
 
-  componentDidMount() {
-    // If user is signed in, set an authenticatedUser property with the users id. This will be sent to the 
-    // DeckDetailContainer Component to determine which options will be available to the user.
-
-    // Make a call to the API to grab the deck using the url param set to the id property in state
-
-    axios(`http://localhost:5000/catalog/deck/${this.state.id}`)
-        .then(deck => {
-            this.setState({
-                hint: null,
-                sideOfCard: 'question',
-                amountOfCards: deck.data.cards.length,
-                deck: deck.data,
-                deckTitle: deck.data.title,
-                deckCreator: deck.data.deck.user.first_name + ' ' + deck.data.deck.user.last_name,
-                loading: false,
-                jsx: <Route exact path="/decks/:id" render = {({match})=> 
-                    <DeckDetailContainer
-                        hint={this.state.hint}
-                        sideOfCard={this.state.sideOfCard}
-                        amountOfCards={this.state.amountOfCards}
-                        nextCard={this.nextCard}
-                        previousCard={this.previousCard}
-                        flipCard={this.flipCard}
-                        showHint={this.showHint}
-                        score={this.state.score}
-                        deckCreator={this.state.deckCreator}                  
-                        deck={this.state.deck} 
-                        match={match}/> } />
-            })
-        }).catch(()=>{
-            // catch errors and push new route to History object
-            this.props.history.push('/error');
-          })
+componentDidMount() {
+  // If user is signed in, set an authenticatedUser property with the users id. This will be sent to the 
+  // DeckDetailContainer Component to determine which options will be available to the user.
+  if (this.props.context.authenticatedUser) {
+    this.setState({
+    authenticatedUser: this.props.context.authenticatedUser.user.user.id 
+    })
   }
+  // Make a call to the API to grab the deck using the url param set to the id property in state
+  this.props.context.actions.getDeck(this.state.id)
+      .then(deck => {
+          this.setState({
+              hint: null,
+              sideOfCard: 'question',
+              amountOfCards: deck.cards.length,
+              deck: deck,
+              deckTitle: deck.title,
+              deckCreator: deck.deck.user.first_name + ' ' + deck.deck.user.last_name,
+              loading: false,
+              jsx: <Route exact path="/decks/:id" render = {({match})=> 
+                  <DeckDetailContainerWithContext
+                      authenticatedUserId={this.state.authenticatedUser} 
+                      hint={this.state.hint}
+                      sideOfCard={this.state.sideOfCard}
+                      amountOfCards={this.state.amountOfCards}
+                      nextCard={this.nextCard}
+                      previousCard={this.previousCard}
+                      flipCard={this.flipCard}
+                      showHint={this.showHint}
+                      score={this.state.score}
+                      deckCreator={this.state.deckCreator}                  
+                      deck={this.state.deck} 
+                      match={match}/> } />
+          })
+      }).catch(()=>{
+          // catch errors and push new route to History object
+          this.props.history.push('/error');
+        })
+}
 
   render() {
     return (    
@@ -139,15 +145,3 @@ showHint = () => {
     );
   }
 }
-
-
-{/* <Route exact path="/deck/:id" render= {({match})=> 
-                        <DeckDetailContainer
-                            deckCreator={this.state.deckCreator}                  
-                            deck={this.state.deck} 
-                            match={match}/> } />  */}
-
-
-{/* <Route exact path="deck/:id" render = {({match}) => 
-<h1>Jello World</h1>
-} /> */}

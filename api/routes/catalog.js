@@ -6,7 +6,6 @@ var deck_controller = require('../controllers/deckController');
 var user_controller = require('../controllers/userController');
 var subject_controller = require('../controllers/subjectController');
 var card_controller = require('../controllers/cardController');
-var test_controller = require('../controllers/testController');
 var auth_controller = require('../controllers/authController');
 const mid = require('../middleware/index');
 
@@ -16,9 +15,6 @@ const mid = require('../middleware/index');
 
 // GET catalog home page.
 router.get('/', deck_controller.index);
-
-// TEST
-router.get('/test', test_controller.test_route);
 
 // GET request for list of all Deck items.
 router.get('/decks', deck_controller.deck_list);
@@ -51,10 +47,10 @@ router.get('/profile', user_controller.user_profile);
 // router.get('/user/logout', user_controller.user_logout);
 
 // // GET LOGIN
-// router.get('/user/login', mid.loggedOut, user_controller.user_login_get);
+router.get('/user/login', mid.loggedOut, user_controller.user_login_get);
 
 // // POST LOGIN
-// router.post('/user/login', auth_controller.user_login_post);
+router.post('/user/login', auth_controller.user_login_post);
 
 // GET request for creating User. NOTE This must come before route for id (i.e. display user).
 router.get('/user/create', mid.loggedOut, user_controller.user_create_get);

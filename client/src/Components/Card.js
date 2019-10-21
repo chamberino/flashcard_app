@@ -17,8 +17,17 @@ const Card = props => (
         <div className="card">
         <h3 className="card--question">{props.props.deck.cards[props.props.score][props.props.sideOfCard]}</h3>
         <button className="flip-card" onClick={props.props.flipCard}>flip card</button>
-        <button className="previous-card" onClick={props.props.previousCard}> previous card </button>
-        <button className="next-card" onClick={props.props.nextCard}> next card </button>
+        {/* instead of rendering next and previous as null change class so you can gray out buttons */}
+        {
+            (props.props.score > 0)
+                ? <button className="previous-card" onClick={props.props.previousCard}> previous card </button>
+                : (null)
+        }
+        {
+            (props.props.score < props.props.amountOfCards-1)
+                ?<button className="next-card" onClick={props.props.nextCard}> next card </button>
+                : (null)
+        }
         <button className="show-hint" onClick={props.props.showHint}> show hint </button>
 
         </div>
@@ -38,6 +47,7 @@ const Card = props => (
     </div>
         )
     }
+    <p>{props.props.score+1}/{props.props.amountOfCards}</p>
 </div>
 
 )

@@ -9,14 +9,14 @@ import Form from './Form';
 export default class UserSignIn extends Component {
 
   state = {
-    emailAddress: '',
+    email: '',
     password: '',
     errors: [],
   }
 
   render() {
     const {
-      emailAddress,
+      email,
       password,
       errors,
     } = this.state;
@@ -33,10 +33,10 @@ export default class UserSignIn extends Component {
             elements={() => (
               <React.Fragment>
                 <input 
-                  id="emailAddress" 
-                  name="emailAddress" 
-                  type="text"
-                  value={emailAddress} 
+                  id="email" 
+                  name="email" 
+                  type="email"
+                  value={email} 
                   onChange={this.change} 
                   placeholder="Email" />
                 <input 
@@ -74,13 +74,14 @@ export default class UserSignIn extends Component {
     const { context } = this.props;
     // The from variable passed to history.push(from) contains information 
     // about the pathname an unauthenticated user redirected from (via this.props.location.state). 
-    const { from } = this.props.location.state || { from: { pathname: '/courses' } };
+    const { from } = this.props.location.state || { from: { pathname: '/decks' } };
     // unpack username and properties password from state
-    const { emailAddress, password } = this.state;
+    const { email, password } = this.state;
 
     // call the signIn() function, passing in the users credentials
     // signIn returns the users credentials or null if invalid 
-    context.actions.signIn(emailAddress, password)
+    console.log(email, password)
+    context.actions.signIn(email, password)
       .then((user) => {
         if (user === null) {
           this.setState(() => {
@@ -88,7 +89,7 @@ export default class UserSignIn extends Component {
           });
         } else {
           this.props.history.push(from);
-          console.log(`SUCCESS! ${emailAddress} is now signed in!`);
+          console.log(`SUCCESS! ${email} is now signed in!`);
         }
       })
       .catch(() => {

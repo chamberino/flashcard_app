@@ -17,10 +17,19 @@ export default (props) => {
 
         <Link to="/decks"><h1 className="header--logo">Flashcards App</h1></Link>
         <nav>
+            
+        {/* Ternary operator checks if authenticatedUser is set in props */}
+        {props.context.authenticatedUser ? (
+            <React.Fragment>
+              <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span>
+              <Link to="/signout">Sign Out</Link>
+            </React.Fragment>
+          ) : (
             <React.Fragment>
               <Link className="signup" to={"/signup"}>Sign Up</Link>
               <Link className="signin" to={"/signin"}>Sign In</Link>
             </React.Fragment>
+          )}
 
         </nav>
       </div>
@@ -28,16 +37,3 @@ export default (props) => {
   );
 }
 
-
-        // {/* Ternary operator checks if authenticatedUser is set in props */}
-        // {props.context.authenticatedUser ? (
-        //     <React.Fragment>
-        //       <span>Welcome, {props.context.authenticatedUser.user.fullName}!</span>
-        //       <Link to="/signout">Sign Out</Link>
-        //     </React.Fragment>
-        //   ) : (
-        //     <React.Fragment>
-        //       <Link className="signup" to={"/signup"}>Sign Up</Link>
-        //       <Link className="signin" to={"/signin"}>Sign In</Link>
-        //     </React.Fragment>
-        //   )}

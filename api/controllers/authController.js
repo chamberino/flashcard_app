@@ -18,43 +18,70 @@ exports.user_login_get = (req, res) => {
 // Post route for loggin in an existing user
 // helpful video on jwt web tokens
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-exports.user_login_post = (req, res) => {
-    if (req.body.email && req.body.password) {
-      User.authenticate(req.body.email, req.body.password, function(error, user) {
-        if (error || !user) {
-          const err = new Error('Credentials do not match')
-          err.status = 401;
-          res.json(err);
-        } else {
-            jwt.sign(
-                { id: user._id },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '10m' },
-                // callback
-                (err, token) => {
-                  if(err) {
-                    res.json(err)
-                  } 
-                  req.session.token = token;
-                  res.json({
-                    token,
-                    user: {
-                      id: user._id,
-                      name: user.name,
-                      email: user.email
-                    }
-                  })
-                }
-            )  
-        }
-      });
-    } else {
-      const err = new Error('Email and password are required');
-      err.status = 401;
-      res.json(err);
-    }
-  };
+// exports.user_login_post = (req, res) => {
+//     if (req.body.email && req.body.password) {
+//       User.authenticate(req.body.email, req.body.password, function(error, user) {
+//         if (error || !user) {
+//           const err = new Error('Credentials do not match')
+//           err.status = 401;
+//           res.send(err);
+//         } else {
+//             jwt.sign(
+//                 { id: user._id },
+//                 process.env.ACCESS_TOKEN_SECRET,
+//                 { expiresIn: '10m' },
+//                 // callback
+//                 (err, token) => {
+//                   if(err) {
+//                     res.json(err)
+//                   } 
+//                   req.session.token = token;
+//                   res.json({
+//                     token,
+//                     user: {
+//                       id: user._id,
+//                       name: user.name,
+//                       email: user.email
+//                     }
+//                   })
+//                 }
+//             )  
+//         }
+//       });
+//     } else {
+//       const err = new Error('Email and password are required');
+//       err.status = 401;
+//       res.json(err);
+//     }
+//   };
 
+
+exports.user_login_post = (req, res) => {
+if (!req.body.email || !req.body.password) {
+  const err = new Error('Email and password are required');
+  err.status = 401;
+  res.json(err);
+} else {
+  User.findOne({ email: email })
+
+  .exec( function(error, user) {
+      if (error) {
+          return callback(error)
+      } else if ( !user ) {
+          const err = new Error('User not found.');
+          err.status = 401;
+          return callback(err);
+      }
+      bcrypt.compare(password, user.password, function(error, result) {
+          if (result === true) {
+              return callback(null, user)
+          } else {
+              return callback(error);
+          }
+      })
+  })
+  }
+};
 
 exports.user_logout = (req, res, next) => {
     if (req.session) {

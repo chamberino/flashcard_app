@@ -74,34 +74,34 @@ exports.user_login_get = (req, res) => {
 // Display User create form on GET.
 // helpful video on jwt web tokens
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-// exports.user_login_post = [
-//     (req, res, next) => {
-//         if (req.body.email && req.body.password) {
-//           User.authenticate(req.body.email, req.body.password, function(error, user) {
-//             if (error || !user) {
-//               const err = new Error('Credentials do not match')
-//               err.status = 401;
-//               return next(err);
-//             } else {
-//               // user._id is what we get back from the authenticate method when credentials match
-//               // req.session.userId = user._id;
+exports.user_login_post = [
+    (req, res, next) => {
+        if (req.body.email && req.body.password) {
+          User.authenticate(req.body.email, req.body.password, function(error, user) {
+            if (error || !user) {
+              const err = new Error('Credentials do not match')
+              err.status = 401;
+              return next(err);
+            } else {
+              // user._id is what we get back from the authenticate method when credentials match
+              // req.session.userId = user._id;
               
-//               return res.redirect('/profile');
-//             // const user = {
-//             //   email: req.body.email
-//             // }
-//             // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-//             // res.json( { accessToken: accessToken} )
-//             // return res.redirect('/catalog/user/' + user._id)
-//             }
-//           });
-//         } else {
-//           const err = new Error('Email and password are required');
-//           err.status = 401;
-//           return next(err);
-//         }
-//       }
-// ]
+              return res.redirect('/profile');
+            // const user = {
+            //   email: req.body.email
+            // }
+            // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+            // res.json( { accessToken: accessToken} )
+            // return res.redirect('/catalog/user/' + user._id)
+            }
+          });
+        } else {
+          const err = new Error('Email and password are required');
+          err.status = 401;
+          return next(err);
+        }
+      }
+]
 
 // exports.user_logout = (req, res, next) => {
 //     if (req.session) {

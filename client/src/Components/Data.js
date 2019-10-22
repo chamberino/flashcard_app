@@ -23,11 +23,11 @@ export default class Data {
       if (requiresAuth) {    
         // If authentication is required, pass the authentication information to the server 
         // in an Authorization header using base-64 encoding
-        const encodedCredentials = btoa(`${credentials.email}:${credentials.password}`);
+        const encodedCredentials = btoa(`${credentials}`);
         // Add Authorization property to options.headers
         // Set the Authorization type to Basic, followed by the encoded credentials, 
         // stored in the variable encodedCredentials:
-        options.headers['Authorization'] = `Basic ${encodedCredentials}`;
+        options.headers['Authorization'] = `Bearer ${credentials}`;
       }
   
       return fetch(url, options);
@@ -75,11 +75,12 @@ export default class Data {
       }
     }
   
+    // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
     async create(deckPayload, credentials) {
       const response = await this.api('/catalog/deck/create', 'POST', deckPayload, true, credentials);
       // If user is created and a 201 status is set, return empty array
       if (response.status === 201) {
-        return response;
+        return response.json().then(data => data);
       }
       // If there is a problem creating the user, return the data
       // Which will be the error data
@@ -147,6 +148,7 @@ export default class Data {
         throw new Error();
       }
     }
+
   
     async getDeck(id) {
       const response = await this.api(`/catalog/deck/${id}`, 'GET', null, false);
@@ -155,6 +157,23 @@ export default class Data {
         // If status is 200, return deck data
         const deck = await response.json();
         return deck
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+    async getSubjects() {
+      const response = await this.api(`/catalog/subjects`, 'GET', null, false);
+      // Send GET request to API to retrieve list of subjects in database
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const subjects = await response.json();
+        return subjects
       }
       // If there is a problem retrieving the decks, return the error data
       else if (response.status !== 200) {

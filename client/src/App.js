@@ -11,7 +11,7 @@ import {
 import Header from './Components/Header';
 import Decks from './Components/Decks/Decks';
 import DeckDetail from './Components/DeckDetail/DeckDetail';
-import Card from './Components/Card/Card';
+import Card from './Components/Card';
 import CreateDeck from './Components/CreateDeck';
 import UpdateDeck from './Components/UpdateDeck';
 import UserSignUp from './Components/UserSignUp';

@@ -9,7 +9,7 @@ or the user's first and last name and a button for signing out
 */
 
 export default (props) => {
-    
+  console.log(props.context.authenticatedUser !== null)
   // The header nav is conditionally rendered based on the authenticatedUser state
   return (
     <div className="header">
@@ -19,7 +19,7 @@ export default (props) => {
         <nav>
             
         {/* Ternary operator checks if authenticatedUser is set in props */}
-        {props.context.authenticatedUser ? (
+        {(props.context.authenticatedUser)  ? (
             <React.Fragment>
               <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span>
               <Link to="/signout">Sign Out</Link>

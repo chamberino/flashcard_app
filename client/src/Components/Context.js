@@ -10,9 +10,7 @@ export class Provider extends Component {
     // if a an 'authenticatedUser' cookie exists, then state is set to it's value
     // Otherwise the value of authenticatedUser is null and a user will have to sign-in to view
     // private routes
-    authenticatedUser: Cookies.getJSON('authenticatedUser') || null,
-    decks: [],
-    decktest: {}
+    authenticatedUser: Cookies.getJSON('authenticatedUser') || null
   };
 
   constructor() {
@@ -37,7 +35,8 @@ export class Provider extends Component {
         delete: this.DeleteDeck,
         getDecks: this.getDecks,
         getDeck: this.getDeck,
-        getAuthor: this.getAuthor
+        getAuthor: this.getAuthor,
+        getSubjects: this.getSubjects
       },
     };
     return (
@@ -53,11 +52,10 @@ export class Provider extends Component {
     // If credentials are valid the returned value will be an object 
     // containing the authenticated users data or will remain null upon failure
     const user = await this.data.getUser(email, password);
-    if (user !== null) {
+    if (user.token !== undefined) {
       this.setState(() => {
         return {
           authenticatedUser: {user},
-          decks: []
         };
       });
       // Set cookie named authenticatedUser with js-cookie
@@ -91,8 +89,8 @@ export class Provider extends Component {
     return update;
   }
 
-  CreateDeck = async (title, description) => {
-    const newDeck = await this.data.create(title, description);
+  CreateDeck = async (deckPayload, credentials) => {
+    const newDeck = await this.data.create(deckPayload, credentials);
     return newDeck;
   }
 
@@ -114,6 +112,11 @@ export class Provider extends Component {
       }
     });
     return deck;
+  }
+
+  getSubjects = async () => {
+    const subjects = await this.data.getSubjects()
+    return subjects;
   }
 
 }

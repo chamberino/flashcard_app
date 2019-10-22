@@ -24,7 +24,8 @@ export default class Decks extends Component {
     super();
     this.state= {
       decks: [],
-      loading: true
+      loading: true,
+      // credentials: props.context.authenticatedUser.user.token
     };
   }
 

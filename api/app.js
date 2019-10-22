@@ -56,7 +56,15 @@ const mongoose = require('mongoose');
 // Mongo Atlas Connection String
 const mongoDB = process.env.mongoURI;
 // Set up default mongoose connection
-mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+  // .then((error, result) => {
+  //     if (error) {
+  //       res.json('cannot connect to server');
+  //     } else {
+  //       return result
+  //     }
+  // }).catch((err)=> err)
+
 // Get the default connect
 const db = mongoose.connection;
 // Bind connection to error event (to get notification of connection erros)
@@ -71,12 +79,12 @@ app.use(session({
   })
 }));
 
-app.use( (req, res, next) => {
-    res.locals.currentUser = req.session.userId;
-    console.log(req.session.userId)
-    console.log(req.session.token)
-    next();
-  })
+// app.use( (req, res, next) => {
+//     res.locals.currentUser = req.session.userId;
+//     console.log(req.session.userId)
+//     console.log(req.session.token)
+//     next();
+//   })
 
 // make user ID available in templates
 // Locals provides a way for you to add information to the response object

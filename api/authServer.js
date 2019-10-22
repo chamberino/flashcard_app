@@ -29,6 +29,7 @@ app.options('*', cors())
 
 //CORS
 app.use(function(req, res, next){
+  // res.header("Access-Control-Expose-Headers", "Location");
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Location");
@@ -133,12 +134,19 @@ app.post('/user/login', [
     // Attempt to get the validation result from the Request object.
   const errors = validationResult(req);
   // If there are validation errors...
+  // if (!errors.isEmpty()) {
+  //     // Use the Array `map()` method to get a list of error messages.
+  //     const errorMessages = errors.array().map(error => error.msg);
+  //     // Create custom error with 400 status code
+  //     res.status(400);
+  //     return res.json(errorMessages);
   if (!errors.isEmpty()) {
-      // Use the Array `map()` method to get a list of error messages.
-      const errorMessages = errors.array().map(error => error.msg);
-      // Create custom error with 400 status code
-      res.status(400);
-      return res.json(errorMessages);
+    // Use the Array `forEach()` method to push a list of error messages received from 
+    // Mongoose validation to errorMessages array.
+    const errorMessages = [];
+        errors.array().forEach(error => errorMessages.push(error.msg))
+        console.log(errorMessages)
+        return res.json(errorMessages)
   } else {
     User.findOne({email: req.body.email})
     
@@ -146,6 +154,7 @@ app.post('/user/login', [
       if (!user) {        
         const errorMessages = [];
         errorMessages.push("User not found")
+        console.log(errorMessages)
         return res.json(errorMessages)
       }
       if (user) {
@@ -174,6 +183,7 @@ app.post('/user/login', [
           } else {
             const errorMessages = [];
             errorMessages.push("Credentials don't match")
+            console.log(errorMessages)
             return res.json(errorMessages)
           }
       })

@@ -80,19 +80,22 @@ export default class UserSignIn extends Component {
 
     // call the signIn() function, passing in the users credentials
     // signIn returns the users credentials or null if invalid 
-    console.log(email, password)
     context.actions.signIn(email, password)
-      .then((user) => {
-        if (user === null) {
-          this.setState(() => {
-            return { errors: [ 'Sign-in was unsuccessful' ] };
-          });
+      .then((errors) => {
+        // if (user === null) {
+        //   this.setState(() => {
+        //     return { errors: [ 'Sign-in was unsuccessful' ] };
+        //   });
+        if (errors.length) {
+          // if any error messages, set the error state to the value of the errors
+          this.setState({ errors })
         } else {
           this.props.history.push(from);
+          console.log(errors)
           console.log(`SUCCESS! ${email} is now signed in!`);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         // catch errors and push new route to History object
         this.props.history.push('/error');
       });

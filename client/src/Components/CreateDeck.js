@@ -12,32 +12,62 @@ the "Course Detail" screen.
 
 /* pass props to UpdateCourse Component from Course */
 
-export default class CreateCourseWithContext extends Component {
+export default class CreateDeckWithContext extends Component {
 
   constructor(props) {
     super();
   this.state= {
   preservedTitle: '',
-  preservedDescription: '',  
-  title: '',    
-  description: '',                
-  estimatedTime: '',
-  materialsNeeded: '',
+  title: '',      
+  subjects: [],           
+  subjectsChecked: [],           
   errors: [],
   searchText: '',
-  user: props.context.authenticatedUser.user.fullName
+  user: props.context.authenticatedUser.user.user.name,
+  userId: props.context.authenticatedUser.user.user.id,
   };
+}
+
+componentDidMount() {  
+  // Make a call to the API to get all the courses in the DB.
+  this.props.context.actions.getSubjects()
+  // Get all available subjects
+    .then(subjects=>{
+      let subjectCheckboxArray = subjects.subject_list.map( (subject) => { 
+        // For each deck received in props, return a Deck component with relevant data
+        return <label key={subject._id}>{subject.name}<input onChange={this.change} type="checkbox" name="subject" id={subject._id} value={subject._id} checked={subject.checked} key={subject._id}/></label>
+        // return <Deck title={result.title} id={result._id} key={result._id}/>
+      });
+      this.setState({
+        subjects: subjectCheckboxArray,
+        loading: false
+      })
+
+    }).catch((error)=>{
+      console.log(error)
+      // catch errors and push new route to History object
+      this.props.history.push('/error');
+    })
 }
 
   render() {
     const {
       title,
-      description,
-      estimatedTime,
-      materialsNeeded,
       errors,
+      userId,
       user
     } = this.state;
+
+    // this.state.subjects.forEach( (subject) => { 
+    //   this.setState({
+    //     [subject]: {subject}
+    //   })
+
+    // let subjects = this.state.subjects.map( (subject) => { 
+    //   // For each deck received in props, return a Deck component with relevant data
+    //   return <label key={subject._id}>{subject.name}<input onChange={this.change} type="checkbox" name="subject" id={subject._id} value={subject._id} checked={subject.checked} key={subject._id}/></label>
+    //   // return <Deck title={result.title} id={result._id} key={result._id}/>
+    // });
 
     return (
       <div className="bounds course--detail">
@@ -64,52 +94,17 @@ export default class CreateCourseWithContext extends Component {
                     placeholder="Deck title..." 
                     value={title}
                      />
+                   <input 
+                    id="user" 
+                    name="user" 
+                    type="hidden" 
+                    className="input-title course--title--input"                     
+                    value={userId}
+                     />  
                 </div>
                 <p>By {user}</p>
               </div>
-              <div className="course--description">
-                <div>
-                  <textarea 
-                    id="description" 
-                    name="description" 
-                    className="" 
-                    placeholder="Course description..." 
-                    value={description}
-                    onChange={this.change} 
-                    />
-                  </div>
-              </div>
-            </div>
-            <div className="grid-25 grid-right">
-              <div className="course--stats">
-                <ul className="course--stats--list">
-                  <li className="course--stats--list--item">
-                    <h4>Estimated Time</h4>
-                    <div>
-                      <input 
-                        id="estimatedTime" 
-                        name="estimatedTime" 
-                        type="text" 
-                        className="course--time--input" 
-                        onChange={this.change} 
-                        placeholder="Hours" 
-                        value={estimatedTime} />
-                    </div>
-                  </li>
-                  <li className="course--stats--list--item">
-                    <h4>Materials Needed</h4>
-                    <div>
-                      <textarea 
-                        id="materialsNeeded" 
-                        name="materialsNeeded" 
-                        placeholder="List materials..." 
-                        onChange={this.change} 
-                        value={materialsNeeded}
-                        />
-                    </div>
-                  </li>
-                </ul>
-              </div>
+              {this.state.subjects}
             </div>
         </React.Fragment>
           )} />
@@ -121,15 +116,20 @@ export default class CreateCourseWithContext extends Component {
     // Any changes made in the input fields will update it's corresponding property in state
     const name = event.target.name;
     const value = event.target.value;
+    const testing = event.target.checked
 
     this.setState(() => {
       return {
-        [name]: value
+        [name]: value,
+        testing       
       };
     });
   }
 
   submit = () => {
+
+    console.log(this.state.subjects)
+    // console.log(res.subject)
     // Data is passed to the component via a prop named context. 
     // Destructuring is used to extract the value from props. 
     const { context } = this.props;
@@ -138,45 +138,54 @@ export default class CreateCourseWithContext extends Component {
     // the state object (this.state) into distinct variables
     const {
       title,
-      description,
-      estimatedTime,
-      materialsNeeded,
+      userId
     } = this.state;
 
-    this.setState({ preservedTitle: title, preservedDescription: description });
+    this.setState({ preservedTitle: title, userId: userId });
     
     // Initialize a variable named coursePayLoad to an object 
     // containing the necessary data to make a call to the API to create a course
-    const coursePayload = {
-      title,
-      description,
-      estimatedTime,
-      materialsNeeded,
-    };
+    // const coursePayload = {
+    //   title,
+    //   userId
+    // };
+
+    const deckPayload = {
+      title: title,
+      user: userId,
+      subject: this.state.subject
+    }
 
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
-    const credentials = {
-      emailAddress: this.props.context.authenticatedUser.user.emailAddress,
-      password: this.props.context.authenticatedUser.password
-    }
+    const credentials = this.props.context.authenticatedUser.user.token;
 
     // Create user by calling the create method made available through Context
     // The course data and users credentials are passed along.
-    context.data.create(coursePayload, credentials)
+    context.data.create(deckPayload, credentials)
     .then((response) => {
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.
+      // sometimes this condition is true when validation fails.
+      // It's also true when a successful post happen because status isn't
+      // being set properly
       if (response.status !== 201) {
+        console.log(response)
+        // currently a successful response is returning the new id
+        // change it so there's a response.status
+        // this.props.history.push(`/decks/` + response);
         this.setState({ errors: response });
-        this.setState({title: this.state.preservedTitle, description: this.state.preservedDescription})
+        this.setState({title: this.state.preservedTitle})
       } else {
-        console.log(response.course);
-        console.log('test')
+        // response.headers.get('Location');
         // The errors property is set to the response, which should be empty. The user is sent to the courses list.
-        this.setState({ errors: response });
-        this.setState({title: title, description: description, estimatedTime: estimatedTime, materialsNeeded: materialsNeeded});
-        this.props.history.push(`/courses/`);
+        this.setState({ errors: [] });
+        this.setState({title: title});
+        this.props.history.push(`/decks/` + response.id);
         return response
+        // this.setState({title: title});
+        // this.props.history.push(`/decks/` + response);
+        // this.props.history.push(`/decks/create`);
+        // return response
       }
     })
     .catch((error) => {

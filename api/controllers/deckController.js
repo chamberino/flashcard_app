@@ -35,7 +35,7 @@ exports.index = function(req, res) {
 };
 
 // Display list of all decks.
-exports.deck_list = function(req, res) {
+exports.deck_list = function(req, res, next) {
     Deck.find({}, 'title user')
     .populate('user', '_id first_name last_name')
     .exec(function (err, list_decks) {

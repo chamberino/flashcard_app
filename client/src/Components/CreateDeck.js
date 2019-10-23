@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+// import checkboxes from './checkboxes';
+import Checkbox from './Checkbox';
 import Form from './Form';
 
 /* 
@@ -15,8 +18,11 @@ the "Course Detail" screen.
 export default class CreateDeckWithContext extends Component {
 
   constructor(props) {
-    super();
+    super(props);
   this.state= {
+  checkboxes: [],
+  checkedItems: new Map(),
+  checkedItemsIds: new Map(),
   preservedTitle: '',
   title: '',      
   subjects: [],           
@@ -26,25 +32,35 @@ export default class CreateDeckWithContext extends Component {
   user: props.context.authenticatedUser.user.user.name,
   userId: props.context.authenticatedUser.user.user.id,
   };
+
+  this.handleChange = this.handleChange.bind(this);
 }
+
+handleChange(e) {
+  const label =e.target.value;
+  const item = e.target.name;
+  const isChecked = e.target.checked;
+  this.setState(prevState => ({ checkedItems: prevState.checkedItems.set(item, isChecked), checkedItemsIds: prevState.checkedItemsIds.set(label, isChecked) }));
+}
+
 
 componentDidMount() {  
   // Make a call to the API to get all the courses in the DB.
   this.props.context.actions.getSubjects()
   // Get all available subjects
     .then(subjects=>{
-      let subjectCheckboxArray = subjects.subject_list.map( (subject) => { 
-        // For each deck received in props, return a Deck component with relevant data
-        return <label key={subject._id}>{subject.name}<input onChange={this.change} type="checkbox" name="subject" id={subject._id} value={subject._id} checked={subject.checked} key={subject._id}/></label>
-        // return <Deck title={result.title} id={result._id} key={result._id}/>
+      let arrayOfObjects = [];
+      let subjectCheckboxArray = subjects.subject_list.forEach( (subject, i) => { 
+        // For each subject returned from db, push to arrayOfObjects
+        arrayOfObjects.push({name: subject.name, value:subject._id, key:i,})
       });
       this.setState({
         subjects: subjectCheckboxArray,
+        checkboxes: arrayOfObjects,
         loading: false
       })
 
     }).catch((error)=>{
-      console.log(error)
       // catch errors and push new route to History object
       this.props.history.push('/error');
     })
@@ -57,17 +73,6 @@ componentDidMount() {
       userId,
       user
     } = this.state;
-
-    // this.state.subjects.forEach( (subject) => { 
-    //   this.setState({
-    //     [subject]: {subject}
-    //   })
-
-    // let subjects = this.state.subjects.map( (subject) => { 
-    //   // For each deck received in props, return a Deck component with relevant data
-    //   return <label key={subject._id}>{subject.name}<input onChange={this.change} type="checkbox" name="subject" id={subject._id} value={subject._id} checked={subject.checked} key={subject._id}/></label>
-    //   // return <Deck title={result.title} id={result._id} key={result._id}/>
-    // });
 
     return (
       <div className="bounds course--detail">
@@ -108,6 +113,16 @@ componentDidMount() {
             </div>
         </React.Fragment>
           )} />
+          <React.Fragment>
+        {
+          this.state.checkboxes.map(deck => (
+            <label key={deck.key}>
+              {deck.name}
+              <Checkbox name={deck.name} value={deck.value} checked={this.state.checkedItems.get(deck.name)} onChange={this.handleChange} />
+            </label>
+          ))
+        }
+      </React.Fragment>
       </div>
     );
   }
@@ -116,20 +131,17 @@ componentDidMount() {
     // Any changes made in the input fields will update it's corresponding property in state
     const name = event.target.name;
     const value = event.target.value;
-    const testing = event.target.checked
-
     this.setState(() => {
       return {
-        [name]: value,
-        testing       
+        [name]: value,      
       };
     });
   }
 
   submit = () => {
 
-    console.log(this.state.subjects)
-    // console.log(res.subject)
+    // convert checkedItems map object into an array containing subject ids
+    let subjectsChosen = Array.from(this.state.checkedItemsIds, ([key, value]) => key)
     // Data is passed to the component via a prop named context. 
     // Destructuring is used to extract the value from props. 
     const { context } = this.props;
@@ -143,36 +155,24 @@ componentDidMount() {
 
     this.setState({ preservedTitle: title, userId: userId });
     
-    // Initialize a variable named coursePayLoad to an object 
-    // containing the necessary data to make a call to the API to create a course
-    // const coursePayload = {
-    //   title,
-    //   userId
-    // };
-
+    // Initialize a variable named deckPayload to an object 
+    // containing the necessary data to make a call to the API to create a deck
     const deckPayload = {
       title: title,
       user: userId,
-      subject: this.state.subject
+      subject: subjectsChosen
     }
 
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
 
-    // Create user by calling the create method made available through Context
-    // The course data and users credentials are passed along.
+    // Create deck by calling the create method made available through Context
+    // The deck data and users credentials are passed along.
     context.data.create(deckPayload, credentials)
     .then((response) => {
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.
-      // sometimes this condition is true when validation fails.
-      // It's also true when a successful post happen because status isn't
-      // being set properly
       if (response.status !== 201) {
-        console.log(response)
-        // currently a successful response is returning the new id
-        // change it so there's a response.status
-        // this.props.history.push(`/decks/` + response);
         this.setState({ errors: response });
         this.setState({title: this.state.preservedTitle})
       } else {
@@ -182,10 +182,6 @@ componentDidMount() {
         this.setState({title: title});
         this.props.history.push(`/decks/` + response.id);
         return response
-        // this.setState({title: title});
-        // this.props.history.push(`/decks/` + response);
-        // this.props.history.push(`/decks/create`);
-        // return response
       }
     })
     .catch((error) => {

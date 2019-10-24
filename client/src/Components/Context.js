@@ -32,7 +32,7 @@ export class Provider extends Component {
         signIn: this.signIn,
         signOut: this.signOut,
         update: this.update,
-        delete: this.DeleteDeck,
+        deleteDeck: this.DeleteDeck,
         getDecks: this.getDecks,
         getDeck: this.getDeck,
         getAuthor: this.getAuthor,
@@ -95,7 +95,7 @@ export class Provider extends Component {
   }
 
   DeleteDeck = async (deckId, credentials) => {
-    const deleteDeck = await this.data.delete(deckId, credentials)
+    const deleteDeck = await this.data.deleteDeck(deckId, credentials)
     return deleteDeck;
   }
 

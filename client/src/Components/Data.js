@@ -7,7 +7,6 @@ export default class Data {
     // whether authentication is required, and the users credentials if the page requires authentication.
     api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
       const url = server + path;
-    
       const options = {
         method,
         headers: {
@@ -21,9 +20,6 @@ export default class Data {
   
       // Check if auth is required
       if (requiresAuth) {    
-        // If authentication is required, pass the authentication information to the server 
-        // in an Authorization header using base-64 encoding
-        const encodedCredentials = btoa(`${credentials}`);
         // Add Authorization property to options.headers
         // Set the Authorization type to Basic, followed by the encoded credentials, 
         // stored in the variable encodedCredentials:
@@ -91,7 +87,23 @@ export default class Data {
         throw new Error();
       }
     }
-    
+
+  // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
+    async deleteDeck(deckId, credentials) {
+      const response = await this.api(`/catalog/deck/${deckId}/delete`, 'DELETE', null, true, credentials) 
+      // If user is deleted and a 204 status is set, return empty array
+      if (response.status === 204) {
+        return response;
+      }
+      // If there is a problem deleting the user, return the error data
+      else if (response.status === 500) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
     
     // createUser() is an asynchronous operation that returns a promise. 
     // The resolved value of the promise is either an array of errors (sent from the API if the response is 400), 
@@ -108,24 +120,8 @@ export default class Data {
       // Which will be the error data
       else if (response.status === 400) {
         return response.json().then(data => {
-          console.log(data)
           return data
         });
-      }
-      else {
-        throw new Error();
-      }
-    }
-  
-    async delete(deckId, credentials) {
-      const response = await this.api(`/catalog/deck/${deckId}/delete`, 'DELETE', null, true, credentials);
-      // If user is deleted and a 204 status is set, return empty array
-      if (response.status === 204) {
-        return response;
-      }
-      // If there is a problem deleting the user, return the error data
-      else if (response.status === 500) {
-        return response.json().then(data => data);
       }
       else {
         throw new Error();

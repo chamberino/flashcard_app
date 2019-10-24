@@ -141,7 +141,11 @@ componentDidMount() {
   submit = () => {
 
     // convert checkedItems map object into an array containing subject ids
-    let subjectsChosen = Array.from(this.state.checkedItemsIds, ([key, value]) => key)
+    Array.from(this.state.checkedItemsIds, ([key, value]) => {
+      if (value) {
+      return key
+      }
+    }).filter((subject)=> (subject!==undefined))
     // Data is passed to the component via a prop named context. 
     // Destructuring is used to extract the value from props. 
     const { context } = this.props;
@@ -160,11 +164,21 @@ componentDidMount() {
     const deckPayload = {
       title: title,
       user: userId,
-      subject: subjectsChosen
+      // convert checkedItemsIds map object into an array containing subject ids
+      // filter any items that are undefined
+      subject: Array.from(this.state.checkedItemsIds, ([key, value]) => {
+        if (value) {
+        return key
+        }
+      }).filter((subject)=> (subject!==undefined))
     }
+    console.log(deckPayload);
+
+    
 
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
+    console.log(credentials);
 
     // Create deck by calling the create method made available through Context
     // The deck data and users credentials are passed along.

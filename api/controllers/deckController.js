@@ -51,7 +51,7 @@ exports.deck_list = function(req, res, next) {
 };
 
 // Display detail page for a specific deck.
-exports.deck_detail = function(req, res) {
+exports.deck_detail = function(req, res, next) {
         const id = mongoose.Types.ObjectId(req.params.id);
     
         async.parallel({
@@ -95,61 +95,9 @@ exports.deck_create_get = function(req, res) {
     });
 };
 
-// Display deck create form on GET.
-// exports.deck_create_post = [
-//     check('title')
-//       .exists({ checkNull: true, checkFalsy: true })
-//       .withMessage('Please enter a class title'),
-//       check('user')
-//       .exists({ checkNull: true, checkFalsy: true })
-//       .withMessage('User not recognized. Please sign in again.'),
-
-//     sanitizeBody('title').escape(),
-//     sanitizeBody('_id').escape(),
-//     (req, res, next) => {
-//       // Attempt to get the validation result from the Request object.
-//     const errors = validationResult(req);
-//     // If there are validation errors...
-//     if (!errors.isEmpty()) {
-//         // Use the Array `map()` method to get a list of error messages.
-//         const errorMessages = errors.array().map(error => error.msg);
-//         // Create custom error with 400 status code
-//         res.status(400);
-//         return res.json(errorMessages);
-//     } else {
-//         Deck.create(req.body)
-//             .then((course)=>{
-//                 if (course) {
-//                     res.status(400);
-//                     const errorMessages = [];
-//                     errorMessages.push("This course already exists")
-//                     return res.json(errorMessages);
-//                 } else {
-//                     res.location(`/decks/${course.id}`);                        
-//                     res.status(201)                    
-//                     res.json({deck: 100});  
-//                 }
-//             }).catch((error)=> {  // check for errors within body
-//                 if (error.name === "SequelizeValidationError") {
-//                     // Use Sequelize ORM to catch any validation errors
-//                     // If errors exist, map over array of error objects and return array
-//                     // with error messages
-//                     const errorsArray = error.errors.map((error) => {
-//                         return error.message;                
-//                     })
-//                     const err = new Error(errorsArray); //custom error message
-//                     err.status = 400;
-//                     next(err) // pass error along to global error handler
-//                 } else {
-//                     // catch any other errors and pass errors to global error handler
-//                     next(error);
-//                 }
-//             });
-//     };      
-// }
-// ]
-
 // Handle post deck route
+// Request body should be formatted like this...
+//
 exports.deck_create_post = [
         check('title')
           .exists({ checkNull: true, checkFalsy: true })
@@ -159,6 +107,7 @@ exports.deck_create_post = [
           .withMessage('User not recognized. Please sign in again.'),
           check('subject')
           .exists({ checkNull: true, checkFalsy: true })
+          .isArray({min:1})
           .withMessage('Subject required'),
         sanitizeBody('title').escape(),
 (req, res, next) => {
@@ -171,12 +120,13 @@ exports.deck_create_post = [
         res.status(400);
         return res.json(errorMessages);
     } else {
+        console.log(req.body)
     Deck.create(req.body)
             .then((deck)=>{
                 if (!deck) {
                     res.status(400);
                     const errorMessages = [];
-                    errorMessages.push("This course already exists")
+                    errorMessages.push("This deck already exists")
                     return res.json(errorMessages);
                 } else {
                     console.log(deck._id)
@@ -195,14 +145,40 @@ exports.deck_create_post = [
 
 
 // Display deck delete form on GET.
-exports.deck_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Deck delete GET');
-};
-
-// Handle deck delete on POST.
-exports.deck_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Deck delete POST');
-};
+exports.deck_delete_post = function(req, res, next) {
+//     const id = mongoose.Types.ObjectId(req.params.id);
+const id = '5db0b5f8e7af6d122cc38dfc';
+    Deck.findById(id)
+    .then((deck) => {
+        // the deck creator is checked against the req.currentUser.id passed along from auth middleware
+        if(!(deck.userId == req.currentUser.id)) {
+            res.status(403).json({ message: 'Users may only delete decks they created themselves' });
+        } else {
+            if (!deck) { 
+                const error = new Error('Cannot find the requested resource to update'); // custom error message
+                error.status = 400;
+                next(error); // catch any other errors and pass errors to global error handler
+            } else { // delete matched deck
+                return deck.destroy()
+                .then((deck)=>{
+                    if (!deck) { 
+                        const error = new Error('There was a problem deleting the deck'); // custom error message
+                        error.status = 400;
+                        next(error);
+                    } else {
+                    res.status(204).end();
+                    }
+                }).catch((error) => {
+                    // catch any other errors and pass errors to global error handler
+                    next(error);
+                });
+            }
+        }
+    }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+}
 
 // Display deck update form on GET.
 exports.deck_update_get = function(req, res) {

@@ -27,7 +27,6 @@ const catalogRouter = require('./routes/catalog');  //Import routes for "catalog
 
 
 require('dotenv').config();
-const User = require('./models/user'); //temporarily being used for authentication tutorial
 const mid = require('./middleware/index');
 const jwt = require('jsonwebtoken');
 
@@ -160,8 +159,14 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
+res.status(err.status || 500).json({
+  message: err.message,
+  errorStatus: err.status,
+});
 });
 
 module.exports = app;

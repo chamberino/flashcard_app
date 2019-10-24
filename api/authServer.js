@@ -163,7 +163,7 @@ app.post('/user/login', [
             jwt.sign(
               { id: user._id },
               process.env.ACCESS_TOKEN_SECRET,
-              { expiresIn: '10m' },
+              { expiresIn: '45m' },
               // callback
               (err, token) => {
                 if(err) {

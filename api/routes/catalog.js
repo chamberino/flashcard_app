@@ -83,11 +83,76 @@ router.post('/deck/create', mid.auth, deck_controller.deck_create_post)
 // GET request for one Deck.
 router.get('/deck/:id', deck_controller.deck_detail);
 
-// GET request to delete Deck.
-router.get('/deck/:id/delete', deck_controller.deck_delete_get);
-
 // POST request to delete Deck.
-router.post('/deck/:id/delete', deck_controller.deck_delete_post);
+router.delete('/deck/:id/delete', mid.auth, function(req, res, next) {
+//     const id = mongoose.Types.ObjectId(req.params.id);
+const id = req.params.id;
+    Deck.findById(id)
+    .then((deck) => {
+        // the deck creator is checked against the req.currentUser.id passed along from auth middleware
+        // if(!(deck.userId == req.currentUser.id)) {
+        //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
+        // } else {
+            if (!deck) { 
+                const error = new Error('Cannot find the requested resource to update'); // custom error message
+                error.status = 400;
+                next(error); // catch any other errors and pass errors to global error handler
+            } else { // delete matched deck
+                return deck.remove()
+                .then((deck)=>{
+                    if (!deck) { 
+                        const error = new Error('There was a problem deleting the deck'); // custom error message
+                        error.status = 400;
+                        next(error);
+                    } else {
+                    res.status(204).end();
+                    }
+                }).catch((error) => {
+                    // catch any other errors and pass errors to global error handler
+                    next(error);
+                });
+            }
+        // }
+    }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+});
+
+// router.delete('/deck/:id/delete', mid.auth, function(req, res, next) {
+//     //     const id = mongoose.Types.ObjectId(req.params.id);
+//     const id = req.params.id;
+//         Deck.findById(id)
+//         .then((deck) => {
+//             // the deck creator is checked against the req.currentUser.id passed along from auth middleware
+//             // if(!(deck.userId == req.currentUser.id)) {
+//             //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
+//             // } else {
+//                 if (!deck) { 
+//                     const error = new Error('Cannot find the requested resource to update'); // custom error message
+//                     error.status = 400;
+//                     next(error); // catch any other errors and pass errors to global error handler
+//                 } else { // delete matched deck
+//                     return deck.remove()
+//                     .then((deck)=>{
+//                         if (!deck) { 
+//                             const error = new Error('There was a problem deleting the deck'); // custom error message
+//                             error.status = 400;
+//                             next(error);
+//                         } else {
+//                         res.status(204).end();
+//                         }
+//                     }).catch((error) => {
+//                         // catch any other errors and pass errors to global error handler
+//                         next(error);
+//                     });
+//                 }
+//             // }
+//         }).catch((error) => {  
+//             // catch any other errors and pass errors to global error handler
+//             next(error);
+//         });
+//     });
 
 // GET request to update Deck.
 router.get('/deck/:id/update', deck_controller.deck_update_get);

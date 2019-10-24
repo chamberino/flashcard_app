@@ -99,6 +99,11 @@ componentDidMount() {
   // Make a call to the API to grab the deck using the url param set to the id property in state
   this.props.context.actions.getDeck(this.state.id)
       .then(deck => {
+        if (deck.errorStatus || deck.message) {
+          this.props.history.push(`/notfound`);
+          return null;
+        } else {
+          console.log(deck.deck.user._id)
           this.setState({
               hint: null,
               sideOfCard: 'question',
@@ -122,7 +127,8 @@ componentDidMount() {
                       deck={this.state.deck} 
                       match={match}/> } />
           })
-      }).catch(()=>{
+        }
+      }).catch((error)=>{
           // catch errors and push new route to History object
           this.props.history.push('/error');
         })

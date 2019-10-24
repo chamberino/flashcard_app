@@ -26,18 +26,15 @@ export default class DeleteDeckWithContext extends Component {
             return null
           } else {
           this.setState({
-              //program gets to this line
             deckCreatorId: deck.deck.user._id,
             foundDeck: true,
           })
         }
       }).then(()=>{
         if (!this.state.foundDeck) {
-            //program gets here
           this.props.history.push(`/notfound`);
         }
         else if (this.state.deckCreatorId !== this.state.userId) {
-            //program gets here
           this.props.history.push(`/forbidden`);
           return null;
         } else {
@@ -53,10 +50,9 @@ export default class DeleteDeckWithContext extends Component {
         })
       }
     })
-
-    // .catch(()=>{
-    //     this.props.history.push('/error');
-    // })
+    .catch(()=>{
+        this.props.history.push('/error');
+    })
   }
   
 

@@ -1,19 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-// import checkboxes from './checkboxes';
 import Checkbox from './Checkbox';
 import Form from './Form';
-
-/* 
-UpdateCourse - This component provides the "Update Course" screen by 
-rendering a form that allows a user to update one of their existing courses. 
-The component also renders an "Update Course" button that when clicked sends 
-a PUT request to the REST API's /api/courses/:id route. 
-This component also renders a "Cancel" button that returns the user to 
-the "Course Detail" screen. 
-*/
-
-/* pass props to UpdateCourse Component from Course */
 
 export default class CreateDeckWithContext extends Component {
 
@@ -45,7 +32,7 @@ handleChange(e) {
 
 
 componentDidMount() {  
-  // Make a call to the API to get all the courses in the DB.
+  // Make a call to the API to get all the decks in the DB.
   this.props.context.actions.getSubjects()
   // Get all available subjects
     .then(subjects=>{
@@ -75,7 +62,7 @@ componentDidMount() {
     } = this.state;
 
     return (
-      <div className="bounds course--detail">
+      <div className="bounds deck--detail">
         <h1>Create Deck</h1>
         <Form 
             cancel={this.cancel}
@@ -87,14 +74,14 @@ componentDidMount() {
             elements={() => (
               <React.Fragment>
             <div className="grid-66">
-              <div className="course--header">
-                <h4 className="course--label">Deck</h4>
+              <div className="deck--header">
+                <h4 className="deck--label">Deck</h4>
                 <div>
                   <input 
                     id="title" 
                     name="title" 
                     type="text" 
-                    className="input-title course--title--input" 
+                    className="input-title deck--title--input" 
                     onChange={this.change} 
                     placeholder="Deck title..." 
                     value={title}
@@ -103,7 +90,7 @@ componentDidMount() {
                     id="user" 
                     name="user" 
                     type="hidden" 
-                    className="input-title course--title--input"                     
+                    className="input-title deck--title--input"                     
                     value={userId}
                      />  
                 </div>

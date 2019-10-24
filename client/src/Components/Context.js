@@ -35,6 +35,7 @@ export class Provider extends Component {
         deleteDeck: this.DeleteDeck,
         getDecks: this.getDecks,
         getDeck: this.getDeck,
+        createCard: this.createCard,
         getAuthor: this.getAuthor,
         getSubjects: this.getSubjects
       },
@@ -112,6 +113,11 @@ export class Provider extends Component {
       }
     });
     return deck;
+  }
+  
+  createCard = async (cardPayload, deckId, credentials) => {
+    const newCard = await this.data.createCard(cardPayload, deckId, credentials);
+    return newCard;
   }
 
   getSubjects = async () => {

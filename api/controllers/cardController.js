@@ -76,20 +76,23 @@ exports.card_create_post = [
 
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
-            Deck.findById(req.params.id)
-                .exec(function (err, deck) {
-                    if (err) { return next(err); }
-                    // Successful, so render.
-                    res.json({ title: 'Create Card', deck: deck, selected_deck: card.deck._id , errors: errors.array(), card: card });
-            });
-            return;
+            const errorMessages = errors.array().map(error => error.msg);
+            res.status(400);
+            return res.json(errorMessages);
+            // Deck.findById(req.params.id)
+            //     .exec(function (err, deck) {
+            //         if (err) { return next(err); }
+            //         // Successful, so render.
+            //         // res.json({ newerrortest:errorMessages ,title: 'Create Card', deck: deck, selected_deck: card.deck._id , errors: errors.array(), card: card });
+            // });
+            // return;
         }
         else {
             // Data from form is valid.
             card.save(function (err) {
                 if (err) { return next(err); }
                    // Successful - redirect to new record.
-                   res.redirect(card.url);
+                   return res.status(201).json({id: card._id, status: 201});                
                 });
         }
     }

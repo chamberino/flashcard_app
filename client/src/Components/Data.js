@@ -88,6 +88,22 @@ export default class Data {
       }
     }
 
+    async createCard(deckId, cardPayload, credentials) {
+      const response = await this.api(`/catalog/deck/${deckId}/create`, 'POST', cardPayload, true, credentials);
+      // If user is created and a 201 status is set, return empty array
+      if (response.status === 201) {
+        return response.json().then(data => data);
+      }
+      // If there is a problem creating the user, return the data
+      // Which will be the error data
+      else if (response.status !== 201) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
   // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
     async deleteDeck(deckId, credentials) {
       const response = await this.api(`/catalog/deck/${deckId}/delete`, 'DELETE', null, true, credentials) 

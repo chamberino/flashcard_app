@@ -15,6 +15,7 @@ import Card from './Components/Card';
 import CreateDeck from './Components/CreateDeck';
 import UpdateDeck from './Components/UpdateDeck';
 import DeleteDeck from './Components/DeleteDeck';
+import CreateCard from './Components/CreateCard';
 import UserSignUp from './Components/UserSignUp';
 import UserSignIn from './Components/UserSignIn';
 import UserSignOut from './Components/UserSignOut';
@@ -35,6 +36,7 @@ const DeckDetailWithContext = withContext(DeckDetail);
 const CreateDeckWithContext = withContext(CreateDeck);
 const UpdateDeckWithContext = withContext(UpdateDeck);
 const DeleteDeckWithContext = withContext(DeleteDeck);
+const CreateCardWithContext = withContext(CreateCard)
 
 export default class App extends Component {
   // Constructor initializes state //
@@ -59,6 +61,7 @@ export default class App extends Component {
           <Route exact path="/decks" component={DecksWithContext} />
           <PrivateRoute path="/decks/:id/update/" component={UpdateDeckWithContext} />
           <PrivateRoute path="/decks/:id/delete/" component={DeleteDeckWithContext} />
+          <PrivateRoute path="/decks/:id/createcard/" component={CreateCardWithContext} />
           <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
 

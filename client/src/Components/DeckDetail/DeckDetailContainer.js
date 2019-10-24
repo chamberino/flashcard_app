@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import Card from '../Card'
+import CreateCard from '../CreateCard'
+
+import withContext from '../Context';
+
+const CreateCardWithContext = withContext(CreateCard);
 
 // DeckDetailContainer Component receives props from DeckDetail and renders the jsx
 
@@ -62,7 +67,7 @@ const DeckDetailContainer = props => {
                             <Link className="button" to={`${props.match.url}/update`}>Edit Flashcard</Link>
                         </span>
                     <Link className="button" to={`/decks/${props.deck.deck._id}/delete`}>Delete Flashcard</Link>
-                    <Link className="button button-secondary" to="/decks">Add Flashcard</Link>
+                    <Link className="button button-secondary" to={`/decks/${props.deck.deck._id}/createcard`}>Add Flashcard</Link>
                 </div>
             </div>
             </div>
@@ -74,6 +79,7 @@ const DeckDetailContainer = props => {
                 </div>
             </div>
         }
+        {/* <CreateCardWithContext /> */}
         </div> 
     );
 }

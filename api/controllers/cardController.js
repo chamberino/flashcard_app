@@ -104,9 +104,40 @@ exports.card_delete_get = function(req, res) {
 };
 
 // Handle Card delete on POST.
-exports.card_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Card delete POST');
-};
+exports.card_delete_post = function(req, res, next) {
+    //     const id = mongoose.Types.ObjectId(req.params.id);
+    const id = req.body.id
+        Card.findById(id)
+        .then((card) => {
+            // the deck creator is checked against the req.currentUser.id passed along from auth middleware
+            // if(!(deck.userId == req.currentUser.id)) {
+            //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
+            // } else {
+                if (!card) { 
+                    const error = new Error('Cannot find the requested resource to update'); // custom error message
+                    error.status = 400;
+                    next(error); // catch any other errors and pass errors to global error handler
+                } else { // delete matched deck
+                    return card.remove()
+                    .then((card)=>{
+                        if (!card) { 
+                            const error = new Error('There was a problem deleting the card'); // custom error message
+                            error.status = 400;
+                            next(error);
+                        } else {
+                        res.status(204).end();
+                        }
+                    }).catch((error) => {
+                        // catch any other errors and pass errors to global error handler
+                        next(error);
+                    });
+                }
+            // }
+        }).catch((error) => {  
+            // catch any other errors and pass errors to global error handler
+            next(error);
+        });
+    }
 
 // Display Card update form on GET.
 exports.card_update_get = function(req, res) {

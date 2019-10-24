@@ -66,7 +66,7 @@ const DeckDetailContainer = props => {
                         <span>
                             <Link className="button" to={`${props.match.url}/update`}>Edit Flashcard</Link>
                         </span>
-                    <Link className="button" to={`/decks/${props.deck.deck._id}/delete`}>Delete Flashcard</Link>
+                    <Link className="button" to={`/deck/${props.deck.deck._id}/delete`}>Delete Flashcard</Link>
                     <Link className="button button-secondary" to={`/decks/${props.deck.deck._id}/createcard`}>Add Flashcard</Link>
                 </div>
             </div>

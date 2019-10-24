@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
   The props passed down in DecksContainer from Decks is mapped over returning 
   this Deck component for each deck in the decks array returned from the API
 */
+
 const Card = props => (
 <div className="bounds card--detail">
 {/* Check to see if there are flashcards in deck */}
@@ -48,6 +49,27 @@ const Card = props => (
         )
     }
     <p>{props.props.score+1}/{props.props.amountOfCards}</p>
+    {/* {
+          (props.props.authenticatedUserId == props.props.deck.deck.user._id)
+          ? <div className="actions--bar">
+                <div className="bounds">
+                    <div className="grid-100">
+                        <span>
+                            <Link className="button" to={`${props.props.match.url}/update`}>Edit Flashcard</Link>
+                        </span>
+                    <Link className="button" to={`/decks/${props.props.deck.deck._id}/delete`}>Delete Flashcard</Link>
+                    <Link className="button button-secondary" to={`/decks/${props.props.deck.deck._id}/createcard`}>Add Flashcard</Link>
+                </div>
+            </div>
+            </div>
+          : <div className="actions--bar">
+                <div className="bounds">
+                    <div className="grid-100">
+                        <Link className="button button-secondary" to="/decks">Return to List</Link>
+                    </div>
+                </div>
+            </div>
+        } */}
 </div>
 
 )

@@ -21,6 +21,7 @@ import UpdateDeck from './Components/UpdateDeck';
 import DeleteDeck from './Components/DeleteDeck';
 import CreateCard from './Components/CreateCard';
 import DeleteCard from './Components/DeleteCard';
+import UpdateCard from './Components/UpdateCard';
 import UserSignUp from './Components/UserSignUp';
 import UserSignIn from './Components/UserSignIn';
 import UserSignOut from './Components/UserSignOut';
@@ -35,6 +36,7 @@ import PrivateRoute from './PrivateRoute';
 
 const HeaderWithContext = withContext(Header);
 const UserSignInWithContext = withContext(UserSignIn);
+const UserSignUpWithContext = withContext(UserSignUp)
 const UserSignOutWithContext = withContext(UserSignOut);
 const UsersWithContext = withContext(Users);
 const UserDetailWithContext = withContext(UserDetail);
@@ -46,7 +48,8 @@ const CreateDeckWithContext = withContext(CreateDeck);
 const UpdateDeckWithContext = withContext(UpdateDeck);
 const DeleteDeckWithContext = withContext(DeleteDeck);
 const CreateCardWithContext = withContext(CreateCard);
-const DeleteCardWithContext = withContext(DeleteCard);
+const DeleteCardWithContext = withContext(DeleteCard)
+const UpdateCardWithContext = withContext(UpdateCard);
 
 export default class App extends Component {
   // Constructor initializes state //
@@ -63,7 +66,7 @@ export default class App extends Component {
           <Route exact path="/" render={ () => <Redirect to="/decks/" /> } />
 
           <Route path="/signin" component={UserSignInWithContext} />
-          <Route path="/signup" component={UserSignUp} />
+          <Route path="/signup" component={UserSignUpWithContext} />
           <Route path="/signout" component={UserSignOutWithContext} />
 
           <Route exact path="/users" component={UsersWithContext} />
@@ -78,6 +81,7 @@ export default class App extends Component {
           <PrivateRoute path="/decks/:id/delete/" component={DeleteDeckWithContext} />
           <PrivateRoute path="/decks/:id/createcard/" component={CreateCardWithContext} />
           <PrivateRoute path="/decks/:id/deletecard/" component={DeleteCardWithContext} />
+          <PrivateRoute path="/decks/:id/updatecard/" component={UpdateCardWithContext} />
           <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
 

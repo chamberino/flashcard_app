@@ -5,45 +5,48 @@ export default class DeleteDeckWithContext extends Component {
     constructor(props) {
     super(props);
     this.state= { 
-    deleteDeck: props.context.actions.deleteDeck, 
+    deleteCard: props.context.actions.deleteCard, 
     props: props,  
-    deckId: props.match.params.id,  
+    cardId: props.match.params.id,  
     userId: props.context.authenticatedUser.user.user.id,
     credentials: props.context.authenticatedUser.user.token
     }
   }
 
   componentDidMount() {      
-    // Make a DELETE request to the API and return user to the list of decks.
+    // Make a DELETE request to the API and return user to the deck.
 
-    this.props.context.actions.getDeck(this.state.deckId)
-      .then((deck)=>{
+    this.props.context.actions.getCard(this.state.cardId)
+      .then((card)=>{
         this.setState({
-            error: deck,
+            error: card,
           })
-        if (deck.errorStatus || deck.message) {
+        if (card.errorStatus || card.message) {
             this.props.history.push(`/notfound`);
             return null
           } else {
           this.setState({
-            deckCreatorId: deck.deck.user._id,
-            foundDeck: true,
+            cardCreatorId: card.userId,
+            foundCard: true,
+            deckId: card.deckId
           })
         }
       }).then(()=>{
-        if (!this.state.foundDeck) {
+        if (!this.state.foundCard) {
           this.props.history.push(`/notfound`);
         }
-        else if (this.state.deckCreatorId !== this.state.userId) {
+        else if (this.state.cardCreatorId !== this.state.userId) {
           this.props.history.push(`/forbidden`);
           return null;
         } else {
-          this.deleteDeck(this.state.deckId, this.state.credentials)
-        .then((deck) => {            
+            console.log(this.state.deckId)
+            // const credentials = this.state.credentials
+          this.deleteCard(this.state.cardId, this.state.credentials)
+        .then((card) => {         
             this.setState({
-              deletedDeckOrError: deck,
+              deletedCardOrError: card,
             })
-          this.props.history.push('/');
+            this.props.history.push(`/decks/` + this.state.deckId);
         }).catch(()=>{
         // catch errors and push new route to History object
         this.props.history.push('/error');
@@ -56,8 +59,8 @@ export default class DeleteDeckWithContext extends Component {
   }
   
 
-  deleteDeck = async (deckId, credentials) => {    
-    await this.state.deleteDeck(deckId, credentials)
+  deleteCard = async (cardId, credentials) => {    
+    await this.state.deleteCard(cardId, credentials)
   }
 
   render() {

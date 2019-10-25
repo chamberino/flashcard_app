@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 /* 
   Deck component receives props from DecksContainer
@@ -74,4 +73,4 @@ const Card = props => (
 
 )
 export default Card;
-{/* <button className="counter-action increment" onClick={this.incrementScore}> + </button> */}
+// {/* <button className="counter-action increment" onClick={this.incrementScore}> + </button> */}

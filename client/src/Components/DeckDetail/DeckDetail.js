@@ -3,7 +3,6 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
-import axios from 'axios';
 import withContext from '../Context';
 import DeckDetailContainer from './DeckDetailContainer';
 // import NotFound from '../NotFound';
@@ -65,7 +64,7 @@ export default class DeckDetail extends Component {
 }
 
 flipCard = () => {
-  if (this.state.sideOfCard == 'question') {  
+  if (this.state.sideOfCard === 'question') {  
       this.setState( prevState => ({  
       sideOfCard: 'answer'
       }));
@@ -103,18 +102,20 @@ componentDidMount() {
           this.props.history.push(`/notfound`);
           return null;
         } else {
-          console.log(deck.deck.user._id)
+          // console.log(deck.deck.user._id)
           this.setState({
               hint: null,
               sideOfCard: 'question',
               amountOfCards: deck.cards.length,
               deck: deck,
+              authorId: deck.deck.user._id,
               deckTitle: deck.title,
               deckCreator: deck.deck.user.first_name + ' ' + deck.deck.user.last_name,
               loading: false,
               jsx: <Route exact path="/decks/:id" render = {({match})=> 
                   <DeckDetailContainerWithContext
                       authenticatedUserId={this.state.authenticatedUser} 
+                      authorId={this.state.authorId}  
                       hint={this.state.hint}
                       sideOfCard={this.state.sideOfCard}
                       amountOfCards={this.state.amountOfCards}
@@ -126,7 +127,7 @@ componentDidMount() {
                       deckCreator={this.state.deckCreator}                  
                       deck={this.state.deck} 
                       match={match}/> } />
-          })
+          });
         }
       }).catch((error)=>{
           // catch errors and push new route to History object

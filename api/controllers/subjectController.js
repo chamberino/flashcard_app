@@ -38,7 +38,6 @@ exports.subject_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render
-        console.log('subject: ' + results.subject + 'subject_decks: ' + results.subject_decks)
         res.json({ title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
     });
 };

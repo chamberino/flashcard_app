@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 
-import {
-  Route,
-  Switch
-} from 'react-router-dom';
-import NewDeckLink from '../NewDeckLink';
-import DeckContainer from './DeckContainer';
+import { Route, Switch, Link } from 'react-router-dom';
+import DeckContainer from '../Decks/DeckContainer';
 
 /* 
 This stateful component retreives all the decks in the database once the component mounts. 
@@ -15,10 +11,10 @@ Until the data is retreived and the component is successfully rendered, a loadin
 As long as this property is set to true, a loading message will be rendered. 
 */
 
-export default class Decks extends Component {
+export default class UserDetail extends Component {
 // Constructor initializes state //
 
-  constructor(props) {
+  constructor() {
   // Super allows us to use the keyword 'this' inside the constructor within the context of the app class
     super();
     this.state= {
@@ -30,35 +26,46 @@ export default class Decks extends Component {
 
   componentDidMount() {
     // Make a call to the API to get all the decks in the DB.
-    this.props.context.actions.getDecks()
+    this.props.context.actions.getUserDecks(this.props.match.params.id)
     // Set value of returned decks to the decks property in state. Change loading property to false.
       .then(decks=>{
         this.setState({
-          decks: decks.deck_list,
+          name: decks.userName,
+          decks: decks.user_decks,
           loading: false
         })
       }).catch(()=>{
         // catch errors and push new route to History object
         this.props.history.push('/error');
-      })
+      });
   }
 
   render() {
 
     return (         
       <div className="deck-list-container">
-      <Switch>
-      {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
-      {
-        (this.state.loading)
-        ? <Route exact path="/decks" render= {() => <p>Loading...</p>  } />
-        : <Route exact path="/decks" render= {()=><DeckContainer data={this.state.decks}/> } />
-      } 
-      </Switch>
+        <Switch>
+        {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
+        {
+          (this.state.loading)
+          ? <Route exact path="/user/:id" render= {() => <p>Loading...</p>  } />
+          : <React.Fragment>
+              <h2>{`Decks by ${this.state.name}`}</h2>
+              <Route exact path="/user/:id" render= {()=><DeckContainer data={this.state.decks}/> } />
+              <div className="actions--bar">
+                <div className="bounds">
+                    <div className="grid-100">
+                        <Link className="button button-secondary" to="/decks">Return to List</Link>
+                    </div>
+                </div>
+              </div>
+            </React.Fragment>
+        } 
+        </Switch>
       {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}
-      <Route exact path="/decks/" render= {() => <NewDeckLink />} />
+      {/* <Route exact path="/decks/" render= {() => <NewDeckLink />} />
         <div className="main-content">
-        </div>  
+        </div>   */}
       </div>
     );
   }

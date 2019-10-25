@@ -32,9 +32,12 @@ export class Provider extends Component {
         signIn: this.signIn,
         signOut: this.signOut,
         update: this.update,
+        getUsers: this.getUsers,
         deleteDeck: this.DeleteDeck,
         getDecks: this.getDecks,
         getDeck: this.getDeck,
+        getUserDecks: this.getUserDecks,
+        getSubjectDecks: this.getSubjectDecks, 
         createCard: this.createCard,
         getAuthor: this.getAuthor,
         getSubjects: this.getSubjects
@@ -101,7 +104,17 @@ export class Provider extends Component {
   }
 
   getDecks = async () => {
-    const decks = await this.data.getDecks()
+    const decks = await this.data.getDecks();
+    return decks;
+  }
+
+  getUsers = async () => {
+    const users = await this.data.getUsers();
+    return users;
+  }
+
+  getUserDecks = async (id) => {
+    const decks = await this.data.getUserDecks(id);
     return decks;
   }
 
@@ -123,6 +136,11 @@ export class Provider extends Component {
   getSubjects = async () => {
     const subjects = await this.data.getSubjects()
     return subjects;
+  }
+
+  getSubjectDecks = async (id) => {
+    const decks = await this.data.getSubjectDecks(id);
+    return decks;
   }
 
 }

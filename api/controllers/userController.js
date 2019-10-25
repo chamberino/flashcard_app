@@ -39,13 +39,12 @@ exports.user_detail = (req, res) => {
     }, function(err, results) {
         if (err) { return next(err); } // Error in API usage.
         if (results.user==null) { // No results.
-            var err = new Error('User not found');
-            err.status = 404;
-            return next(err);
+            const err = ['User not found'];
+            return res.status(404).json(err);
         }
         console.log('results: ' + results.user_decks)
         // Successful, so render.
-        res.json({ title: 'User Detail', user: results.user, user_decks: results.user_decks } );
+        res.json({ title: 'User Detail', user: results.user, userName: results.user.name, user_decks: results.user_decks } );
     });
 };
 

@@ -9,6 +9,10 @@ import {
 
 // Import App Components
 import Header from './Components/Header';
+import Users from './Components/Users/Users';
+import UserDetail from './Components/Users/UserDetail';
+import Subjects from './Components/Subjects/Subjects';
+import SubjectDetail from './Components/Subjects/SubjectDetail';
 import Decks from './Components/Decks/Decks';
 import DeckDetail from './Components/DeckDetail/DeckDetail';
 import Card from './Components/Card';
@@ -32,6 +36,10 @@ import PrivateRoute from './PrivateRoute';
 const HeaderWithContext = withContext(Header);
 const UserSignInWithContext = withContext(UserSignIn);
 const UserSignOutWithContext = withContext(UserSignOut);
+const UsersWithContext = withContext(Users);
+const UserDetailWithContext = withContext(UserDetail);
+const SubjectsWithContext = withContext(Subjects);
+const SubjectDetailWithContext = withContext(SubjectDetail);
 const DecksWithContext = withContext(Decks);
 const DeckDetailWithContext = withContext(DeckDetail);
 const CreateDeckWithContext = withContext(CreateDeck);
@@ -58,6 +66,11 @@ export default class App extends Component {
           <Route path="/signup" component={UserSignUp} />
           <Route path="/signout" component={UserSignOutWithContext} />
 
+          <Route exact path="/users" component={UsersWithContext} />
+          <Route exact path="/user/:id" component={UserDetailWithContext} />
+
+          <Route exact path="/subjects" component={SubjectsWithContext} />
+          <Route exact path="/subject/:id" component={SubjectDetailWithContext} />
 
           <PrivateRoute exact path="/decks/create/" component={CreateDeckWithContext}/>
           <Route exact path="/decks" component={DecksWithContext} />

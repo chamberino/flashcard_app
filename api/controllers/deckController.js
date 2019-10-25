@@ -124,12 +124,10 @@ exports.deck_create_post = [
     Deck.create(req.body)
             .then((deck)=>{
                 if (!deck) {
-                    res.status(400);
                     const errorMessages = [];
                     errorMessages.push("This deck already exists")
-                    return res.json(errorMessages);
+                    return res.status(201).json(errorMessages);
                 } else {
-                    console.log(deck._id)
                     // res.location(`/decks/${deck._id}`);                        
                     return res.status(201).json({id: deck._id, status: 201});                
                 }

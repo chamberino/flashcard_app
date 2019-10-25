@@ -174,7 +174,9 @@ exports.user_create_post = [
                if (found_user) {
                  // User exists, redirect to its detail page.
                  res.status(400);
-                 res.json('User already registered');
+                    const errorMessages = [];
+                    errorMessages.push('Email already registered')
+                    return res.json(errorMessages);
                }
                else {     
                     // Hash the new user's password before persisting to the database.

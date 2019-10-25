@@ -32,10 +32,13 @@ export class Provider extends Component {
         signIn: this.signIn,
         signOut: this.signOut,
         update: this.update,
-        deleteDeck: this.DeleteDeck,
+        updateDeck: this.updateDeck,
+        deleteDeck: this.deleteDeck,
         getDecks: this.getDecks,
         getDeck: this.getDeck,
+        getCard: this.getCard,
         createCard: this.createCard,
+        deleteCard: this.deleteCard,
         getAuthor: this.getAuthor,
         getSubjects: this.getSubjects
       },
@@ -85,8 +88,8 @@ export class Provider extends Component {
     return user;
   }
 
-  upDateDeck = async (title, description, deckId) => {
-    const update = await this.data.upDate(title, description, deckId);
+  update = async (path, payload, credentials) => {
+    const update = await this.data.update(path, payload, credentials);
     return update;
   }
 
@@ -95,7 +98,7 @@ export class Provider extends Component {
     return newDeck;
   }
 
-  DeleteDeck = async (deckId, credentials) => {
+  deleteDeck = async (deckId, credentials) => {
     const deleteDeck = await this.data.deleteDeck(deckId, credentials)
     return deleteDeck;
   }
@@ -114,10 +117,25 @@ export class Provider extends Component {
     });
     return deck;
   }
-  
+
+  getCard = async (id) => {
+    const card = await this.data.getCard(id)
+    this.setState(() => { 
+      return {
+        cardTest: card,
+      }
+    });
+    return card;
+  }
+
   createCard = async (cardPayload, deckId, credentials) => {
     const newCard = await this.data.createCard(cardPayload, deckId, credentials);
     return newCard;
+  }
+
+  deleteCard = async (deckId, credentials) => {
+    const deleteCard = await this.data.deleteCard(deckId, credentials)
+    return deleteCard;
   }
 
   getSubjects = async () => {

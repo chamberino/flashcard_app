@@ -70,6 +70,18 @@ export default class Data {
           throw new Error();
       }
     }
+
+    async update(path, payload, credentials) {
+      const response = await this.api(path, 'PUT', payload, true, credentials);
+      if (response.status === 204) {
+        return response
+      } 
+      else if (response.status !== 204) {
+        return response.json().then(data => data);
+      } else {
+          throw new Error();
+      }
+    }
   
     // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
     async create(deckPayload, credentials) {
@@ -97,6 +109,21 @@ export default class Data {
       // If there is a problem creating the user, return the data
       // Which will be the error data
       else if (response.status !== 201) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+    async deleteCard(cardId, credentials) {
+      const response = await this.api(`/catalog/card/${cardId}/delete`, 'DELETE', null, true, credentials) 
+      // If user is deleted and a 204 status is set, return empty array
+      if (response.status === 204) {
+        return response;
+      }
+      // If there is a problem deleting the user, return the error data
+      else if (response.status === 500) {
         return response.json().then(data => data);
       }
       else {
@@ -169,6 +196,23 @@ export default class Data {
         // If status is 200, return deck data
         const deck = await response.json();
         return deck
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+    async getCard(id) {
+      const response = await this.api(`/catalog/card/${id}`, 'GET', null, false);
+      // Send GET request to API to retrieve data for an individual deck
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const card = await response.json();
+        return card
       }
       // If there is a problem retrieving the decks, return the error data
       else if (response.status !== 200) {

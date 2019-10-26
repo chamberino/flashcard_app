@@ -243,7 +243,7 @@ router.delete('/card/:id/delete', mid.auth, card_controller.card_delete_post);
 router.get('/card/:id/update', card_controller.card_update_get);
 
 // POST request to update Card.
-router.put('/card/:id/update', card_controller.card_update_post);
+router.put('/card/:id/update', card_controller.card_update_put);
 
 // GET request for one Card.
 router.get('/card/:id', card_controller.card_detail);

@@ -161,9 +161,9 @@ componentDidMount() {
         } else {
           return null;
         }
-      }).filter((subject)=> (subject!==undefined))
+      })
+      .filter((subject)=> (subject!==null))
     }
-    console.log(deckPayload);
 
     
 

@@ -149,7 +149,7 @@ exports.card_update_get = function(req, res) {
 };
 
 // Handle card update on POST.
-exports.card_update_post = [
+exports.card_update_put = [
 
     // Validate fields.
     body('question', 'Question must be specified').isLength({ min: 1 }).trim(),
@@ -177,12 +177,12 @@ exports.card_update_post = [
         }   else {
             const card =
           { 
-            deck: req.params.id,
+            deck: req.body.deck,
             question: req.body.question,
             hint: req.body.hint,
             answer: req.body.answer
            }
-            Card.findOneAndUpdate(req.params.id, card, function(err,doc) {
+            Card.findOneAndUpdate(req.params.id, card, {upsert:false}, function(err,doc) {
                 if(err) {
                     res.json([err])
                 } else {

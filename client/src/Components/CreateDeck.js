@@ -130,7 +130,9 @@ componentDidMount() {
     // convert checkedItems map object into an array containing subject ids
     Array.from(this.state.checkedItemsIds, ([key, value]) => {
       if (value) {
-      return key
+      return key;
+      } else {
+        return null;
       }
     }).filter((subject)=> (subject!==undefined))
     // Data is passed to the component via a prop named context. 

@@ -43,7 +43,24 @@ export default class Data {
         throw new Error();
       }
     }
-  
+
+    async getUsers() {
+      const response = await this.api(`/catalog/users`, 'GET', null, false);
+      // Send GET request to API to retrieve list of users in DB
+      if (response.status === 200) {
+        // If status is 200, return list of users
+        const users = await response.json();
+        return users;
+      }
+      // If there is a problem retrieving the users, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
     async getAuthor(id) {
       // getAuthor makes a GET request to the API passing along the users id to access the relevant endpoint.
       // If successful, the API will return the users information.
@@ -206,6 +223,7 @@ export default class Data {
       }
     }
 
+
     async getCard(id) {
       const response = await this.api(`/catalog/card/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an individual deck
@@ -213,6 +231,14 @@ export default class Data {
         // If status is 200, return deck data
         const card = await response.json();
         return card
+
+    async getUserDecks(id) {
+      const response = await this.api(`/catalog/user/${id}`, 'GET', null, false);
+      // Send GET request to API to retrieve data for an user's decks
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const decks = await response.json();
+        return decks;
       }
       // If there is a problem retrieving the decks, return the error data
       else if (response.status !== 200) {
@@ -229,7 +255,24 @@ export default class Data {
       if (response.status === 200) {
         // If status is 200, return deck data
         const subjects = await response.json();
-        return subjects
+        return subjects;
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+    async getSubjectDecks(id) {
+      const response = await this.api(`/catalog/subject/${id}`, 'GET', null, false);
+      // Send GET request to API to retrieve data for an user's decks
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const decks = await response.json();
+        return decks;
       }
       // If there is a problem retrieving the decks, return the error data
       else if (response.status !== 200) {

@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import Card from '../Card'
-import CreateCard from '../CreateCard'
+// import CreateCard from '../CreateCard'
 
-import withContext from '../Context';
+// import withContext from '../Context';
 
-const CreateCardWithContext = withContext(CreateCard);
+// const CreateCardWithContext = withContext(CreateCard);
 
 // DeckDetailContainer Component receives props from DeckDetail and renders the jsx
 
@@ -16,7 +16,7 @@ const DeckDetailContainer = props => {
         <div>
         {/* check userId against authenticated UsersId to determine if edit buttons display*/}
         {
-          (props.authenticatedUserId == props.deck.deck.user._id)
+          (props.authenticatedUserId === props.deck.deck.user._id)
           ? <div className="actions--bar">
                 <div className="bounds">
                     <div className="grid-100">
@@ -52,7 +52,7 @@ const DeckDetailContainer = props => {
                 <div className="grid-66">
                     <div className="deck--header">
                     <h3 className="deck--title">{props.deck.title}</h3>
-                    <p>By {props.deckCreator}</p>
+                    <Link to={`/user/${props.authorId}`}>By {props.deckCreator}</Link>
                     </div>
                     <div className="deck--description">
                     </div>
@@ -60,7 +60,7 @@ const DeckDetailContainer = props => {
             </div>
             <Card props={props}/>
             {
-          (props.authenticatedUserId == props.deck.deck.user._id)
+          (props.authenticatedUserId === props.deck.deck.user._id)
           ? <div className="actions--bar">
                 <div className="bounds">
                     <div className="grid-100">
@@ -94,4 +94,4 @@ const DeckDetailContainer = props => {
 export default DeckDetailContainer;
 
 
-{/* <button className="remove-player" onClick={() => props.removePlayer(props.id)}>✖</button> */}
+// {/* <button className="remove-player" onClick={() => props.removePlayer(props.id)}>✖</button> */}

@@ -192,7 +192,7 @@ this.props.context.actions.getCard(this.state.cardId)
         console.log(response)
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.
-      if (response.status !== 201) {
+      if (response.status !== 204) {
         this.setState({ errors: response });
         // this.setState({title: this.state.preservedTitle})
       } else {

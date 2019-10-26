@@ -155,11 +155,13 @@ componentDidMount() {
       // filter any items that are undefined
       subject: Array.from(this.state.checkedItemsIds, ([key, value]) => {
         if (value) {
-        return key
+        return key;
+        } else {
+          return null;
         }
-      }).filter((subject)=> (subject!==undefined))
+      })
+      .filter((subject)=> (subject!==null))
     }
-    console.log(deckPayload);
 
     
 

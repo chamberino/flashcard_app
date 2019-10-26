@@ -231,6 +231,8 @@ export default class Data {
         // If status is 200, return deck data
         const card = await response.json();
         return card
+      }
+    }
 
     async getUserDecks(id) {
       const response = await this.api(`/catalog/user/${id}`, 'GET', null, false);

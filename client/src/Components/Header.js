@@ -21,6 +21,7 @@ export default (props) => {
         {(props.context.authenticatedUser)  ? (
             <React.Fragment>
               <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span>
+              <Link to={`/user/${props.context.authenticatedUser.user.user.id}`}>Profile</Link>
               <Link to="/signout">Sign Out</Link>
             </React.Fragment>
           ) : (

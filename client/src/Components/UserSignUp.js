@@ -90,9 +90,6 @@ export default class UserSignUp extends Component {
   submit = () => {
     // {/* initialize context variable containing the context props  */}
     const { context } = this.props;
-    // The from variable passed to history.push(from) contains information 
-    // about the pathname an unauthenticated user redirected from (via this.props.location.state). 
-    const { from } = this.props.location.state || { from: { pathname: '/decks' } };
     // unpack username and properties password from state
     const { first_name, last_name, email, password } = this.state;
 

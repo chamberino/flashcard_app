@@ -88,7 +88,6 @@ componentDidMount() {
       title,
       errors,
       userId,
-      user,
       deckCreator
     } = this.state;
 

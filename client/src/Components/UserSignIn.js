@@ -91,7 +91,6 @@ export default class UserSignIn extends Component {
           this.setState({ errors })
         } else {
           this.props.history.push(from);
-          console.log(errors)
           console.log(`SUCCESS! ${email} is now signed in!`);
         }
       })

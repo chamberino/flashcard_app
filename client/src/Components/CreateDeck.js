@@ -169,7 +169,6 @@ componentDidMount() {
 
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
-    console.log(credentials);
 
     // Create deck by calling the create method made available through Context
     // The deck data and users credentials are passed along.

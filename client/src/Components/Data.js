@@ -76,17 +76,17 @@ export default class Data {
       }
     }
   
-    async update(deckPayload, deckId, credentials) {
-      const response = await this.api(`/catalog/deck/${deckId}`, 'PUT', deckPayload, true, credentials);
-      if (response.status === 204) {
-        return response
-      } 
-      else if (response.status !== 204) {
-        return response.json().then(data => data);
-      } else {
-          throw new Error();
-      }
-    }
+    // async update(deckPayload, deckId, credentials) {
+    //   const response = await this.api(`/catalog/deck/${deckId}`, 'PUT', deckPayload, true, credentials);
+    //   if (response.status === 204) {
+    //     return response
+    //   } 
+    //   else if (response.status !== 204) {
+    //     return response.json().then(data => data);
+    //   } else {
+    //       throw new Error();
+    //   }
+    // }
 
     async update(path, payload, credentials) {
       const response = await this.api(path, 'PUT', payload, true, credentials);

@@ -39,8 +39,6 @@ export default class DeleteDeckWithContext extends Component {
           this.props.history.push(`/forbidden`);
           return null;
         } else {
-            console.log(this.state.deckId)
-            // const credentials = this.state.credentials
           this.deleteCard(this.state.cardId, this.state.credentials)
         .then((card) => {         
             this.setState({

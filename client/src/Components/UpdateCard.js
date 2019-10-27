@@ -24,27 +24,6 @@ export default class UpdateCardWithContext extends Component {
 componentDidMount() {  
   // Make a call to the API to get all the courses in the DB.
 
-// this.props.context.actions.getDeck(this.state.deckId)
-// .then(deck => {
-//   if (deck.errorStatus || deck.message) {
-//     this.props.history.push(`/notfound`);
-//     return null;
-//   } else {
-//     console.log(deck.deck.user._id)
-//     this.setState({
-//         sideOfCard: 'question',
-//         amountOfCards: deck.cards.length,
-//         deck: deck,
-//         deckTitle: deck.title,
-//         deckCreator: deck.deck.user.first_name + ' ' + deck.deck.user.last_name,
-//         loading: false,
-//     })
-//   }
-// }).catch((error)=>{
-//     // catch errors and push new route to History object
-//     this.props.history.push('/error');
-//   })
-
 this.props.context.actions.getCard(this.state.cardId)
       .then((card)=>{
         this.setState({
@@ -71,9 +50,7 @@ this.props.context.actions.getCard(this.state.cardId)
 }
 
   render() {
-    //   console.log(this.state.card.card)
     const {
-        card,
         question,
         answer,
         hint,
@@ -83,7 +60,7 @@ this.props.context.actions.getCard(this.state.cardId)
     } = this.state;
     return (
       <div className="bounds course--detail">
-        <h1>Create Flashcard for {deckTitle} Deck</h1>
+        <h1>Edit Flashcard for {deckTitle} Deck</h1>
         <Form 
             cancel={this.cancel}
             errors={errors}
@@ -186,10 +163,8 @@ this.props.context.actions.getCard(this.state.cardId)
     const credentials = this.props.context.authenticatedUser.user.token;
     // Create deck by calling the create method made available through Context
     // The deck data and users credentials are passed along.
-    console.log(cardPayload)
     context.actions.update(`/catalog/card/${cardId}/update`, cardPayload, credentials)
     .then((response) => {
-        console.log(response)
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.
       if (response.status !== 204) {

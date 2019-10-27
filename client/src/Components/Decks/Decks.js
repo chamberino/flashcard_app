@@ -47,6 +47,7 @@ export default class Decks extends Component {
 
     return (         
       <div className="deck-list-container">
+      <Route exact path="/decks/" render= {() => <NewDeckLink />} />
       <Switch>
       {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
       {
@@ -56,7 +57,6 @@ export default class Decks extends Component {
       } 
       </Switch>
       {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}
-      <Route exact path="/decks/" render= {() => <NewDeckLink />} />
         <div className="main-content">
         </div>  
       </div>

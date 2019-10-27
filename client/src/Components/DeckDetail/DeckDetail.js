@@ -102,7 +102,6 @@ componentDidMount() {
           this.props.history.push(`/notfound`);
           return null;
         } else {
-          // console.log(deck.deck.user._id)
           this.setState({
               hint: null,
               sideOfCard: 'question',

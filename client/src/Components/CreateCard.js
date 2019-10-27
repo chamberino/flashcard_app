@@ -30,7 +30,6 @@ this.props.context.actions.getDeck(this.state.deckId)
     this.props.history.push(`/notfound`);
     return null;
   } else {
-    console.log(deck.deck.user._id)
     this.setState({
         sideOfCard: 'question',
         amountOfCards: deck.cards.length,
@@ -162,7 +161,6 @@ this.props.context.actions.getDeck(this.state.deckId)
     // The deck data and users credentials are passed along.
     context.data.createCard(deckId, cardPayload, credentials)
     .then((response) => {
-        console.log(response)
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.
       if (response.status !== 201) {

@@ -120,7 +120,6 @@ exports.deck_create_post = [
         res.status(400);
         return res.json(errorMessages);
     } else {
-        console.log(req.body)
     Deck.create(req.body)
             .then((deck)=>{
                 if (!deck) {
@@ -184,6 +183,37 @@ exports.deck_update_get = function(req, res) {
 };
 
 // Handle deck update on POST.
-exports.deck_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Deck update POST');
-};
+exports.deck_update_put = [
+
+    // Validate fields.
+    check('title')
+          .exists({ checkNull: true, checkFalsy: true })
+          .withMessage('Title required'),
+          check('user')
+          .exists({ checkNull: true, checkFalsy: true })
+          .withMessage('User not recognized. Please sign in again.'),
+          check('subject')
+          .exists({ checkNull: true, checkFalsy: true })
+          .isArray({min:1})
+          .withMessage('Subject required'),
+        sanitizeBody('title').escape(),
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values and error messages.
+            const errorMessages = errors.array().map(error => error.msg);
+            res.status(400);
+            return res.json(errorMessages);
+        }   else {
+            Deck.findByIdAndUpdate(req.params.id, req.body, {upsert:false}, function(err,doc) {
+                if(err) {
+                    res.json([err])
+                } else {
+                    res.status(204).end();
+                }
+            })
+        }
+    }
+];

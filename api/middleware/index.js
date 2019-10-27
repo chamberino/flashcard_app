@@ -22,7 +22,6 @@ function requiresLogin(req, res, next) {
 function authenticateToken(req, res, next) {
     // authHeader holds the value of the authorization header sent in the request body
     const authHeader = req.headers['authorization'];
-    console.log(authHeader)
     // We split the authHeader because there should be a space between 'Bearer' and the Token
     // token returns undefined if authHeader doesn't exist
     const token = authHeader && authHeader.split(' ')[1];
@@ -53,7 +52,6 @@ function auth(req, res, next) {
     // // We split the authHeader because there should be a space between 'Bearer' and the Token
     // // token returns undefined if authHeader doesn't exist
     const token = authHeader && authHeader.split(' ')[1];
-    console.log(authHeader)
     
     // Check for token
     // Token returns undefined if authHeader doesn't exist
@@ -66,7 +64,6 @@ function auth(req, res, next) {
     }    
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) {
-            console.log(err)
             res.status(400);
             const errorMessages = [];
             errorMessages.push("Insufficient Credentials")
@@ -78,7 +75,6 @@ function auth(req, res, next) {
 //         { id: '5da54d1a8d782aa485a25f3f',
 //           iat: 1571685501,
 //           exp: 1571686101 }
-console.log(user)
         req.user = user;
         next();
     })

@@ -145,7 +145,6 @@ app.post('/user/login', [
     // Mongoose validation to errorMessages array.
     const errorMessages = [];
         errors.array().forEach(error => errorMessages.push(error.msg))
-        console.log(errorMessages)
         return res.json(errorMessages)
   } else {
     User.findOne({email: req.body.email})
@@ -154,7 +153,6 @@ app.post('/user/login', [
       if (!user) {        
         const errorMessages = [];
         errorMessages.push("User not found")
-        console.log(errorMessages)
         return res.json(errorMessages)
       }
       if (user) {
@@ -183,7 +181,6 @@ app.post('/user/login', [
           } else {
             const errorMessages = [];
             errorMessages.push("Credentials don't match")
-            console.log(errorMessages)
             return res.json(errorMessages)
           }
       })

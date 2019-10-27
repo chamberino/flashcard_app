@@ -11,7 +11,6 @@ import Card from '../Card'
 // DeckDetailContainer Component receives props from DeckDetail and renders the jsx
 
 const DeckDetailContainer = props => {
-    console.log(props.amountOfCards)
     return (
         <div>
         {/* check userId against authenticated UsersId to determine if edit buttons display*/}

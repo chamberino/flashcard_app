@@ -27,56 +27,6 @@ router.get('/decks', deck_controller.deck_list);
 // GET request for creating a Deck. NOTE This must come before routes that display Deck (uses id).
 router.get('/deck/create', deck_controller.deck_create_get);
 
-// POST request for creating a Deck. NOTE This must come before routes that display Deck (uses id).
-// router.post('/deck/create', [
-//     check('title')
-//       .exists({ checkNull: true, checkFalsy: true })
-//       .withMessage('Please enter a class title'),
-//       check('_id')
-//       .exists({ checkNull: true, checkFalsy: true })
-//       .withMessage('User not recognized. Please sign in again.')
-//   ], (req, res, next) => {
-//       // Attempt to get the validation result from the Request object.
-//     const errors = validationResult(req);
-//     // If there are validation errors...
-//     if (!errors.isEmpty()) {
-//         // Use the Array `map()` method to get a list of error messages.
-//         const errorMessages = errors.array().map(error => error.msg);
-//         // Create custom error with 400 status code
-//         res.status(400);
-//         return res.json(errorMessages);
-//     } else {
-//         Deck.create(req.body)
-//             .then((course)=>{
-//                 if (course) {
-//                     res.status(400);
-//                     const errorMessages = [];
-//                     errorMessages.push("This course already exists")
-//                     return res.json(errorMessages);
-//                 } else {
-//                     res.location(`/decks/${course.id}`);                        
-//                     res.status(201)                    
-//                     res.json({deck: 100});  
-//                 }
-//             }).catch((error)=> {  // check for errors within body
-//                 if (error.name === "SequelizeValidationError") {
-//                     // Use Sequelize ORM to catch any validation errors
-//                     // If errors exist, map over array of error objects and return array
-//                     // with error messages
-//                     const errorsArray = error.errors.map((error) => {
-//                         return error.message;                
-//                     })
-//                     const err = new Error(errorsArray); //custom error message
-//                     err.status = 400;
-//                     next(err) // pass error along to global error handler
-//                 } else {
-//                     // catch any other errors and pass errors to global error handler
-//                     next(error);
-//                 }
-//             });
-//     };      
-// });
-
 router.post('/deck/create', mid.auth, deck_controller.deck_create_post)
 
 
@@ -85,14 +35,9 @@ router.get('/deck/:id', deck_controller.deck_detail);
 
 // POST request to delete Deck.
 router.delete('/deck/:id/delete', mid.auth, function(req, res, next) {
-//     const id = mongoose.Types.ObjectId(req.params.id);
 const id = req.params.id;
     Deck.findById(id)
     .then((deck) => {
-        // the deck creator is checked against the req.currentUser.id passed along from auth middleware
-        // if(!(deck.userId == req.currentUser.id)) {
-        //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
-        // } else {
             if (!deck) { 
                 const error = new Error('Cannot find the requested resource to update'); // custom error message
                 error.status = 400;
@@ -119,47 +64,11 @@ const id = req.params.id;
     });
 });
 
-// router.delete('/deck/:id/delete', mid.auth, function(req, res, next) {
-//     //     const id = mongoose.Types.ObjectId(req.params.id);
-//     const id = req.params.id;
-//         Deck.findById(id)
-//         .then((deck) => {
-//             // the deck creator is checked against the req.currentUser.id passed along from auth middleware
-//             // if(!(deck.userId == req.currentUser.id)) {
-//             //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
-//             // } else {
-//                 if (!deck) { 
-//                     const error = new Error('Cannot find the requested resource to update'); // custom error message
-//                     error.status = 400;
-//                     next(error); // catch any other errors and pass errors to global error handler
-//                 } else { // delete matched deck
-//                     return deck.remove()
-//                     .then((deck)=>{
-//                         if (!deck) { 
-//                             const error = new Error('There was a problem deleting the deck'); // custom error message
-//                             error.status = 400;
-//                             next(error);
-//                         } else {
-//                         res.status(204).end();
-//                         }
-//                     }).catch((error) => {
-//                         // catch any other errors and pass errors to global error handler
-//                         next(error);
-//                     });
-//                 }
-//             // }
-//         }).catch((error) => {  
-//             // catch any other errors and pass errors to global error handler
-//             next(error);
-//         });
-//     });
-
 // GET request to update Deck.
 router.get('/deck/:id/update', deck_controller.deck_update_get);
 
 // POST request to update Deck.
-router.post('/deck/:id/update', deck_controller.deck_update_post);
-
+router.put('/deck/:id/update', deck_controller.deck_update_put);
 
 // USER ROUTES ///
 

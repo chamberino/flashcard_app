@@ -90,7 +90,6 @@ export default class UserSignUp extends Component {
   submit = () => {
     // {/* initialize context variable containing the context props  */}
     const { context } = this.props;
-    console.log(context)
     // The from variable passed to history.push(from) contains information 
     // about the pathname an unauthenticated user redirected from (via this.props.location.state). 
     const { from } = this.props.location.state || { from: { pathname: '/decks' } };
@@ -103,7 +102,6 @@ export default class UserSignUp extends Component {
     // signIn returns the users credentials or null if invalid 
     context.data.createUser(user)
       .then((errors) => {
-        console.log(errors)
         // if (user === null) {
         //   this.setState(() => {
         //     return { errors: [ 'Sign-in was unsuccessful' ] };

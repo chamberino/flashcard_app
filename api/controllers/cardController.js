@@ -117,13 +117,10 @@ exports.card_delete_post = function(req, res, next) {
                 if (!card) { 
                     const error = new Error('Cannot find the requested resource to update'); // custom error message
                     error.status = 400;
-                    console.log(error)
                     next(error); // catch any other errors and pass errors to global error handler
                 } else { // delete matched deck
                     return card.remove()
                     .then((card)=>{
-                        console.log(card)
-
                         if (!card) { 
                             const error = new Error('There was a problem deleting the card'); // custom error message
                             error.status = 400;
@@ -167,8 +164,6 @@ exports.card_update_put = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
-        // Create a BookInstance object with escaped and trimmed data.
-
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
             const errorMessages = errors.array().map(error => error.msg);
@@ -182,52 +177,13 @@ exports.card_update_put = [
             hint: req.body.hint,
             answer: req.body.answer
            }
-            Card.findOneAndUpdate(req.params.id, card, {upsert:false}, function(err,doc) {
+            Card.findByIdAndUpdate(req.params.id, card, {upsert:false}, function(err,doc) {
                 if(err) {
                     res.json([err])
                 } else {
                     res.status(204).end();
                 }
             })
-                // .then((card) => {
-                // // the deck creator is checked against the req.currentUser.id passed along from auth middleware
-                // // if(!(deck.userId == req.currentUser.id)) {
-                // //     res.status(403).json({ message: 'Users may only delete decks they created themselves' });
-                // // } else {
-                //     if (!card) { 
-                //         const error = new Error('Cannot find the requested resource to update'); // custom error message
-                //         error.status = 400;
-                //         console.log(error)
-                //         next(error); // catch any other errors and pass errors to global error handler
-                //     } else { // update matched deck
-            
-            // Data from form is valid.
-        //     card.update(card)
-        //         .then((card) => { 
-        //             if (!card){
-        //                 const error = new Error('There was a problem posting the flashcard'); // custom error message
-        //                 error.status = 400;
-        //                 next(error); // pass error along to global error handler
-        //             } else {
-        //                 res.status(204).end();
-        //             }
-        //         }).catch((error)=>{
-        //             // Use Sequelize ORM to catch any validation errors
-        //             if (error.name === "SequelizeValidationError") {
-        //                 const errorsArray = error.errors.map((error) => {
-        //                     return error.message;                
-        //                 })
-        //                 const err = new Error(errorsArray);
-        //                 error.status = 400;
-        //                 next(err);
-        //             } else {
-        //                 next(error); // catch any other errors and pass errors to global error handler
-        //             }
-        //         });
-        //     }
-        // }).catch((error)=>{
-        //     next(error); // catch any other errors and pass errors to global error handler
-        // })
         }
     }
 ];

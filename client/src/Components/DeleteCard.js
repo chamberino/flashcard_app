@@ -18,10 +18,12 @@ export default class DeleteDeckWithContext extends Component {
 
     this.props.context.actions.getCard(this.state.cardId)
       .then((card)=>{
+        // NOTE!:: Why is this setting error state to the returned card?
         this.setState({
             error: card,
           })
         if (card.errorStatus || card.message) {
+          console.log(card)
             this.props.history.push(`/notfound`);
             return null
           } else {

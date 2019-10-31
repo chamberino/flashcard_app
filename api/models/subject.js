@@ -12,7 +12,7 @@ const SubjectSchema = new Schema({
 SubjectSchema
 .virtual('url')
 .get(function () {
-  return '/catalog/subject/' + this._id;
+  return '/subject/' + this._id;
 });
 
 

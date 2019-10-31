@@ -3,14 +3,14 @@ var User = require('../models/user');
 var Subject = require('../models/subject');
 var Card = require('../models/card');
 var mongoose = require('mongoose');
-const mid = require('../middleware/index');
-const { body,check,validationResult } = require('express-validator');
+const { check,validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 
+mongoose.Promise = global.Promise;
 var async = require('async');
 
+// Route is currently not being used by client
 exports.index = function(req, res) {   
-    
     async.parallel({
         deck_count: function(callback) {
             Deck.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
@@ -30,7 +30,7 @@ exports.index = function(req, res) {
             error.status = 400;
             next(error); // pass error along to global error handler
         }
-        res.json({ title: 'FlashCard Home', error: err, data: results });
+        res.json({error: err, data: results });
     });
 };
 
@@ -38,7 +38,7 @@ exports.index = function(req, res) {
 exports.deck_list = function(req, res, next) {
     Deck.find({}, 'title user')
     .populate('user', '_id first_name last_name')
-    .exec(function (err, list_decks) {
+    .exec(function (err, deck_list) {
       if (err) { 
             // Log error and set status code if there's a problem retrieving the decks
             const error = new Error('There was an error retrieving the decks'); //throw custom error    
@@ -46,54 +46,96 @@ exports.deck_list = function(req, res, next) {
             next(error); // pass error along to global error handler
        }
       //Successful, so send data
-      res.json({title: 'List of Decks', deck_list: list_decks});
+      res.json({deck_list});
     });
 };
+
+// // Display detail page for a specific deck.
+// exports.deck_detail = function(req, res, next) {
+//         const id = mongoose.Types.ObjectId(req.params.id);
+    
+//         async.parallel({
+//             deck: function(callback) {
+    
+//                 Deck.findById(id)
+//                   .populate('user', '_id first_name last_name')
+//                   .populate('subject')
+//                   .exec(callback);
+//             },
+//             card: function(callback) {
+    
+//               Card.find({ 'deck': id })
+//               .exec(callback);
+//             },
+//         }, function(err, results) {
+//             if (err) { return next(err); }
+//             if (results.deck == null) { // No results.
+//                 var err = new Error('Deck not found');
+//                 err.status = 404;
+//                 return next(err);
+//             }
+//             // Successful, so send data.
+//             res.json({ title: results.deck.title, deck: results.deck, cards: results.card });
+//         });
+//     };
+
 
 // Display detail page for a specific deck.
-exports.deck_detail = function(req, res, next) {
-        const id = mongoose.Types.ObjectId(req.params.id);
-    
-        async.parallel({
-            deck: function(callback) {
-    
-                Deck.findById(id)
-                  .populate('user', '_id first_name last_name')
-                  .populate('subject')
-                  .exec(callback);
-            },
-            card: function(callback) {
-    
-              Card.find({ 'deck': id })
-              .exec(callback);
-            },
-        }, function(err, results) {
-            if (err) { return next(err); }
-            if (results.deck == null) { // No results.
-                var err = new Error('Deck not found');
+exports.deck_detail = [
+    async function(req, res, next) {
+        const id = mongoose.Types.ObjectId(req.params.id);
+        try {
+            const deck = await Deck.findById(id)
+            .populate('user', '_id first_name last_name')
+            .populate('subject')
+            if (deck == null) {
+                var err = new Error('Deck not found');
                 err.status = 404;
                 return next(err);
-            }
-            // Successful, so send data.
-            res.json({ title: results.deck.title, deck: results.deck, cards: results.card });
-        });
-    };
-
-// Display deck create form on GET.
-exports.deck_create_get = function(req, res) {
-        // Get all subjects, which we can use for adding to our deck.
-
-    Subject.find()
-    .exec(function (err, list_subjects) {
-        if (err) { 
-        var err = new Error('Subjects not found');
-        err.status = 404;
-        return next(err);
+            }
+            req.deck = deck
+            next()
+        } catch(err) {
+            next(err)
         }
-          // Successful, so render
-            res.json({ title: 'Create Deck', subjects: list_subjects });
-    });
-};
+    }, async function(req, res, next) {
+        const id = mongoose.Types.ObjectId(req.params.id);
+        try {
+            const cards = await Card.find({ 'deck': id })
+            if (cards == null) {
+                var err = new Error('Cards not found');
+                    err.status = 404;
+                    return next(err);
+            }
+            req.cards = cards
+            next()
+        } catch(err) {
+            next(err)
+        }
+    }, 
+    (req, res, next) => {res.json({title: req.deck.title, deck: req.deck, cards: req.cards})}
+]
+
+    // getDeck(id).then((deck)=>res.json(deck.title))
+
+   
+
+    // async function getCard() {
+    //         await Card.findById({ 'deck': id })
+    //             .exec();
+    //     }
+
+    //     }, function(err, results) {
+    //         if (err) { return next(err); }
+    //         if (results.deck == null) { // No results.
+    //             var err = new Error('Deck not found');
+    //             err.status = 404;
+    //             return next(err);
+    //         }
+            // Successful, so send data.
+            // res.json({ title: results.deck.title, deck: results.deck, cards: results.card });
+
+    // };
 
 // Handle post deck route
 // Request body should be formatted like this...
@@ -140,47 +182,47 @@ exports.deck_create_post = [
     }
 ]
 
-
-// Display deck delete form on GET.
+// Delete Deck and all associated cards
 exports.deck_delete_post = function(req, res, next) {
-//     const id = mongoose.Types.ObjectId(req.params.id);
-const id = '5db0b5f8e7af6d122cc38dfc';
-    Deck.findById(id)
-    .then((deck) => {
-        // the deck creator is checked against the req.currentUser.id passed along from auth middleware
-        if(!(deck.userId == req.currentUser.id)) {
-            res.status(403).json({ message: 'Users may only delete decks they created themselves' });
-        } else {
-            if (!deck) { 
-                const error = new Error('Cannot find the requested resource to update'); // custom error message
-                error.status = 400;
-                next(error); // catch any other errors and pass errors to global error handler
-            } else { // delete matched deck
-                return deck.destroy()
-                .then((deck)=>{
-                    if (!deck) { 
-                        const error = new Error('There was a problem deleting the deck'); // custom error message
-                        error.status = 400;
+    const id = req.params.id;
+        Deck.findById(id)
+        .then((deck) => {
+                if (!deck) { 
+                    const error = new Error('Cannot find the requested resource to update'); // custom error message
+                    error.status = 400;
+                    next(error); // catch any other errors and pass errors to global error handler
+                } else if (!(deck.user == req.user.id)) {
+                    const error = new Error('Users may only delete decks they created themselves'); // custom error message
+                    error.status = 403;
+                    next(error); // catch any other errors and pass errors to global error handler
+                } else { // delete matched deck
+                    return deck.remove()
+                    .then((deck)=>{
+                        if (!deck) { 
+                            const error = new Error('There was a problem deleting the deck'); // custom error message
+                            error.status = 400;
+                            next(error);
+                        } else {
+                            // delete all cards associated with deck
+                            Card.deleteMany({ 'deck': id, 'user':req.user.id }, function(err, doc) {
+                                if (err) {
+                                    return res.json([err])
+                                } 
+                            })
+                            .then(deck => console.log(deck))
+                            res.status(204).end();
+                        }
+                    }).catch((error) => {
+                        // catch any other errors and pass errors to global error handler
                         next(error);
-                    } else {
-                    res.status(204).end();
-                    }
-                }).catch((error) => {
-                    // catch any other errors and pass errors to global error handler
-                    next(error);
-                });
-            }
-        }
-    }).catch((error) => {  
-        // catch any other errors and pass errors to global error handler
-        next(error);
-    });
-}
-
-// Display deck update form on GET.
-exports.deck_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Deck update GET');
-};
+                    });
+                }
+            // }
+        }).catch((error) => {  
+            // catch any other errors and pass errors to global error handler
+            next(error);
+        });
+    }
 
 // Handle deck update on POST.
 exports.deck_update_put = [
@@ -202,7 +244,6 @@ exports.deck_update_put = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values and error messages.
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
             return res.json(errorMessages);

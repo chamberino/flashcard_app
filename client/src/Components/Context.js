@@ -75,15 +75,23 @@ export class Provider extends Component {
     return user;
   }
 
-  signOut = () => {
+  signOut = async (credentials) => {
     // signOut is an event handler triggered by the sign out link in the Header
     // Once fired, the authenticatedUser state is set to null and the cookie is removed.
-    this.setState(() => { 
-      return {
-        authenticatedUser: null,
-      }
-    });
-    Cookies.remove('authenticatedUser')
+
+    // NOTE: This function should make a call to the database and revoke/delete the refreshToken from 
+    // the mongo session store
+
+    const logOut = await this.data.logOut(credentials);
+      if (logOut.status !== undefined) {
+        this.setState(() => { 
+          return {
+            authenticatedUser: null,
+          }
+        });
+        Cookies.remove('authenticatedUser')
+      } 
+      return logOut;
   }
 
   getAuthor = async (id) => {

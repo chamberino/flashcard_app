@@ -7,7 +7,8 @@ the user to the default route (i.e. the list of courses).
 */
 
 export default ({ context }) => {
-  context.actions.signOut();
+  const credentials = context.authenticatedUser.user.token;
+  context.actions.signOut(credentials);
 
   return (
     <Redirect to="/" />

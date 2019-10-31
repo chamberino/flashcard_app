@@ -11,7 +11,6 @@ exports.subject_list = (req, res, next) => {
     .sort([['name', 'ascending']])
     .exec(function (err, list_subjects) {
       if (err) { return next(err); }
-      //Successful, so render
       res.json({ title: 'Subject List', subject_list: list_subjects });
     });
 };
@@ -24,7 +23,6 @@ exports.subject_detail = function(req, res, next) {
             Subject.findById(id)
               .exec(callback);
         },
-
         subject_decks: function(callback) {
             Deck.find({ 'subject': id })
               .exec(callback);
@@ -37,15 +35,8 @@ exports.subject_detail = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
-        // Successful, so render
-        res.json({ title: 'Subject Detail', subject: results.subject, subject_decks: results.subject_decks } );
+        res.json( { subject: results.subject, subject_decks: results.subject_decks } );
     });
-};
-
-
-// Display Subject create form on GET.
-exports.subject_create_get = function(req, res) {
-    res.json({ title: 'Create Subject' });
 };
 
 // Handle Subject create on POST.
@@ -67,15 +58,11 @@ exports.subject_create_post = [
         { name: req.body.name }
       );
   
-  
       if (!errors.isEmpty()) {
-        // There are errors. Render the form again with sanitized values/error messages.
         // Use the Array `map()` method to get a list of error messages.
         const errorMessages = errors.array().map(error => error.msg);
         res.status(400);
         return res.json(errorMessages);
-        // res.render('subject_form', { title: 'Create Subject', subject: subject, errors: errors.array()});
-        // return;
       }
       else {
         // Data from form is valid.
@@ -85,37 +72,28 @@ exports.subject_create_post = [
              if (err) { return next(err); }
   
              if (found_subject) {
-               // Subject exists, redirect to its detail page.
-               res.redirect(found_subject.url);
+               // Subject exists, send message.
+               res.status(400);
+                    const errorMessages = [];
+                    errorMessages.push('Subect already exists')
+                    return res.json(errorMessages);
              }
              else {
-  
                subject.save(function (err) {
                  if (err) { return next(err); }
                  // Subject saved. Redirect to subject detail page.
                  res.redirect(subject.url);
                });
   
-             }
-  
-           });
-      }
+            }
+      });
     }
-  ];
-
-// Display Subject delete form on GET.
-exports.subject_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject delete GET');
-};
+  }
+];
 
 // Handle Subject delete on POST.
 exports.subject_delete_post = function(req, res) {
     res.send('NOT IMPLEMENTED: Subject delete POST');
-};
-
-// Display Subject update form on GET.
-exports.subject_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Subject update GET');
 };
 
 // Handle Subject update on POST.

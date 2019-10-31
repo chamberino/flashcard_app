@@ -1,11 +1,10 @@
 const User = require('../models/user');
 const Deck = require('../models/deck');
+const Card = require('../models/card');
 const async = require('async');
 var mongoose = require('mongoose');
-const { body,check,validationResult } = require('express-validator');
+const { check,validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
-var bcrypt = require('bcryptjs');
-var auth = require('basic-auth');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -18,17 +17,17 @@ exports.user_list = (req, res) => {
     .sort([['last_name', 'ascending']])
     .exec(function (err, list_users) {
       if (err) { return next(err); }
-      //Successful, so render
       res.json({ title: 'User List', user_list: list_users });
     });
 };
 
 // Display detail page for a specific User.
-exports.user_detail = (req, res) => {
+exports.user_detail = (req, res, next) => {
     const id = mongoose.Types.ObjectId(req.params.id);
     async.parallel({
         user: function(callback) {
             User.findById(id)
+              .select('-password')
               .exec(callback)
         },
         user_decks: function(callback) {
@@ -39,85 +38,14 @@ exports.user_detail = (req, res) => {
     }, function(err, results) {
         if (err) { return next(err); } // Error in API usage.
         if (results.user==null) { // No results.
-            const err = ['User not found'];
-            return res.status(404).json(err);
+          const error = new Error('User not found'); // custom error message
+          error.status = 400;
+          next(error)
         }
-        console.log('results: ' + results.user_decks)
-        // Successful, so render.
-        res.json({ title: 'User Detail', user: results.user, userName: results.user.name, user_decks: results.user_decks } );
+        else {
+        res.json({ user: results.user, userName: results.user.name, user_decks: results.user_decks } );
+        }
     });
-};
-
-// Display profile page for a specific User.
-exports.user_profile = function(req, res, next) {
-    if (!req.session.userId) {
-        const err = new Error("You are not authorized to view this page");
-        err.status = 403;
-        return next(err);
-    }
-    User.findById(req.session.userId)
-        .exec(function (error, user) {
-          if (error) {
-            return next(error);
-          } else {
-            return res.json({ title: 'Profile', name: user.name });
-          }
-        });
-  }
-
-// Display User create form on GET.
-exports.user_login_get = (req, res) => {
-    res.json({ title: 'Log In'});
-};
-
-// Display User create form on GET.
-// helpful video on jwt web tokens
-// https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-exports.user_login_post = [
-    (req, res, next) => {
-        if (req.body.email && req.body.password) {
-          User.authenticate(req.body.email, req.body.password, function(error, user) {
-            if (error || !user) {
-              const err = new Error('Credentials do not match')
-              err.status = 401;
-              return next(err);
-            } else {
-              // user._id is what we get back from the authenticate method when credentials match
-              // req.session.userId = user._id;
-              
-              return res.redirect('/profile');
-            // const user = {
-            //   email: req.body.email
-            // }
-            // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-            // res.json( { accessToken: accessToken} )
-            // return res.redirect('/catalog/user/' + user._id)
-            }
-          });
-        } else {
-          const err = new Error('Email and password are required');
-          err.status = 401;
-          return next(err);
-        }
-      }
-]
-
-// exports.user_logout = (req, res, next) => {
-//     if (req.session) {
-//       // delete session object
-//       req.session.destroy( (err) => {
-//         if (err) {
-//           return next(err)
-//         } else {
-//           return res.redirect('/');
-//         }
-//       })
-//     }
-//   }
-
-// Display User create form on GET.
-exports.user_create_get = (req, res) => {
-    res.json({ title: 'Sign Up'});
 };
 
 // Handle User create on POST
@@ -154,12 +82,9 @@ exports.user_create_post = [
         const errors = validationResult(req);
         // If there are validation errors...
         if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values/errors messages.
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
             return res.json(errorMessages);
-            // res.render('author_form', { title: 'Create Author', author: req.body, errors: errors.array() });
-            // return;
         }
         else if (!emailRegEx.test(req.body.email)) {
             const error = ['Please enter a valid address. Example: foo@bar.com'];
@@ -178,9 +103,6 @@ exports.user_create_post = [
                     return res.json(errorMessages);
                }
                else {     
-                    // Hash the new user's password before persisting to the database.
-                    // var hash = bcrypt.hashSync(req.body.password);
-                    // req.body.password = hash;
                     // Create a User object with escaped and trimmed data.
                     var user = new User(
                         {
@@ -189,12 +111,7 @@ exports.user_create_post = [
                             email: req.body.email,
                             password: req.body.password
                         });
-                    // user.save(function (err) {
-                    //     if (err) { return next(err); }
-                    //     // set location header, set status code and close response returning no data
-                    //     res.location('/');
-                    //     res.status(201).end();
-                    // }); 
+                    // Users' password is hashed in the User model schema before persisting to the database.
                     User.create(user, (error, user) => {
                         if (error) {
                             return next(error)
@@ -209,7 +126,7 @@ exports.user_create_post = [
                               if(err) {
                                 res.json(err)
                               } 
-                              res.json({
+                              return res.status(201).json({
                                 token,
                                 user: {
                                   id: user._id,
@@ -227,21 +144,102 @@ exports.user_create_post = [
     }
 ];
 
-
-// Display User delete form on GET.
-exports.user_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: User delete GET');
-};
-
 // Handle User delete on POST.
-exports.user_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: User delete POST');
-};
+exports.user_delete_post = function(req, res, next) {
+    User.findById(req.params.id)
+    .then((user) => {
+            if (!user) { 
+                const error = new Error('Cannot find the requested resource to update'); // custom error message
+                error.status = 400;
+                next(error); // catch any other errors and pass errors to global error handler
+            } else if (!(user._id == req.user.id)) {
+                const error = new Error('Users may only delete their own accounts'); // custom error message
+                error.status = 403;
+                next(error); // catch any other errors and pass errors to global error handler
+            } else { // delete matched user
+                return user.remove()
+                .then((user)=>{
+                    if (!user) { 
+                        const error = new Error('There was a problem deleting the account'); // custom error message
+                        error.status = 400;
+                        next(error);
+                    } else {
+                        Deck.find({'user': req.user.id})
+                        .select('_id')
+                            .then((decks)=>{
+                                if(!decks) {
+                                    var err = new Error('problem getting decks');
+                                    err.status = 404;
+                                    return next(err);
+                                } else {
+                                    // delete all decks associated with user
+                                    Deck.deleteMany({
+                                        '_id': { $in: 
+                                            decks.map(deck=>deck._id)
+                                        }    
+                                    }, function(err, deletedDecks) {
 
-// Display User update form on GET.
-exports.user_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: User update GET');
-};
+                                        if (err) {
+                                            return res.json([err])
+                                        } 
+                                        if (deletedDecks) {
+                                        console.log(deletedDecks)
+                                        }
+                                    })
+                                    .catch(()=>{
+                                        // catch any other errors and pass errors to global error handler
+                                        next(error);
+                                    })
+
+                                    Card.find({
+                                        'deck': { $in:
+                                            decks.map(deck=>deck._id)
+                                            }
+                                    }, function(err, cards){
+                                        if (err) {
+                                            const error = new Error(err);
+                                            next(error)
+                                        } else {
+                                            Card.deleteMany({
+                                                '_id': { $in: 
+                                                    cards.map(card=>card._id)
+                                                }    
+                                            }, function(err, cards){
+                                                if (err) {
+                                                    const error = new Error(err);
+                                                    next(error)
+                                                } else {
+                                                    res.json(cards)
+                                                }
+                                            }).catch((error)=>{
+                                                if (error) {
+                                                    return next(error)
+                                                } 
+                                            })
+                                        }
+                                    }).catch((error)=>{
+                                    if (error) {
+                                        return next(error)
+                                    } 
+                                })
+                            }
+                            }).catch((error) => {
+                            const err = new Error(error)
+                            return next(err) 
+                        })
+                    }
+                }).catch((error) => {
+                    // catch any other errors and pass errors to global error handler
+                    next(error);
+                });
+            }
+        // }
+    }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+  };
+
 
 // Handle User update on POST.
 exports.user_update_post = function(req, res) {

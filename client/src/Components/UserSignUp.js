@@ -104,14 +104,31 @@ export default class UserSignUp extends Component {
         //     return { errors: [ 'Sign-in was unsuccessful' ] };
         //   });
         if (errors.length) {
+          console.log(errors)
           // if any error messages, set the error state to the value of the errors
           this.setState({ errors })
         } else {
-          this.props.history.push('/decks');
-          console.log(`SUCCESS! ${email} is now signed in!`);
-        }
-      })
+          context.actions.signIn(email, password)
+            .then((errors) => {
+              console.log(errors)
+              if (errors.length) {
+              // if any error messages, set the error state to the value of the errors
+              this.setState({ errors })
+              } else {
+                console.log('here')
+                this.props.history.push('/decks');
+                console.log(`SUCCESS! ${email} is now signed in!`);
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+              // catch errors and push new route to History object
+              this.props.history.push('/error');
+            });
+          }
+        })
       .catch((err) => {
+        console.log(err)
         // catch errors and push new route to History object
         this.props.history.push('/error');
       });

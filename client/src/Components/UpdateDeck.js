@@ -206,7 +206,7 @@ componentDidMount() {
     // Create deck by calling the create method made available through Context
     // The deck data and users credentials are passed along.
     // context.data.create(deckPayload, credentials)
-    context.actions.update(`/catalog/deck/${deckId}/update`, deckPayload, credentials)
+    context.actions.update(`/deck/${deckId}/update`, deckPayload, credentials)
     .then((response) => {
       // If API returns a response that is not 201, set the errors property in state to the response. 
       // The response will carry any error messages in an array. The title and description are then initialized.

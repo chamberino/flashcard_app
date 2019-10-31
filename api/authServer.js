@@ -6,14 +6,14 @@ const createError = require('http-errors');
 const express = require('express');
 // var user_controller = require('./controllers/userController');
 const auth_controller = require('./controllers/authController');
+const user_controller = require('./controllers/userController');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const bcrypt = require('bcryptjs')
-const { body,check,validationResult } = require('express-validator');
-const { sanitizeBody } = require('express-validator');
+const { check,validationResult } = require('express-validator');
 const cors = require('cors');
 
 
@@ -53,9 +53,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error'));
 
 
 app.use(session({
-  secret: 'flashcardAppSecret',
+  secret: process.env.SESSION_SECRET,
+  saveUninitialized: true,
   resave: true,
-  saveUninitialized: false,
   store: new MongoStore({
     mongooseConnection: db,
   })
@@ -72,7 +72,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // then your normal access tokens expire after a specified period of time
 // Access is then revoked and the user needs to login to get a new token
 
-const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
+const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYTU0ZDFhOGQ3ODJhYTQ4NWEyNWYzZiIsImlhdCI6MTU3MjI5NjIzMn0.cG6Mq2BSC2f9OFSAhOGd7m1FFJej2MLaCcLbG6G7YBo','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
 
 app.post('/token', (req, res) => {
     const refreshToken = req.body.token;
@@ -86,43 +86,14 @@ app.post('/token', (req, res) => {
         if (err) {
             return res.sendStatus(403);
         }
-        const accessToken = generateAccessToken( { name: user.name } );
+        const accessToken = generateAccessToken( { id: user._id } );
         res.json({ accessToken: accessToken });
     })
 })
 
-// A post request to /login at localhost 4000 will log in a user by authenticating 
-// their credentials
-app.post('/login', (req, res, next) => {
-    if (!req.body.email || !req.body.password) {
-      const err = new Error('Email and password are required');
-      err.status = 401;
-      res.json(err);
-    } else {
-      User.authenticate(req.body.email, req.body.password, function(error, user) {
-        if (error || !user) {
-          const err = new Error('Credentials do not match')
-          err.status = 401;
-          res.json(err);
-        } else {
-          // user._id is what we get back from the authenticate method when credentials match
-          // req.session.userId = user._id;
-          //
-        //   return res.redirect('/profile');
-        const user = {
-          email: req.body.email
-        }
-        // generate access token
-        const accessToken = generateAccessToken(user);
-        // generate a refresh token
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-        res.json( { accessToken: accessToken, refreshToken: refreshToken } )
-        // return res.redirect('/catalog/user/' + user._id)
-        }
-      });
-    }
-  });
 
+// Tutorial on JWT (JSON Web Tokens)
+// https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
 app.post('/user/login', [
   check('email')
     .exists({ checkNull: true, checkFalsy: true })
@@ -134,12 +105,6 @@ app.post('/user/login', [
     // Attempt to get the validation result from the Request object.
   const errors = validationResult(req);
   // If there are validation errors...
-  // if (!errors.isEmpty()) {
-  //     // Use the Array `map()` method to get a list of error messages.
-  //     const errorMessages = errors.array().map(error => error.msg);
-  //     // Create custom error with 400 status code
-  //     res.status(400);
-  //     return res.json(errorMessages);
   if (!errors.isEmpty()) {
     // Use the Array `forEach()` method to push a list of error messages received from 
     // Mongoose validation to errorMessages array.
@@ -148,7 +113,6 @@ app.post('/user/login', [
         return res.json(errorMessages)
   } else {
     User.findOne({email: req.body.email})
-    
     .then((user)=>{
       if (!user) {        
         const errorMessages = [];
@@ -158,26 +122,41 @@ app.post('/user/login', [
       if (user) {
         bcrypt.compare(req.body.password, user.password, function(error, result) {
           if (result === true) {
-            jwt.sign(
-              { id: user._id },
-              process.env.ACCESS_TOKEN_SECRET,
-              { expiresIn: '45m' },
-              // callback
-              (err, token) => {
-                if(err) {
-                  res.json(err)
-                } 
-                req.session.token = token;
-                res.json({
-                  token,
-                  user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
-                  }
-                })
-              }
-          )  
+            token = generateAccessToken({ id: user._id })
+            refreshToken = generateRefreshToken({ id: user._id })
+          //   jwt.sign(
+          //     { id: user._id },
+          //     process.env.ACCESS_TOKEN_SECRET,
+          //     { expiresIn: '45m' },
+          //     // callback
+          //     (err, token) => {
+          //       if(err) {
+          //         res.json(err)
+          //       } 
+          //       // req.session.token = token;
+          //       res.json({                  
+          //         token,
+          //         refreshToken: refreshToken,
+          //         test:'test',
+          //         user: {
+          //           id: user._id,
+          //           name: user.name,
+          //           email: user.email
+          //         }
+          //       })
+          //     }
+          // )  
+          req.session.refreshToken = refreshToken;
+          console.log(req.session.refreshToken)
+          res.json({token,
+                    refreshToken: refreshToken,
+                    test:'test',
+                    user: {
+                      id: user._id,
+                      name: user.name,
+                      email: user.email
+                    }
+                  })
           } else {
             const errorMessages = [];
             errorMessages.push("Credentials don't match")
@@ -189,61 +168,20 @@ app.post('/user/login', [
       // catch any other errors and pass errors to global error handler
       next(error);
   });
-      // User.findOne({ where: {email: req.body.email} })
-      // .then((user) => {
-      //     if (user) {
-      //         res.status(400);
-      //         const errorMessages = [];
-      //         errorMessages.push("A user")
-      //         return res.json(errorMessages);
-      //     } else {
-      //         //req.body contains a json object with the values of the form which maps 1:1 to the Course model.
-      //         req.body.userId = req.currentUser.id;                
-      //         Course.create(req.body)
-      //         .then((course)=>{
-      //             if(!course){
-      //                 const error = new Error('There was a problem posting the course'); //throw custom error
-      //                 error.status =400;
-      //                 next(error); // pass error along to global error handler
-      //             } else {
-      //                 res.locals.courseId = course.Id;
-      //                 res.location(`/api/courses/${course.id}`);                        
-      //                 res.status(201)                    
-      //                 res.json({course: 100});                      
-      //             }
-      //         }).catch((error)=> {  // check for errors within body
-      //             if (error.name === "SequelizeValidationError") {
-      //                 // Use Sequelize ORM to catch any validation errors
-      //                 // If errors exist, map over array of error objects and return array
-      //                 // with error messages
-      //                 const errorsArray = error.errors.map((error) => {
-      //                     return error.message;                
-      //                 })
-      //                 const err = new Error(errorsArray); //custom error message
-      //                 err.status = 400;
-      //                 next(err) // pass error along to global error handler
-      //             } else {
-      //                 // catch any other errors and pass errors to global error handler
-      //                 next(error);
-      //             }
-      //         });
-      //         return null;
-      //     };
-      // }).catch((error) => {
-      //     // catch any other errors and pass errors to global error handler
-      //     next(error);
-      // });
   };      
 });
 
-// app.post('/user/login', auth_controller.user_login_post);
+app.post('/user/create',  user_controller.user_create_post);
 
-app.post('/user/create',  auth_controller.user_create_post);
-
+app.get('/user/logout', mid.auth, auth_controller.user_logout);
 
 // Returns an access token which expires after 10 minutes
 function generateAccessToken(user) {
-   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m'})
+   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+}
+
+function generateRefreshToken(user) {
+  return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
 }
 
 // catch 404 and forward to error handler
@@ -257,7 +195,7 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // set status and send error
   res.status(err.status || 500);
   res.send(err);
 });

@@ -15,7 +15,7 @@ export default class DeleteDeckWithContext extends Component {
 
   componentDidMount() {      
     // Make a DELETE request to the API and return user to the list of decks.
-
+    
     this.props.context.actions.getDeck(this.state.deckId)
       .then((deck)=>{
         this.setState({

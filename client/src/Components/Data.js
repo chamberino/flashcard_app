@@ -45,7 +45,7 @@ export default class Data {
     }
 
     async getUsers() {
-      const response = await this.api(`/catalog/users`, 'GET', null, false);
+      const response = await this.api(`/users`, 'GET', null, false);
       // Send GET request to API to retrieve list of users in DB
       if (response.status === 200) {
         // If status is 200, return list of users
@@ -64,7 +64,7 @@ export default class Data {
     async getAuthor(id) {
       // getAuthor makes a GET request to the API passing along the users id to access the relevant endpoint.
       // If successful, the API will return the users information.
-      const response = await this.api(`/catalog/user/${id}`, 'GET', null, false);
+      const response = await this.api(`/user/${id}`, 'GET', null, false);
       if (response.status === 200) {
         return response.json().then(data => data);
       }
@@ -77,7 +77,7 @@ export default class Data {
     }
   
     // async update(deckPayload, deckId, credentials) {
-    //   const response = await this.api(`/catalog/deck/${deckId}`, 'PUT', deckPayload, true, credentials);
+    //   const response = await this.api(`/deck/${deckId}`, 'PUT', deckPayload, true, credentials);
     //   if (response.status === 204) {
     //     return response
     //   } 
@@ -102,7 +102,7 @@ export default class Data {
   
     // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
     async create(deckPayload, credentials) {
-      const response = await this.api('/catalog/deck/create', 'POST', deckPayload, true, credentials);
+      const response = await this.api('/deck/create', 'POST', deckPayload, true, credentials);
       // If user is created and a 201 status is set, return empty array
       if (response.status === 201) {
         return response.json().then(data => data);
@@ -118,7 +118,7 @@ export default class Data {
     }
 
     async createCard(deckId, cardPayload, credentials) {
-      const response = await this.api(`/catalog/deck/${deckId}/create`, 'POST', cardPayload, true, credentials);
+      const response = await this.api(`/deck/${deckId}/create`, 'POST', cardPayload, true, credentials);
       // If user is created and a 201 status is set, return empty array
       if (response.status === 201) {
         return response.json().then(data => data);
@@ -134,7 +134,23 @@ export default class Data {
     }
 
     async deleteCard(cardId, credentials) {
-      const response = await this.api(`/catalog/card/${cardId}/delete`, 'DELETE', null, true, credentials) 
+      const response = await this.api(`/card/${cardId}/delete`, 'DELETE', null, true, credentials) 
+      // If user is deleted and a 204 status is set, return empty array
+      if (response.status === 204) {
+        return response;
+      }
+      // If there is a problem deleting the card, return the error data
+      else if (response.status === 500) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+  // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
+    async deleteDeck(deckId, credentials) {
+      const response = await this.api(`/deck/${deckId}/delete`, 'DELETE', null, true, credentials) 
       // If user is deleted and a 204 status is set, return empty array
       if (response.status === 204) {
         return response;
@@ -148,15 +164,14 @@ export default class Data {
       }
     }
 
-  // api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
-    async deleteDeck(deckId, credentials) {
-      const response = await this.api(`/catalog/deck/${deckId}/delete`, 'DELETE', null, true, credentials) 
-      // If user is deleted and a 204 status is set, return empty array
+    async logOut(credentials) {
+      const response = await this.api(`/user/logout`, 'GET', null, true, credentials, 'http://localhost:4000') 
+      // If user is logged out and a 204 status is set, return empty array
       if (response.status === 204) {
         return response;
       }
-      // If there is a problem deleting the user, return the error data
-      else if (response.status === 500) {
+      // If there is a problem logginout the user, return the error data
+      else if (response.status !== 204) {
         return response.json().then(data => data);
       }
       else {
@@ -171,7 +186,7 @@ export default class Data {
     // Since this function returns a promise, the async keyword in front of the function
     async createUser(user) {
       // await the results returned from the api method 
-      const response = await this.api('/catalog/user/create', 'POST', user);
+      const response = await this.api('/user/create', 'POST', user, false, null, 'http://localhost:4000');
       // If user is created and a 201 status is set, return empty array
       if (response.status === 201) {
         return [];
@@ -189,7 +204,7 @@ export default class Data {
     }
   
     async getDecks() {
-      const response = await this.api(`/catalog/decks`, 'GET', null, false);
+      const response = await this.api(`/decks`, 'GET', null, false);
       // Send GET request to API to retrieve list of decks in DB
       if (response.status === 200) {
         // If status is 200, return list of decks
@@ -207,7 +222,7 @@ export default class Data {
 
   
     async getDeck(id) {
-      const response = await this.api(`/catalog/deck/${id}`, 'GET', null, false);
+      const response = await this.api(`/deck/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an individual deck
       if (response.status === 200) {
         // If status is 200, return deck data
@@ -225,7 +240,7 @@ export default class Data {
 
 
     async getCard(id) {
-      const response = await this.api(`/catalog/card/${id}`, 'GET', null, false);
+      const response = await this.api(`/card/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an individual deck
       if (response.status === 200) {
         // If status is 200, return deck data
@@ -235,7 +250,7 @@ export default class Data {
     }
 
     async getUserDecks(id) {
-      const response = await this.api(`/catalog/user/${id}`, 'GET', null, false);
+      const response = await this.api(`/user/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an user's decks
       if (response.status === 200) {
         // If status is 200, return deck data
@@ -252,7 +267,7 @@ export default class Data {
     }
 
     async getSubjects() {
-      const response = await this.api(`/catalog/subjects`, 'GET', null, false);
+      const response = await this.api(`/subjects`, 'GET', null, false);
       // Send GET request to API to retrieve list of subjects in database
       if (response.status === 200) {
         // If status is 200, return deck data
@@ -269,7 +284,7 @@ export default class Data {
     }
 
     async getSubjectDecks(id) {
-      const response = await this.api(`/catalog/subject/${id}`, 'GET', null, false);
+      const response = await this.api(`/subject/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an user's decks
       if (response.status === 200) {
         // If status is 200, return deck data

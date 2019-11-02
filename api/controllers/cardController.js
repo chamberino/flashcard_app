@@ -24,7 +24,6 @@ exports.card_create_post = [
 
     // Validate fields.
     body('question', 'Question must be specified').isLength({ min: 1 }).trim(),
-    body('hint', 'Hint must be specified').isLength({ min: 1 }).trim(),
     body('answer', 'Answer must be specified').isLength({ min: 1 }).trim(),
     
     // Sanitize fields.

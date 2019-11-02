@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SubjectSchema = new Schema({
+  _id: {type: Schema.Types.ObjectId, required: false, auto: true},
   name: {type: String, required: true, maxlength: 50}
 });
 

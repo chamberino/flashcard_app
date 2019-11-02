@@ -24,6 +24,7 @@ exports.user_list = (req, res) => {
 // Display detail page for a specific User.
 exports.user_detail = (req, res, next) => {
     const id = mongoose.Types.ObjectId(req.params.id);
+    // const id = req.params.id;
     async.parallel({
         user: function(callback) {
             User.findById(id)
@@ -31,6 +32,7 @@ exports.user_detail = (req, res, next) => {
               .exec(callback)
         },
         user_decks: function(callback) {
+            console.log(id)
           Deck.find({ 'user': id },'title')
             .populate('subject')
             .exec(callback)
@@ -183,7 +185,7 @@ exports.user_delete_post = function(req, res, next) {
                                             return res.json([err])
                                         } 
                                         if (deletedDecks) {
-                                        console.log(deletedDecks)
+                                            res.status(204).end();
                                         }
                                     })
                                     .catch(()=>{

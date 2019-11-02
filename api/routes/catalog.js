@@ -2,8 +2,12 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require('mongoose');
+const User = require('../models/user');
 const Card = require('../models/card');
+const Subject = require('../models/subject');
 var Deck = require('../models/deck');
+
+const db = mongoose.connection;
 
 // Require controller modules.
 var deck_controller = require('../controllers/deckController');
@@ -80,6 +84,226 @@ router.delete('/card/:id/delete', mid.auth, card_controller.card_delete_post);  
 router.put('/card/:id/update', card_controller.card_update_put);    ///****/
 
 router.get('/getUser', mid.auth, auth_controller.getUser)
+
+router.delete('/deletetokens', async function(req, res, next) {
+    try { 
+        db.collection('sessions').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+})
+
+router.delete('/deleteusers', async function(req, res, next) {
+    try { 
+        db.collection('users').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+})
+
+router.delete('/deletedecks', async function(req, res, next) {
+    try { 
+        db.collection('decks').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+})
+
+router.delete('/deletecards', async function(req, res, next) {
+    try { 
+        db.collection('cards').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+})
+
+router.delete('/deletesubjects', async function(req, res, next) {
+    try { 
+        db.collection('subjects').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+})
+
+router.delete('/cleardatabase', [
+
+    async function(req, res, next) {
+        try { 
+            db.collection('users').drop()
+                if (!res) {
+                    var err = new Error('Something went wrong');
+                    err.status = 404;
+                    return next(err)
+                } 
+                    console.log('Successfully deleted')
+                    next()
+            }
+        catch (err) {
+            next(err)
+            }
+    },
+
+    async function(req, res, next) {
+    try { 
+        db.collection('tokens').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                console.log('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+},
+
+async function(req, res, next) {
+    try { 
+        db.collection('decks').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                console.log('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+},
+
+async function(req, res, next) {
+    try { 
+        db.collection('cards').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                console.log('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+},
+
+async function(req, res, next) {
+    try { 
+        db.collection('subjects').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                console.log('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+},
+
+async function(req, res, next) {
+    try { 
+        db.collection('sessions').drop()
+            if (!res) {
+                var err = new Error('Something went wrong');
+                err.status = 404;
+                return next(err)
+            } 
+                res.json('Successfully deleted')
+                next()
+        }
+    catch (err) {
+        next(err)
+        }
+}
+
+], (req, res) => {
+    res.json('successfully cleared db')
+})
+
+router.get('/getperson/:id',  async function(req, res, next) {
+    // const id = mongoose.Types.ObjectId(req.params.id);
+    const id = req.params.id;
+    console.log(typeof id)
+    try {
+        deck = await Deck.find({"user": "5dbb595b45a2ef0e1752b843" })
+        if (deck == null) {
+            var err = new Error('Deck not found');
+            err.status = 404;
+            return next(err);
+        } else { 
+        res.json(deck)
+        }
+    } catch(err) {
+        next(err)
+    }
+})
+
+router.get('/getcardids', [
+    async function(req, res, next) {
+        try {
+            const cards = await Card.find({}, '_id')
+            if (cards == null) {
+                var err = new Error('Cards not found');
+                err.status = 404;
+                return next(err);
+            }
+            req.cards = cards
+            next()
+        } catch(err) {
+            next(err)
+        }
+    }, 
+    (req, res, next) => {
+        cardArray = req.cards.map(card=>card._id)
+        res.json(cardArray)}
+])
 
 module.exports = router;
 

@@ -173,11 +173,12 @@ app.post('/user/login', [
 
 app.post('/user/create',  user_controller.user_create_post);
 
-app.get('/user/logout', mid.auth, auth_controller.user_logout);
+app.get('/user/logout', auth_controller.user_logout);
 
 // Returns an access token which expires after 10 minutes
 function generateAccessToken(user) {
-   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+  //  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
 }
 
 function generateRefreshToken(user) {

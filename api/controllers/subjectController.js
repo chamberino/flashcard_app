@@ -4,7 +4,6 @@ const async = require('async');
 const mongoose = require('mongoose');
 const validator = require('express-validator');
 
-
 // Display list of all Subjects.
 exports.subject_list = (req, res, next) => {
     Subject.find()

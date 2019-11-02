@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const DeckSchema = new Schema({
+  _id: {type: Schema.Types.ObjectId, required: false, auto: true},
   title: {type: String, required: true, maxlength: 50},
   user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   subject: [{type: Schema.Types.ObjectId, ref: 'Subject', required: true}]

@@ -1,0 +1,860 @@
+{
+	"info": {
+		"_postman_id": "5294d7ed-2b6c-4b28-91be-8b4a78b5b61d",
+		"name": "Flashcard App Test Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Count of all Models in DB. (Client currently not using route)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:5000/",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+        },
+        
+		{
+			"name": "GET Decks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:5000/decks/",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"decks"
+					]
+				}
+			},
+			"response": []
+        },
+        
+		{
+			"name": "GET Deck Detail",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319332",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"deck",
+						"5dbcd7d257c65b1ab2319332"
+					]
+				}
+			},
+			"response": []
+		},
+
+		{
+			"name": "Create Deck (Insufficient Credentials)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"deck",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		
+		{
+			"name": "Create Deck (Incomplete Data)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"deck",
+						"create"
+					]
+				}
+			},
+			"response": []
+        },
+
+        {
+            "name": "Create Deck",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"WWII\",\n    \"user\": \"5dbb59c259c05f0e304059e0\",\n    \"subject\": [\"5db61de45bf42318526b4dfc\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"deck",
+						"create"
+					]
+				}
+			},
+            "response": []
+        },
+
+        {
+            "name": "Delete Deck (Different Author making request)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319334/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+                        "deck",
+                        "5dbcd7d257c65b1ab2319334",
+                        "delete"
+					]
+				}
+			},
+            "response": []
+		},
+		
+		{
+            "name": "Delete Deck",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTlkZiIsImlhdCI6MTU3MjU2MDQ4OH0.PfB2UwqsX0YzIdC0w_tlvQu7dbYZOJzErxP1Q7iv-64",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319334/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+                        "deck",
+                        "5dbcd7d257c65b1ab2319334",
+                        "delete"
+					]
+				}
+			},
+            "response": []
+        },
+
+        {
+            "name": "Update Deck",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"WWI\",\n    \"user\": \"5dbb59c259c05f0e304059df\",\n    \"subject\": [\"5dbcd7d157c65b1ab231932a\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319333/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+                        "deck",
+                        "5dbcd7d257c65b1ab2319333",
+                        "update"
+					]
+				}
+			},
+            "response": []
+        },
+
+		{
+			"name": "Create Card POST",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"deck\": \"5dbcd7d257c65b1ab2319333\",\n   \"question\": \"What single event triggered the start of World War I?\",\n    \"hint\": \"Take Me Out!\",\n    \"answer\": \"The assassination of Archduke Ferdinand\"\n  }"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319333/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						
+						"deck",
+						"5dbcd7d257c65b1ab2319333",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		
+		{
+			"name": "Udate Card PUT",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"deck\": \"5dbcd7d157c65b1ab231932e\",\n   \"question\": \"Almost everything in React is considered a\",\n    \"hint\": \"These are the building blocks of React\",\n    \"answer\": \"Component\"\n  }"
+				},
+				"url": {
+					"raw": "http://localhost:5000/card/5dbcd7d257c65b1ab2319336/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						
+						"card",
+						"5dbcd7d257c65b1ab2319336",
+						"update"
+					]
+				}
+			},
+			"response": []
+        },
+        
+        {
+			"name": "DELETE Card",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OTY4NTU3MDYxMGUxOGNjNWM0NSIsImlhdCI6MTU3MjU4MDkyN30.zitcFr94W5CsFvtCHKLO5dbMWS9LKwAw-OPRXgTxlnM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+				},
+				"url": {
+					"raw": "http://localhost:5000/card/5dbcd7d257c65b1ab231933a/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						
+						"card",
+						"5dbcd7d257c65b1ab231933a",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+
+		{
+			"name": "GET list of cards",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/deck/5dbcd7d257c65b1ab2319332",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						
+						"deck",
+						"5dbcd7d257c65b1ab2319332"
+					]
+				}
+			},
+			"response": []
+		},
+
+		{
+			"name": "GET card",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/card/5dbcd7d257c65b1ab231933f",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						
+						"card",
+						"5dbcd7d257c65b1ab231933f"
+					]
+				}
+			},
+			"response": []
+		},
+
+
+
+		{
+            "name": "Create User (Incomplete Data)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{}"
+                },
+                "url": {
+                    "raw": "http://localhost:4000/user/create",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "4000",
+                    "path": [                        
+                        "user",
+                        "create"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john@smith.com\",\n    \"password\": \"pass\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:4000/user/create",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "4000",
+                    "path": [                        
+                        "user",
+                        "create"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create User (Existing Email Address)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"first_name\": \"Isaac\",\n    \"last_name\": \"Isamov\",\n    \"email\": \"i@a.com\",\n    \"password\": \"pass\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:4000/user/create",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "4000",
+                    "path": [                        
+                        "user",
+                        "create"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "Update User",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"firstName\": \"Isaac\",\n    \"lastName\": \"Isamov\",\n    \"emailAddress\": \"i@a.com\",\n    \"password\": \"password\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/user/5dbb59c259c05f0e304059e0/update",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "user",
+                        "5dbb59c259c05f0e304059e0",
+                        "update"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "DELETE User",
+            "request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWJjNTljMDVmMGUzMDQwNTlkZSIsImlhdCI6MTU3MjU2MDQ0NH0.sGXLWtYPH9jzwkSK-bOZm4ze1s1SvsAaqGRNRcNdA8I",
+							"type": "string"
+						}
+					]
+				},
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+
+                },
+                "url": {
+                    "raw": "http://localhost:5000/user/5dbb59bc59c05f0e304059de/delete",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "user",
+                        "5dbb59bc59c05f0e304059de",
+                        "delete"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "GET User Log Out",
+            "request": {
+                "auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+                "url": {
+                    "raw": "http://localhost:4000/user/logout",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "4000",
+                    "path": [                        
+                        "user",                    
+                        "logout"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "Get Users",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:5000/users",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "users"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "Get User Detail (user doesn't exist)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:5000/user/5da54d1aed782aa485a25f3f",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "user",
+                        "5da54d1aed782aa485a25f3f"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "Get User Detail",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:5000/user/5dbb59685570610e18cc5c45",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "user",
+                        "5dbb59685570610e18cc5c45"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Subjects",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:5000/subjects",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "subjects"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Subject Detail",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:5000/subject/:id",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "subject",
+                        ":id"
+                    ]
+                }
+            },
+            "response": []
+        },
+
+        {
+            "name": "Post Create Subject",
+            "request": {
+                "auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYmI1OWMyNTljMDVmMGUzMDQwNTllMCIsImlhdCI6MTU3MjU2MDUxNn0.4EabABS52tHORNa-GjX3CItrPpHTU6XsZuqtKXstJAo",
+							"type": "string"
+						}
+					]
+				},
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Science\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/subject/create",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [                        
+                        "subject",
+                        "create"
+                    ]
+                }
+            },
+            "response": []
+        }
+	]
+}

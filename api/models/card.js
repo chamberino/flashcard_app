@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 
 const CardSchema = new Schema(
   {
+    _id: {type: Schema.Types.ObjectId, required: false, auto: true},
     deck: {type: Schema.Types.ObjectId, ref: 'Deck', required: true},
     question: {type: String, required: true},
     answer: {type: String, required: true},

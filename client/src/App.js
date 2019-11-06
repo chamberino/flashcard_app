@@ -9,6 +9,10 @@ import {
 
 // Import App Components
 import Header from './Components/Header';
+import Test from './Components/Test';
+import CreateDeckTest from './Components/CreateDeckTest';
+import Profile from './Components/Profile/Profile';
+import ProfileDetail from './Components/Profile/ProfileDetail';
 import Users from './Components/Users/Users';
 import UserDetail from './Components/Users/UserDetail';
 import Subjects from './Components/Subjects/Subjects';
@@ -38,12 +42,16 @@ const HeaderWithContext = withContext(Header);
 const UserSignInWithContext = withContext(UserSignIn);
 const UserSignUpWithContext = withContext(UserSignUp)
 const UserSignOutWithContext = withContext(UserSignOut);
+const ProfileWithContext = withContext(Profile);
+const ProfileDetailWithContext = withContext(ProfileDetail);
 const UsersWithContext = withContext(Users);
 const UserDetailWithContext = withContext(UserDetail);
 const SubjectsWithContext = withContext(Subjects);
 const SubjectDetailWithContext = withContext(SubjectDetail);
 const DecksWithContext = withContext(Decks);
 const DeckDetailWithContext = withContext(DeckDetail);
+
+const CreateDeckTestWithContext = withContext(CreateDeckTest);
 const CreateDeckWithContext = withContext(CreateDeck);
 const UpdateDeckWithContext = withContext(UpdateDeck);
 const DeleteDeckWithContext = withContext(DeleteDeck);
@@ -69,6 +77,8 @@ export default class App extends Component {
           <Route path="/signup" component={UserSignUpWithContext} />
           <Route path="/signout" component={UserSignOutWithContext} />
 
+          {/* <Route exact path="/profile" component={ProfileWithContext} /> */}
+          <Route exact path="/profile" component={ProfileDetailWithContext} />
           <Route exact path="/users" component={UsersWithContext} />
           <Route exact path="/user/:id" component={UserDetailWithContext} />
 
@@ -85,6 +95,8 @@ export default class App extends Component {
           <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
 
+          <Route exact path="/createDeckTest" component={CreateDeckTestWithContext} />
+          <Route exact path="/test" component={Test} />
           <Route exact path="/notfound" component={NotFound}/>
           <Route exact path="/error" component={ErrorPage}/>
           <Route exact path="/forbidden" component={Forbidden}/>

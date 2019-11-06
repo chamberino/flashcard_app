@@ -181,7 +181,7 @@ componentDidMount() {
         this.setState({title: this.state.preservedTitle})
       } else {
         // response.headers.get('Location');
-        // The errors property is set to the response, which should be empty. The user is sent to the courses list.
+        // The errors property is set to the response, which should be empty. The user is sent to the decks list.
         this.setState({ errors: [] });
         this.setState({title: title});
         this.props.history.push(`/decks/` + response.id);

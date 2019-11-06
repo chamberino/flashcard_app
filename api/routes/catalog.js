@@ -27,7 +27,11 @@ router.get('/', deck_controller.index);
 // GET request for list of all Deck items.
 router.get('/decks', deck_controller.deck_list);   ///****/
 
+// POST request to create deck
 router.post('/deck/create', mid.auth, deck_controller.deck_create_post) ///****/
+
+// Post request to create deck with cards
+router.post('/deck/createdeckwithcards', deck_controller.deck_createWithCard_post)
 
 // GET request for one Deck.
 router.get('/deck/:id', deck_controller.deck_detail);   ///****/

@@ -24,9 +24,9 @@ export default class Subjects extends Component {
   }
 
   componentDidMount() {
-    // Make a call to the API to get all the courses in the DB.
+    // Make a call to the API to get all the subjects in the DB.
     this.props.context.actions.getSubjects()
-    // Set value of returned courses to the courses property in state. Change loading property to false.
+    // Set value of returned subjects to the subjects property in state. Change loading property to false.
       .then(subjects=>{
         this.setState({
           subjects: subjects.subject_list,

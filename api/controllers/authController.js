@@ -28,14 +28,14 @@ exports.user_create_post = [
     // Validate fields.
     check('first_name')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('First name must be specified.')
-        .isAlphanumeric()
-        .withMessage('First name has non-alphanumeric characters.'),
+        .withMessage('First name must be specified.'),
+        // .isAlphanumeric()
+        // .withMessage('First name has non-alphanumeric characters.'),
     check('last_name')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Last name must be specified.')
-        .isAlphanumeric()
-        .withMessage('Last name has non-alphanumeric characters.'),
+        .withMessage('Last name must be specified.'),
+        // .isAlphanumeric()
+        // .withMessage('Last name has non-alphanumeric characters.'),
     check('email')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a valid email'),

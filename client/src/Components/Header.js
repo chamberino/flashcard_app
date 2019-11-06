@@ -14,20 +14,20 @@ export default (props) => {
     <div className="header">
       <div className="bounds">
 
-        <Link to="/decks"><h1 className="header--logo">Flashcards App</h1></Link>
+        <Link to="/decks"><h1 className="header--logo"><strong>Quiz</strong>Wiz™</h1></Link>
         <nav>
             
         {/* Ternary operator checks if authenticatedUser is set in props */}
         {(props.context.authenticatedUser)  ? (
             <React.Fragment>
-              <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span>
-              <Link to={`/user/${props.context.authenticatedUser.user.user.id}`}>Profile</Link>
-              <Link to="/signout">Sign Out</Link>
+              {/* <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span> */}
+              <Link className="header-links" to={`/profile`}>Profile</Link>
+              <Link className="header-links" to="/signout">Sign Out</Link>
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <Link className="signup" to={"/signup"}>Sign Up</Link>
-              <Link className="signin" to={"/signin"}>Sign In</Link>
+              <Link className="header-links" to={"/signup"}>Sign Up</Link>
+              <Link className="header-links" to={"/signin"}>Sign In</Link>
             </React.Fragment>
           )}
 

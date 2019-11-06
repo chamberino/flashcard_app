@@ -22,7 +22,7 @@ export default class UpdateCardWithContext extends Component {
 }
 
 componentDidMount() {  
-  // Make a call to the API to get all the courses in the DB.
+  // Make a call to the API to get all the cards in the DB.
 
 this.props.context.actions.getCard(this.state.cardId)
       .then((card)=>{
@@ -59,7 +59,7 @@ this.props.context.actions.getCard(this.state.cardId)
         deckTitle
     } = this.state;
     return (
-      <div className="bounds course--detail">
+      <div className="bounds deck--detail">
         <h1>Edit Flashcard for {deckTitle} Deck</h1>
         <Form 
             cancel={this.cancel}
@@ -71,8 +71,8 @@ this.props.context.actions.getCard(this.state.cardId)
             elements={() => (
               <React.Fragment>
             <div className="grid-66">
-              <div className="course--header">
-                <h4 className="course--label">Deck</h4>
+              <div className="deck--header">
+                <h4 className="deck--label">Deck</h4>
                 <div>
                 <label>
                 Question
@@ -80,7 +80,7 @@ this.props.context.actions.getCard(this.state.cardId)
                     id="question" 
                     name="question" 
                     type="text" 
-                    className="input-question course--question--input" 
+                    className="input-question deck--question--input" 
                     onChange={this.change} 
                     placeholder={question}
                     value={question}
@@ -92,7 +92,7 @@ this.props.context.actions.getCard(this.state.cardId)
                     id="answer" 
                     name="answer" 
                     type="text" 
-                    className="input-answer course--answer--input" 
+                    className="input-answer deck--answer--input" 
                     onChange={this.change} 
                     placeholder="Bismark" 
                     value={answer}
@@ -104,7 +104,7 @@ this.props.context.actions.getCard(this.state.cardId)
                     id="hint" 
                     name="hint" 
                     type="text" 
-                    className="input-hint course--hint--input" 
+                    className="input-hint deck--hint--input" 
                     onChange={this.change} 
                     placeholder="Otto Van..." 
                     value={hint}
@@ -172,7 +172,7 @@ this.props.context.actions.getCard(this.state.cardId)
         // this.setState({title: this.state.preservedTitle})
       } else {
         // response.headers.get('Location');
-        // The errors property is set to the response, which should be empty. The user is sent to the courses list.
+        // The errors property is set to the response, which should be empty. The user is sent to the decks list.
         this.setState({ errors: [] });
         // this.setState({title: title});
         // response.id

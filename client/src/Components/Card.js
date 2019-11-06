@@ -19,22 +19,25 @@ const Card = props => (
                 <button className="flip-card" onClick={props.props.flipCard}>flip card</button>
                 {/* instead of rendering next and previous as null change class so you can gray out buttons */}
 
+                {/* Checks if at the beginning of deck*/}
                 {
                     (props.props.score > 0)
                         ? <button className="previous-card" onClick={props.props.previousCard}> previous card </button>
                         : (null)
                 }
 
+                {/* Checks if at the end of deck*/}
                 {
                     (props.props.score < props.props.amountOfCards-1)
                         ?<button className="next-card" onClick={props.props.nextCard}> next card </button>
                         : (null)
                 }
 
+                {/* Checks if hint exists*/}
                 {
-                    (props.props.deck.cards[props.props.score]["hint"] !== "")
-                        ?<button className="show-hint" onClick={props.props.showHint}> show hint </button>
-                        : (null)
+                    (props.props.deck.cards[props.props.score]["hint"] === undefined)
+                        ? (null)
+                        : <button className="show-hint" onClick={props.props.showHint}> show hint </button>
                 }
 
             </div>

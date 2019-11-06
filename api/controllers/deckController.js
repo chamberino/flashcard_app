@@ -182,6 +182,81 @@ exports.deck_create_post = [
     }
 ]
 
+exports.deck_createWithCard_post = [
+    check('title')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Title required'),
+      check('user')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('User not recognized. Please sign in again.'),
+      check('subject')
+      .exists({ checkNull: true, checkFalsy: true })
+      .isArray({min:1})
+      .withMessage('Subject required'),
+    sanitizeBody('title').escape(),
+(req, res, next) => {
+    console.log(req.body)
+const errors = validationResult(req);
+// If there are validation errors...
+if (!errors.isEmpty()) {
+    // Use the Array `map()` method to get a list of error messages.
+    const errorMessages = errors.array().map(error => error.msg);
+    // Create custom error with 400 status code
+    res.status(400);
+    return res.json(errorMessages);
+} else {
+Deck.create(req.body)
+        .then((deck)=>{
+            if (!deck) {
+                const errorMessages = [];
+                errorMessages.push("This deck already exists")
+                return res.status(201).json(errorMessages);
+            } else {
+                // res.location(`/decks/${deck._id}`);    
+                console.log(`Deck ${deck.id} successfully created`)                    
+                req.deckId = deck.id;
+                next()
+            }
+        }).catch((error)=> {  // check for errors within body
+            if (error) {
+                // catch any other errors and pass errors to global error handler
+                next(error);
+            }
+        });
+    };
+}, 
+(req, res, next) => {
+    console.log(req.body.cards)
+    req.body.cards.map((card)=>{
+        card.deck = req.deckId
+    })
+        Card.insertMany(req.body.cards)
+        .then(cards => {
+            res.json(`Results: ${cards.length}`);
+        })
+        .catch(err => {
+            console.log(err)
+            res.json([err.message]);
+        });
+    }
+// async function(req, res, next) {
+//     req.body.cards.map((card, index)=>{
+//         try {
+//             Card.create(card, index)
+//             if (!card) {
+//                 var err = new Error('Cards not found');
+//                     err.status = 404;
+//                     return next(err);
+//             }
+//             req.cards = cards
+//             next()
+//         } catch(err) {
+//             next(err)
+//         }
+//     })
+// }
+]
+
 // Delete Deck and all associated cards
 exports.deck_delete_post = function(req, res, next) {
     const id = req.params.id;

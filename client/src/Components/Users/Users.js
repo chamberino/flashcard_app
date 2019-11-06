@@ -24,9 +24,9 @@ export default class Users extends Component {
   }
 
   componentDidMount() {
-    // Make a call to the API to get all the courses in the DB.
+    // Make a call to the API to get all the users in the DB.
     this.props.context.actions.getUsers()
-    // Set value of returned courses to the courses property in state. Change loading property to false.
+    // Set value of returned users to the users property in state. Change loading property to false.
       .then(users=>{
         this.setState({
           users: users.user_list,

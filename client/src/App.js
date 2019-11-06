@@ -95,7 +95,7 @@ export default class App extends Component {
           <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
 
-          <Route exact path="/createDeckTest" component={CreateDeckTestWithContext} />
+          <PrivateRoute exact path="/createDeckTest" component={CreateDeckTestWithContext} />
           <Route exact path="/test" component={Test} />
           <Route exact path="/notfound" component={NotFound}/>
           <Route exact path="/error" component={ErrorPage}/>

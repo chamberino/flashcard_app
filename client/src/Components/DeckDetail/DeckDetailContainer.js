@@ -20,7 +20,7 @@ const DeckDetailContainer = props => {
                 <div className="bounds">
                     <div className="grid-100">
                         <span>
-                            <Link className="button" to={`${props.match.url}/update`}>Update Deck</Link>
+                            <Link className="button" to={`${props.match.url}/updatedecktest`}>Update Deck</Link>
                         </span>
                     <Link className="button" to={`/decks/${props.deck.deck._id}/delete`}>Delete Deck</Link>
                     <Link className="button button-secondary" to="/decks">Return to List</Link>

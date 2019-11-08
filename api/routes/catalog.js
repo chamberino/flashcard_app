@@ -42,6 +42,8 @@ router.delete('/deck/:id/delete', mid.auth, deck_controller.deck_delete_post);  
 // POST request to update Deck.
 router.put('/deck/:id/update', deck_controller.deck_update_put);  ///****/
 
+router.put('/deck/:id/updatedeckwithcards', deck_controller.deck_updateWithCards_put);  ///in progress
+
 // USER ROUTES ///
 
 // POST request to delete User and all associated records

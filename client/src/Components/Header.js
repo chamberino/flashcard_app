@@ -26,8 +26,8 @@ export default (props) => {
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <Link className="header-links" to={"/signup"}>Sign Up</Link>
-              <Link className="header-links" to={"/signin"}>Sign In</Link>
+              <Link className="header-links" to={"/signin"}>Log In</Link>
+              <Link className="header-links-2" to={"/signup"}>Sign Up</Link>
             </React.Fragment>
           )}
 

@@ -16,6 +16,7 @@ code {
 
 a {
   text-decoration: none;
+  color: #455358
 }
 
 button {
@@ -28,22 +29,32 @@ button {
   font-size: 18px;
   text-align: center;
   font-style: normal;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   border: 1px solid var(--color-primary);
   transition: background-color .25s ease-out;
+}
+
+button:hover {
+  background-color: #ffcd1f;
+  color: #969494;
 }
 
 button:disabled {
   background: #969494;
 }
 
+.remove-card {
+  /* background-color: tomato; */
+}
+
 
 /* Form Elements */
 
-textarea,
+/* textarea,
 select,
 input {
   border: 1px solid #b2b2b2;
+  border: none;
   width: 90%;
   padding: 5px;
   margin: 15px auto;
@@ -55,6 +66,70 @@ input {
   background: #f9f9f9;
   transition: background-color .25s ease-out;
   color: #606060;
+} */
+
+select, 
+input,
+textarea {
+  margin: .25em auto;
+  height: 100%;
+  width: 100%;
+  padding: 0 0 2px 0;
+  background: transparent;
+  /* border-top: none;
+  border-right: none;
+  border-left: none; */
+  border: none;
+  border-bottom: 2px solid #636363;
+  border-radius: 0px;
+  color: inherit;
+  cursor: inherit;
+  display: block;
+  font: inherit;
+  line-height: inherit;
+  /* line-height: .75em; */
+  outline: none;
+  overflow: hidden;
+  resize: none;
+  text-shadow: inherit;
+  -webkit-tap-highlight-color: rgba(255,255,255,0);
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+}
+
+select {
+  border-right: 1px solid #636363; 
+  border-left: 1px solid #636363; 
+  border-top: 1px solid #636363; 
+  line-height: 1.75em;
+}
+
+textarea:focus {
+  margin: .25em auto;
+  height: 100%;
+  width: 100%;
+  padding: 0 0 0px 0;
+  background: transparent;
+  /* border-top: none;
+  border-right: none;
+  border-left: none; */
+  border: none;
+  border-bottom: 4px solid #ffcd1f;
+  color: inherit;
+  cursor: inherit;
+  display: block;
+  font: inherit;
+  line-height: inherit;
+  outline: none;
+  overflow: hidden;
+  resize: none;
+  text-shadow: inherit;
+  -webkit-tap-highlight-color: rgba(255,255,255,0);
+}
+
+textarea::placeholder, input::placeholder {
+  vertical-align: bottom;
+  color: #C0CACE;
 }
 
 input.field {
@@ -68,12 +143,18 @@ select:focus {
 }
 
 textarea:focus {
-    border: 2px solid #2d3944;
+    /* border: 2px solid #2d3944; */
     background-color: #fff;
 }
 
+label {
+  color: #636363;
+  font-size: 1em;
+  position: relative;
+}
+
 .form-buttons button {
-  margin: .5em auto;
+  /* margin: .5em auto; */
   /* width: 50%; */
 }
 
@@ -86,7 +167,6 @@ textarea:focus {
   font-weight: bold;
   font-size: 1em;
 }
-
 
 /* header */
 
@@ -130,8 +210,10 @@ form div.grid-66 {
   font-size: 1.5em;
 }
 
-
-
+/* .textArea {
+  border-bottom: 1px solid #5e5d5d;
+  padding: 0;
+} */
 
 
 a.header-links {
@@ -140,14 +222,193 @@ a.header-links {
 }
 
 .bounds {
-  margin: 1em;
+  /* margin: 1em; */
 }
 
 .cards {
-  background-color: #e5e5e5;
-  padding: 1em;
+  background-color: #F0F0F0;
+  padding: 1em 3em;
+  padding-top: .25em;
+  padding-bottom: 0;
+  margin-top: 1em;
+}
+
+.card {
+  background-color: #fff;
+  margin: 1em 0;
+  padding: 1em 1.5em;
+  padding-bottom: 2em;
+}
+
+.card textarea {
+  margin: 1em 0 .25em 0;
+  /* padding: .75em 0; */
 }
 
 .error {
-  border: 1px solid red;
+  border-bottom: 2px solid#FF725B;
+}
+
+.title {
+  font-size: 1.5em;
+  margin-left: 1em;
+  margin-bottom: 0;
+}
+
+.dropdown {
+  margin: 2em;
+}
+
+
+.svg-icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: #4691f6;
+}
+
+.svg-icon-disable path,
+.svg-icon-disable polygon,
+.svg-icon-disable rect {
+  fill: #969494;
+}
+
+.svg-icon circle {
+  stroke: #4691f6;
+  stroke-width: 1;
+}
+
+.trash {
+  margin-top: .75em;
+}
+
+button.remove-card {
+  background-color: #fff;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  margin: 0;
+  margin-top: .5em;
+  text-align: right;
+  cursor: pointer;
+  /* float: right; */
+}
+
+button.remove-card:focus {
+  outline:0 !important;
+}
+
+.button {
+  background-color: #3CCFCF;
+  font-size: .9em;
+  font-weight: bold;
+  margin-right: 2em;
+  width: 20%;
+}
+
+button.button-secondary {
+  background-color: #fff;
+  color: #3CCFCF;
+  border: 2px solid #3CCFCF;
+  font-size: .9em;
+}
+
+button.add-card {
+  color: #636363;
+  font-size: .9em;
+  font-weight: bold;
+  background-color: #fff;
+  margin: 0;
+  /* border: 2px solid #3CCFCF; */
+}
+
+.deck-detail {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.create {
+  /* float: right; */
+  font-size: .9em;
+  font-weight: bold;
+  margin-right: 2em;
+  width: 20%;
+}
+
+button.create:focus {
+  outline:0 !important;
+}
+
+.validation-errors {
+  color: #FF725B;
+  width: 80%;
+  margin: auto;
+  text-align: center
+}
+
+.errorMessage {
+  color: #FF725B;
+}
+
+.deck--header {
+  padding: 0 2em;
+}
+
+.deck--header2 {
+  padding: 0 3em;
+}
+
+.dropdown {
+  /* padding: 0 1em; */
+  margin: 0 3em;
+}
+
+.pad-bottom {
+  background-color: #F0F0F0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root > div > div.bounds.deck--detail > div > form > div.pad-bottom.form-buttons.grid-66 {
+  background-color: #F0F0F0;
+  width: 100%;
+  margin: 0;
+}
+
+.deck-list {
+  margin: 2em;
+}
+
+.deck-list-container {
+  margin: 2em;
+}
+
+a.deck--link {
+  text-decoration: none;
+}
+
+.deck--title {
+  padding: 2em;
+  background-color: #fff;
+}
+
+a.deck--link:visited {
+  color: #455358;
+}
+
+body {
+  /* background-color: #F0F0F0; */
+}
+
+a.header-links-2 {
+  padding: 1.3em;
+  /* margin: .50em; */
+  font-size: 1em;
+  background-color: #3CCFCF;
+  /* border: 1px solid tomato; */
 }

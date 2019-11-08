@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { Route, Switch, Link } from 'react-router-dom';
 import DeckContainer from '../Decks/DeckContainer';
+import NewDeckLink from '../NewDeckLink';
 
 /* 
 This stateful component retreives all the decks in the database once the component mounts. 
@@ -57,11 +58,12 @@ export default class ProfileDetail extends Component {
           (this.state.loading)
           ? <Route exact path="/profile/:id" render= {() => <p>Loading...</p>  } />
           : <React.Fragment>
-              <h2>{`Decks by ${this.state.name}`}</h2>
-              <Route exact path="/profile/:id" render= {()=><DeckContainer data={this.state.decks}/> } />
+              <h2>{`${this.state.name}`}</h2>
+              <Route exact path="/profile" render= {()=><DeckContainer data={this.state.decks}/> } />
               <div className="actions--bar">
                 <div className="bounds">
                     <div className="grid-100">
+                        <NewDeckLink />
                         <Link className="button button-secondary" to="/decks">Return to List</Link>
                     </div>
                 </div>

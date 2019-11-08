@@ -57,7 +57,7 @@ export default class DeleteDeckWithContext extends Component {
         this.props.history.push('/error');
     })
   }
-  
+
 
   deleteCard = async (cardId, credentials) => {    
     await this.state.deleteCard(cardId, credentials)

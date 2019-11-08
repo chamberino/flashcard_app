@@ -167,7 +167,7 @@ exports.deck_create_post = [
                 if (!deck) {
                     const errorMessages = [];
                     errorMessages.push("This deck already exists")
-                    return res.status(201).json(errorMessages);
+                    return res.status(400).json(errorMessages);
                 } else {
                     // res.location(`/decks/${deck._id}`);                        
                     return res.status(201).json({id: deck._id, status: 201});                
@@ -193,7 +193,16 @@ exports.deck_createWithCard_post = [
       .exists({ checkNull: true, checkFalsy: true })
       .isArray({min:1})
       .withMessage('Subject required'),
+      check('cards.*.question')  
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('A question is required for each card.'),
+      check('cards.*.answer')  
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('An answer is required for each card.'),
+
     sanitizeBody('title').escape(),
+    sanitizeBody('cards.*.question').escape(),
+    sanitizeBody('cards.*.answer').escape(),
 (req, res, next) => {
     console.log(req.body)
 const errors = validationResult(req);
@@ -201,6 +210,7 @@ const errors = validationResult(req);
 if (!errors.isEmpty()) {
     // Use the Array `map()` method to get a list of error messages.
     const errorMessages = errors.array().map(error => error.msg);
+    console.log(errorMessages)
     // Create custom error with 400 status code
     res.status(400);
     return res.json(errorMessages);
@@ -209,8 +219,8 @@ Deck.create(req.body)
         .then((deck)=>{
             if (!deck) {
                 const errorMessages = [];
-                errorMessages.push("This deck already exists")
-                return res.status(201).json(errorMessages);
+                errorMessages.push("There was a problem creating the deck")
+                return res.status(400).json(errorMessages);
             } else {
                 // res.location(`/decks/${deck._id}`);    
                 console.log(`Deck ${deck.id} successfully created`)                    
@@ -225,36 +235,22 @@ Deck.create(req.body)
         });
     };
 }, 
+
 (req, res, next) => {
-    console.log(req.body.cards)
+    console.log(req.deckId)
     req.body.cards.map((card)=>{
         card.deck = req.deckId
-    })
+    })    
         Card.insertMany(req.body.cards)
         .then(cards => {
-            res.json(`Results: ${cards.length}`);
+            return res.status(201).json({id: req.deckId, status: 201});  
         })
         .catch(err => {
             console.log(err)
             res.json([err.message]);
         });
     }
-// async function(req, res, next) {
-//     req.body.cards.map((card, index)=>{
-//         try {
-//             Card.create(card, index)
-//             if (!card) {
-//                 var err = new Error('Cards not found');
-//                     err.status = 404;
-//                     return next(err);
-//             }
-//             req.cards = cards
-//             next()
-//         } catch(err) {
-//             next(err)
-//         }
-//     })
-// }
+
 ]
 
 // Delete Deck and all associated cards
@@ -333,3 +329,141 @@ exports.deck_update_put = [
         }
     }
 ];
+
+// Handle deck update on POST.
+exports.deck_updateWithCards_put = [
+
+    // Validate fields.
+    check('title')
+          .exists({ checkNull: true, checkFalsy: true })
+          .withMessage('Title required'),
+          check('user')
+          .exists({ checkNull: true, checkFalsy: true })
+          .withMessage('User not recognized. Please sign in again.'),
+          check('subject')
+          .exists({ checkNull: true, checkFalsy: true })
+          .isArray({min:1})
+          .withMessage('Subject required'),
+        sanitizeBody('title').escape(),
+        check('cards.*.question')  
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('A question is required for each card.'),
+        check('cards.*.answer')  
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('An answer is required for each card.'),
+
+        sanitizeBody('title').escape(),
+        sanitizeBody('cards.*.question').escape(),
+        sanitizeBody('cards.*.answer').escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        console.log(req.body)
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errorMessages = errors.array().map(error => error.msg);
+            res.status(400);
+            return res.json(errorMessages);
+        }   else {
+            Deck.findByIdAndUpdate(req.params.id, req.body, {upsert:false}, function(err,doc) {
+                if(err) {
+                    res.json([err])
+                } else {
+                    next()
+                }
+            }).catch((error)=>{
+                if (error) {
+                    // catch any other errors and pass errors to global error handler
+                    next(error);
+                }
+            })
+        }
+    },
+    (req, res, next) => {
+        console.log(req.req.params.id)
+        req.body.cards.map((card)=>{
+            card.deck = req.params.id
+        })    
+            Card.insertMany(req.body.cards)
+            .then(cards => {
+                return res.status(201).json({status: 201});  
+            })
+            .catch(err => {
+                console.log(err)
+                res.json([err.message]);
+            });
+        }
+
+];
+
+exports.deck_createWithCard_post = [
+    check('title')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Title required'),
+      check('user')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('User not recognized. Please sign in again.'),
+      check('subject')
+      .exists({ checkNull: true, checkFalsy: true })
+      .isArray({min:1})
+      .withMessage('Subject required'),
+      check('cards.*.question')  
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('A question is required for each card.'),
+      check('cards.*.answer')  
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('An answer is required for each card.'),
+
+    sanitizeBody('title').escape(),
+    sanitizeBody('cards.*.question').escape(),
+    sanitizeBody('cards.*.answer').escape(),
+(req, res, next) => {
+    console.log(req.body)
+const errors = validationResult(req);
+// If there are validation errors...
+if (!errors.isEmpty()) {
+    // Use the Array `map()` method to get a list of error messages.
+    const errorMessages = errors.array().map(error => error.msg);
+    console.log(errorMessages)
+    // Create custom error with 400 status code
+    res.status(400);
+    return res.json(errorMessages);
+} else {
+Deck.create(req.body)
+        .then((deck)=>{
+            if (!deck) {
+                const errorMessages = [];
+                errorMessages.push("There was a problem creating the deck")
+                return res.status(400).json(errorMessages);
+            } else {
+                // res.location(`/decks/${deck._id}`);    
+                console.log(`Deck ${deck.id} successfully created`)                    
+                req.deckId = deck.id;
+                next()
+            }
+        }).catch((error)=> {  // check for errors within body
+            if (error) {
+                // catch any other errors and pass errors to global error handler
+                next(error);
+            }
+        });
+    };
+}, 
+
+(req, res, next) => {
+    console.log(req.deckId)
+    req.body.cards.map((card)=>{
+        card.deck = req.deckId
+    })    
+        Card.insertMany(req.body.cards)
+        .then(cards => {
+            return res.status(201).json({id: req.deckId, status: 201});  
+        })
+        .catch(err => {
+            console.log(err)
+            res.json([err.message]);
+        });
+    }
+
+]

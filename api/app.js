@@ -33,7 +33,7 @@ const mongoose = require('mongoose');
 // Mongo Atlas Connection String
 const mongoDB = process.env.mongoURI;
 // Set up default mongoose connection
-mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
 
 // Get the default connect
 const db = mongoose.connection;

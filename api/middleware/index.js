@@ -39,6 +39,7 @@ function auth(req, res, next) {
     }    
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) {
+            console.log('error token')
             res.status(400);
             const errorMessages = [];
             errorMessages.push("Insufficient Credentials")

@@ -123,9 +123,25 @@ export default class Data {
       if (response.status === 201) {
         return response.json().then(data => data);
       }
-      // If there is a problem creating the user, return the data
+      // If there is a problem creating the deck, return the data
       // Which will be the error data
       else if (response.status !== 201) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
+    async updateDeckWithCards(path, deckPayload, credentials) {
+      const response = await this.api(path, 'PUT', deckPayload, true, credentials);
+      // If user is created and a 201 status is set, return empty array
+      if (response.status === 204) {
+        return response.json().then(data => data);
+      }
+      // If there is a problem updating the deck, return the data
+      // Which will be the error data
+      else if (response.status !== 204) {
         return response.json().then(data => data);
       }
       else {

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 */
 
 const Deck = props => (
-  <div className="grid-33"><Link className="deck--module deck--link" to={'/decks/' + props.id}>
+  <div className="deck"><Link className="deck--module deck--link" to={'/decks/' + props.id}>
           <h3 className="deck--title">{props.title}</h3>
     </Link></div>
 );

@@ -56,11 +56,6 @@ validatedName = () => {
   }
 }
 
-sayHi = (event) => {
-  this.setState({subject: event.value})
-  console.log(this.state)
-}
-
 validatedSubject = () => {
   if (this.state.subject.length < 1) {
     this.setState( prevState => {
@@ -77,7 +72,7 @@ validatedSubject = () => {
 
 validatedQuestions = () => {
   this.setState({questionErrors: []})
-  this.state.cards.map((card) => {
+  this.state.cards.forEach((card) => {
     if (card.question === "") {
       this.setState( prevState => {
         return {
@@ -113,7 +108,7 @@ validatedQuestions = () => {
 
 validatedAnswers = () => {
   this.setState({answerErrors: []})
-  this.state.cards.map((card, index) => {
+  this.state.cards.forEach((card, index) => {
     if (card.answer === "") {
       this.setState( prevState => {
       return {
@@ -270,7 +265,10 @@ componentDidMount() {
             cancel={this.cancel}
             errors={errors}
             submit={this.submit}
+            formButtonsClass="form-buttons-create"
             submitButtonText="Create Deck"
+            submitButtonClass="create-deck"
+            cancelButtonClass="cancel-deck"
             // elements prop is a function  which returns
             // the input fields to be used in each of the forms
             elements={() => (
@@ -376,15 +374,14 @@ componentDidMount() {
 						</svg>
             </button>
           </div>
-        ))}
-        
-        <button
-          type="button"
-          onClick={this.handleAddCard}
-          className="add-card"
-        >
-          + Add Card
-        </button>
+        ))}        
+          <button
+            type="button"
+            onClick={this.handleAddCard}
+            className="add-card"
+          >
+            <span className="add-card-span">+ Add Card</span>
+          </button>
         
         </div>
         </React.Fragment>
@@ -442,38 +439,38 @@ componentDidMount() {
         cards: cards
     }
 
+    // delete any empty hint properties in cards array
+    deckPayload.cards.forEach((card) => {
+      if (card.hint === "") {
+        delete card.hint
+      }
+    })
+
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
-
-    // Create deck by calling the create method made available through Context
-    // The deck data and users credentials are passed along.
-    console.log(deckPayload)
 
     // errorsExist returns a boolean depending on if there are any input errors
     // If true, individual validation functions run and update 'errors' in state so they
     // can be passed to the form component, mapped over, and outputted to the user. 
     if (this.errorsExist()) {
-      console.log(this.errorsExist(), this.state.errors)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       this.validatedName()
       this.validatedSubject()
       this.validatedQuestions()
       this.validatedAnswers()
     } else {
+    // Create deck by calling the createDeckWithCards method made available through Context
+    // The deck data and users credentials are passed along.
       context.data.createDeckWithCards(deckPayload, credentials)
       .then((response) => {
-        console.log(response)
         // If API returns a response that is not 201, set the errors property in state to the response. 
         // The response will carry any error messages in an array. The title and description are then initialized.
         if (response.status !== 201) {
-          console.log(response.status)
           this.setState({ errors: response });
           this.setState({title: this.state.preservedTitle})
         } else {
           // response.headers.get('Location');
           // The errors property is set to the response, which should be empty. The user is sent to the decks list.
-          {/* this.setState({ errors: [] }); */}
-          console.log('here')
           this.props.history.push(`/decks/` + response.id);
           return response
         }

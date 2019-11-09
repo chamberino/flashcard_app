@@ -381,11 +381,24 @@ exports.deck_updateWithCards_put = [
         }
     },
     (req, res, next) => {
-        console.log(req.req.params.id)
         req.body.cards.map((card)=>{
-            card.deck = req.params.id
+            req.newCards = [];
+            req.oldCards = []            
+            card.deck = req.params.id;
+            if (card.id === undefined) {
+                req.newCards.push(card)
+            }
+            if (card.id !== undefined) {
+                Card.findByIdAndUpdate(card.id, card, {upsert:false}, function(err,doc) {
+                    if(err) {
+                        res.json([err])
+                    } else {
+                        console.log(`Card ${card.id} successfully created`)                    
+                    }
+                })
+            }
         })    
-            Card.insertMany(req.body.cards)
+            Card.insertMany(req.newCards)
             .then(cards => {
                 return res.status(201).json({status: 201});  
             })

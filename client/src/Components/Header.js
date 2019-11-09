@@ -14,7 +14,7 @@ export default (props) => {
     <div className="header">
       <div className="bounds">
 
-        <Link to="/decks"><h1 className="header--logo"><strong>Quiz</strong>Wiz™</h1></Link>
+        <Link to="/profile"><h1 className="header--logo"><strong>Quiz</strong>Wiz™</h1></Link>
         <nav>
             
         {/* Ternary operator checks if authenticatedUser is set in props */}

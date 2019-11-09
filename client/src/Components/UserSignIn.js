@@ -23,35 +23,42 @@ export default class UserSignIn extends Component {
 
     return (
       <div className="bounds">
-        <div className="sign-in-up centered signin">
+        {/* <div className="sign-in-up centered signin"> */}
+        <div className="section-title">
           <h1>Sign In</h1>
+        </div>
           <Form 
             cancel={this.cancel}
             errors={errors}
             submit={this.submit}
             submitButtonText="Sign In"
+            formButtonsClass="form-buttons-login"
             elements={() => (
               <React.Fragment>
-                <input 
-                  id="email" 
-                  name="email" 
-                  type="email"
-                  value={email} 
-                  onChange={this.change} 
-                  placeholder="Email" />
-                <input 
-                  id="password" 
-                  name="password"
-                  type="password"
-                  value={password} 
-                  onChange={this.change} 
-                  placeholder="Password" />                
+                <div className="signup-login-input-container">
+                  <input 
+                    id="email" 
+                    className="signup-login-input"
+                    name="email" 
+                    type="email"
+                    value={email} 
+                    onChange={this.change} 
+                    placeholder="Email" />
+                  <input 
+                    id="password" 
+                    className="signup-login-input"
+                    name="password"
+                    type="password"
+                    value={password} 
+                    onChange={this.change} 
+                    placeholder="Password" />  
+                </div>              
               </React.Fragment>
             )} />        
-        </div>      
-        <div className="grid-33 centered signin new">
-            <p className="test">
-            Don't have a user account? <Link to="/signup">Click here</Link> to sign up!
+        {/* </div>       */}
+        <div className="centered signup-banner">
+            <p>
+            Don't have a user account? <Link to="/signup"><strong>Click here</strong></Link> to sign up!
           </p>
           </div>
       </div>

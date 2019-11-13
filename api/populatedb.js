@@ -51,8 +51,8 @@ function userCreate(_id, first_name, last_name, email, password, cb) {
   }  );
 }
 
-function subjectCreate(_id, name, cb) {  
-  var subject = new Subject({_id:_id, name: name});
+function subjectCreate(_id, name, isPrimarySubject, cb) {  
+  var subject = new Subject({_id:_id, name: name, isPrimarySubject: isPrimarySubject});
        
   subject.save(function (err) {
     if (err) {
@@ -65,7 +65,7 @@ function subjectCreate(_id, name, cb) {
   }  );
 }
 
-function deckCreate(_id, title, user, subject, cb) {
+function deckCreate(_id=null, title, user, subject, cb) {
   deckdetail = { 
     _id: _id,
     title: title,
@@ -127,17 +127,32 @@ function createSubjectUsers(cb) {
           userCreate(mongoose.Types.ObjectId('5dbb59c259c05f0e304059df'), 'Jim', 'Jones', 'j@j.com', 'pass', callback);
         },
         function(callback) {
-          subjectCreate('5dbcd7d057c65b1ab2319329', 'JavaScript', callback);
+          subjectCreate('5dbcd7d057c65b1ab2319329', 'JavaScript', false, callback);
         },
         function(callback) {
-          subjectCreate('5dbcd7d157c65b1ab231932a', 'History', callback);
+          subjectCreate('5dbcd7d157c65b1ab231932a', 'History', true, callback);
         },
         function(callback) {
-          subjectCreate('5dbcd7d157c65b1ab231932b', 'Node.JS', callback);
+          subjectCreate('5dbcd7d157c65b1ab231932b', 'Node.JS', false, callback);
         },
         function(callback) {
-          subjectCreate('5dbcd7d157c65b1ab231932c', 'Geography', callback);
+          subjectCreate('5dbcd7d157c65b1ab231932c', 'Geography', true, callback);
         },
+        function(callback) {
+          subjectCreate(null, 'Science', true, callback);
+        },
+        function(callback) {
+          subjectCreate(null, 'Humanities', true, callback);
+        },
+        function(callback) {
+          subjectCreate(null, 'Math', true, callback);
+        },
+        function(callback) {
+          subjectCreate(null, 'Computer Programming', true, callback);
+        },
+        function(callback) {
+          subjectCreate(null, 'English', true, callback);
+        }
         ],
         // optional callback
         cb);

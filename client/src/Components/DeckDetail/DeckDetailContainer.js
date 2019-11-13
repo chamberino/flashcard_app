@@ -15,32 +15,15 @@ const DeckDetailContainer = props => {
         <div>
 
             <div className="bounds deck--detail">
-                <div className="grid-66">
-                    <div className="deck--header">
-                    <h3 className="deck--title">{props.deck.title}</h3>
-                    {/* <Link to={`/user/${props.authorId}`}>By {props.deckCreator}</Link> */}
-                    </div>
-                    <div className="deck--description">
-                    </div>
+                <div className="deck--header">
+                <h3 className="deck--title">{props.deck.title}</h3>
+                {/* <Link to={`/user/${props.authorId}`}>By {props.deckCreator}</Link> */}
+                </div>
+                <div className="deck--description">
                 </div>
             </div>
 
             {/* check userId against authenticated UsersId to determine if edit buttons display*/}
-        {
-          (props.authenticatedUserId === props.deck.deck.user._id)
-          ? <div className="edit-card-options-container">
-                <div className="edit-card-options">
-                    <Link className="button" to={`${props.match.url}/updatedecktest`}>Update Deck</Link>
-                    <Link className="button" to={`/decks/${props.deck.deck._id}/delete`}>Delete Deck</Link>
-                    {/* <Link className="button button-secondary" to="/profile">Return to List</Link> */}
-                </div>
-            </div>
-          : <div className="edit-card-options-container">
-                <div className="edit-card-options">
-                        {/* <Link className="button button-secondary" to="/decks">Return to List</Link> */}
-                </div>
-            </div>
-        }
 
             <Card props={props}/>
             {
@@ -57,6 +40,21 @@ const DeckDetailContainer = props => {
                                         <Link className="button" to={`/decks/${props.deck.cards[props.score]._id}/deletecard`}>Delete Flashcard</Link>                                        
                                     </div>
                             }
+                            {
+                                (props.authenticatedUserId === props.deck.deck.user._id)
+                                ? <div className="edit-card-options-container">
+                                        <div className="edit-card-options">
+                                            <Link className="button" to={`${props.match.url}/updatedecktest`}>Update Deck</Link>
+                                            <Link className="button" to={`/decks/${props.deck.deck._id}/delete`}>Delete Deck</Link>
+                                            {/* <Link className="button button-secondary" to="/profile">Return to List</Link> */}
+                                        </div>
+                                    </div>
+                                : <div className="edit-card-options-container">
+                                        <div className="edit-card-options">
+                                                {/* <Link className="button button-secondary" to="/decks">Return to List</Link> */}
+                                        </div>
+                                    </div>
+                             }
                 </div>
           : <div className="edit-card-options">
                 <div className="bounds">

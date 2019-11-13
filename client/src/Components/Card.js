@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactCardFlip from 'react-card-flip';
 
 /* 
   Deck component receives props from DecksContainer
@@ -13,7 +14,8 @@ const Card = props => (
             ? (<p>There are no flashcards in this deck</p>)
             : (
         
-        <div className="card-container">
+        <div className="card-container" onClick={props.props.flipCard}>        
+        <ReactCardFlip flipSpeedBackToFront={1} isFlipped={props.props.isFlipped} flipDirection="vertical">
             <div className="card-quiz">
                 {/* Checks if hint exists*/}
                 {
@@ -38,6 +40,32 @@ const Card = props => (
                 }
                 </div>
             </div>
+
+            <div className="card-quiz">
+                {/* Checks if hint exists*/}
+                {
+                    (props.props.deck.cards[props.props.score]["hint"] === undefined)
+                        ? (null)
+                        : <button className="show-hint hint-card" onClick={props.props.showHint}> show hint </button>
+                }
+                <h3 className="card--question">{props.props.deck.cards[props.props.score][props.props.sideOfCard]}</h3>        
+                <div className="card--hint">
+            
+                { (props.props.hint == null)
+                    ?   (
+                        <div className="grid-66">                            
+                        <h3 className="card--hint">&nbsp;&nbsp;</h3>
+                        </div>
+                        )
+                    :   (
+                        <div className="grid-66">
+                            <h3 className="card--hint">{props.props.deck.cards[props.props.score][props.props.hint]}</h3>
+                        </div>
+                       )
+                }
+                </div>
+            </div>
+        </ReactCardFlip>
         </div>
             )
     }        

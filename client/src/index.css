@@ -177,10 +177,6 @@ form {
   margin: 0 auto;
 }
 
-/* form div.grid-66 {
-  margin: 1em;
-} */
-
 .header .bounds {
   display: flex;
   flex-direction: row;
@@ -239,9 +235,7 @@ a.header-links {
   background-color: #fff;
   margin: 2em;
   padding: 1em 1.5em;
-  /* padding-bottom: 2em; */
   height: 16em;
-  /* border: 1px solid tomato; */
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
@@ -263,6 +257,10 @@ a.header-links {
   cursor: pointer;
 }
 
+input {
+  margin: 1em 0 .25em 0;
+}
+
 .card textarea {
   margin: 1em 0 .25em 0;
   /* padding: .75em 0; */
@@ -281,6 +279,19 @@ a.header-links {
 .dropdown {
   margin: 2em;
   margin-top: 1em;
+}
+
+.dropdown-enabled > * {
+  background-color: #fff !important;
+}
+
+.dropdown-disabled > * {
+  background-color: #f0f0f0 !important;
+}
+
+
+.Dropdown-option:first-of-type {
+  background-color: #f0f0f0;
 }
 
 .svg-icon {
@@ -434,7 +445,7 @@ button.create:focus {
 }
 
 .deck--header2 {
-  padding: 0 3em;
+  padding: 0 2em;
 }
 
 .dropdown {
@@ -447,12 +458,6 @@ button.create:focus {
   width: 100%;
   margin: 0;
   padding: 0;
-} */
-
-/* #root > div > div.bounds.deck--detail > div > form > div.pad-bottom.form-buttons.grid-66 {
-  background-color: #F0F0F0;
-  width: 100%;
-  margin: 0;
 } */
 
 .deck-list {
@@ -513,6 +518,13 @@ a.header-links-2 {
   padding: 1em 0;
 }
 
+.form-buttons-login button:hover {
+  font-size: .9em;
+  font-weight: bold;
+  background-color: #fff;
+  padding: 1em 0;
+}
+
 .signup-login-input {
   margin-bottom: 2em;
 }
@@ -554,6 +566,7 @@ a.header-links-2 {
 
 .Dropdown-control {
   box-shadow: 0px .5px 1px 0px rgba(0,0,0,0.2);
+  min-height: 2.5em;
 }
 
 .Dropdown-option {
@@ -684,22 +697,13 @@ button.flip-card:hover {
   color: #fff;
 }
 
-.card--hint {
-  /* margin-top: 3em; */
+.card-container {
+  width: 90%;
+  margin: auto;
+  margin-bottom: 2em;
 }
 
-h3.card--hint {
-  /* margin: 0; */
-  /* margin-bottom: 2em; */
-  /* align-self: flex-start; */
+.test {
+  rotate: 100px;
 }
-
-/* .signup-banner {
-  background-color: #f0f0f0;
-}
-
-.signup-banner p {
-  margin: 0;
-  background-color: #f0f0f0;
-} */
 

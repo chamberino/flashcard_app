@@ -3,7 +3,7 @@ var User = require('../models/user');
 var Subject = require('../models/subject');
 var Card = require('../models/card');
 var mongoose = require('mongoose');
-const { check,validationResult } = require('express-validator');
+const { check, checkIf, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 
 mongoose.Promise = global.Promise;
@@ -182,76 +182,76 @@ exports.deck_create_post = [
     }
 ]
 
-exports.deck_createWithCard_post = [
-    check('title')
-      .exists({ checkNull: true, checkFalsy: true })
-      .withMessage('Title required'),
-      check('user')
-      .exists({ checkNull: true, checkFalsy: true })
-      .withMessage('User not recognized. Please sign in again.'),
-      check('subject')
-      .exists({ checkNull: true, checkFalsy: true })
-      .isArray({min:1})
-      .withMessage('Subject required'),
-      check('cards.*.question')  
-      .exists({ checkNull: true, checkFalsy: true })
-      .withMessage('A question is required for each card.'),
-      check('cards.*.answer')  
-      .exists({ checkNull: true, checkFalsy: true })
-      .withMessage('An answer is required for each card.'),
+// exports.deck_createWithCard_post = [
+//     check('title')
+//       .exists({ checkNull: true, checkFalsy: true })
+//       .withMessage('Title required'),
+//       check('user')
+//       .exists({ checkNull: true, checkFalsy: true })
+//       .withMessage('User not recognized. Please sign in again.'),
+//       check('subject')
+//       .exists({ checkNull: true, checkFalsy: true })
+//       .isArray({min:1})
+//       .withMessage('Subject required'),
+//       check('cards.*.question')  
+//       .exists({ checkNull: true, checkFalsy: true })
+//       .withMessage('A question is required for each card.'),
+//       check('cards.*.answer')  
+//       .exists({ checkNull: true, checkFalsy: true })
+//       .withMessage('An answer is required for each card.'),
 
-    sanitizeBody('title').escape(),
-    sanitizeBody('cards.*.question').escape(),
-    sanitizeBody('cards.*.answer').escape(),
-(req, res, next) => {
-    console.log(req.body)
-const errors = validationResult(req);
-// If there are validation errors...
-if (!errors.isEmpty()) {
-    // Use the Array `map()` method to get a list of error messages.
-    const errorMessages = errors.array().map(error => error.msg);
-    console.log(errorMessages)
-    // Create custom error with 400 status code
-    res.status(400);
-    return res.json(errorMessages);
-} else {
-Deck.create(req.body)
-        .then((deck)=>{
-            if (!deck) {
-                const errorMessages = [];
-                errorMessages.push("There was a problem creating the deck")
-                return res.status(400).json(errorMessages);
-            } else {
-                // res.location(`/decks/${deck._id}`);    
-                console.log(`Deck ${deck.id} successfully created`)                    
-                req.deckId = deck.id;
-                next()
-            }
-        }).catch((error)=> {  // check for errors within body
-            if (error) {
-                // catch any other errors and pass errors to global error handler
-                next(error);
-            }
-        });
-    };
-}, 
+//     sanitizeBody('title').escape(),
+//     sanitizeBody('cards.*.question').escape(),
+//     sanitizeBody('cards.*.answer').escape(),
+// (req, res, next) => {
+//     console.log(req.body)
+// const errors = validationResult(req);
+// // If there are validation errors...
+// if (!errors.isEmpty()) {
+//     // Use the Array `map()` method to get a list of error messages.
+//     const errorMessages = errors.array().map(error => error.msg);
+//     console.log(errorMessages)
+//     // Create custom error with 400 status code
+//     res.status(400);
+//     return res.json(errorMessages);
+// } else {
+// Deck.create(req.body)
+//         .then((deck)=>{
+//             if (!deck) {
+//                 const errorMessages = [];
+//                 errorMessages.push("There was a problem creating the deck")
+//                 return res.status(400).json(errorMessages);
+//             } else {
+//                 // res.location(`/decks/${deck._id}`);    
+//                 console.log(`Deck ${deck.id} successfully created`)                    
+//                 req.deckId = deck.id;
+//                 next()
+//             }
+//         }).catch((error)=> {  // check for errors within body
+//             if (error) {
+//                 // catch any other errors and pass errors to global error handler
+//                 next(error);
+//             }
+//         });
+//     };
+// }, 
 
-(req, res, next) => {
-    console.log(req.deckId)
-    req.body.cards.map((card)=>{
-        card.deck = req.deckId
-    })    
-        Card.insertMany(req.body.cards)
-        .then(cards => {
-            return res.status(201).json({id: req.deckId, status: 201});  
-        })
-        .catch(err => {
-            console.log(err)
-            res.json([err.message]);
-        });
-    }
+// (req, res, next) => {
+//     console.log(req.deckId)
+//     req.body.cards.map((card)=>{
+//         card.deck = req.deckId
+//     })    
+//         Card.insertMany(req.body.cards)
+//         .then(cards => {
+//             return res.status(201).json({id: req.deckId, status: 201});  
+//         })
+//         .catch(err => {
+//             console.log(err)
+//             res.json([err.message]);
+//         });
+//     }
 
-]
+// ]
 
 // Delete Deck and all associated cards
 exports.deck_delete_post = function(req, res, next) {
@@ -332,55 +332,157 @@ exports.deck_update_put = [
 
 // Handle deck update on POST.
 exports.deck_updateWithCards_put = [
-
     // Validate fields.
     check('title')
           .exists({ checkNull: true, checkFalsy: true })
           .withMessage('Title required'),
-          check('user')
+    check('user')
           .exists({ checkNull: true, checkFalsy: true })
           .withMessage('User not recognized. Please sign in again.'),
-          check('subject')
-          .exists({ checkNull: true, checkFalsy: true })
-          .isArray({min:1})
-          .withMessage('Subject required'),
+    check('subject').custom(subject => {
+        if ((Array.isArray(subject) && subject.length > 0) || subject ===false ) {                        
+            return true
+        } else {
+            console.log('error happening in the subject')
+            throw new Error('subject required')
+        }
+    }),
+    check('otherSubjectValue').custom(otherSubjectValue => {
+        if (otherSubjectValue === false) {            
+            return true
+        } 
+        if ((typeof otherSubjectValue === 'string' && otherSubjectValue.length > 0)) {
+            sanitizeBody('otherSubjectValue').escape()
+            return true
+        } else {
+            throw new Error('subject required')
+        }
+    }),
+    check('otherSubject')
+        .exists({ checkNull: false, checkFalsy: false })
+        .isBoolean(),
         sanitizeBody('title').escape(),
-        check('cards.*.question')  
+    check('cards.*.question')  
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('A question is required for each card.'),
-        check('cards.*.answer')  
+    check('cards.*.answer')  
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('An answer is required for each card.'),
 
         sanitizeBody('title').escape(),
+        sanitizeBody('subject').escape(),
         sanitizeBody('cards.*.question').escape(),
         sanitizeBody('cards.*.answer').escape(),
 
     // Process request after validation and sanitization.
-    (req, res, next) => {
-        console.log(req.body)
+    (req, res, next) => {        
         // Extract the validation errors from a request.
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
             return res.json(errorMessages);
-        }   else {
-            Deck.findByIdAndUpdate(req.params.id, req.body, {upsert:false}, function(err,doc) {
+        }  else {
+            // Deck.findByIdAndUpdate(req.params.id, req.body, {upsert:false}, function(err,doc) {
+            //     if(err) {
+            //         res.json([err])
+            //     } else {
+                console.log('PASSED VALIDATION', req.body)
+                    next()
+            //     }
+            // }).catch((error)=>{
+            //     if (error) {
+            //         // catch any other errors and pass errors to global error handler
+            //         next(error);
+            //     }
+            // })
+        }
+    },
+
+    (req, res, next) => {
+        if (req.body.otherSubject && req.body.otherSubjectValue.length > 0) {
+            console.log('create new subject section')
+                  // Create a subject object with escaped and trimmed data.
+          var subject = new Subject(
+            { name: req.body.otherSubjectValue }
+          );
+            // Check if Subject with same name already exists.
+            Subject.findOne({ 'name': req.body.otherSubjectValue })
+              .exec( function(err, found_subject) {
+                 if (err) { return next(err); }
+      
+                 if (found_subject) {
+                   // Subject exists, send message.
+                   res.status(400);
+                        const errorMessages = [];
+                        errorMessages.push('Subject already exists')
+                        return res.json(errorMessages);
+                 }
+                 else {
+                   subject.save(function (err) {
+                     if (err) { return next(err); }
+                     // Subject saved. Redirect to subject detail page.                 
+                     req.subjectId = subject._id;
+                     next()
+                   });
+                }
+          });
+        } else {
+            console.log('THE SUBJECT EXISTS')
+            next();
+        }
+    },
+
+    (req, res, next) => {
+        console.log('req.subjectId is equal to undefined: ' , req.subjectId !== undefined)
+        console.log('subjectId: ', req.subjectId)
+        if (req.subjectId !== undefined) {
+            const deckPayload = {
+                title: req.body.title,
+                user: req.body.user,
+                subject: [req.subjectId]
+            }
+            console.log('deckpayload: ', deckPayload);
+
+            Deck.findByIdAndUpdate(req.params.id, deckPayload, {upsert:false}, function(err,doc) {
                 if(err) {
                     res.json([err])
                 } else {
-                    next()
-                }
-            }).catch((error)=>{
-                if (error) {
-                    // catch any other errors and pass errors to global error handler
-                    next(error);
-                }
-            })
+                next()
+                    }
+                }).catch((error)=>{
+                    if (error) {
+                        // catch any other errors and pass errors to global error handler
+                        next(error);
+                    }
+                })
+        } else {            
+            const deckPayload = {
+                title: req.body.title,
+                user: req.body.user,
+                subject: req.body.subject                
+            }
+            console.log('payload before updating deck: ', deckPayload)
+
+            Deck.findByIdAndUpdate(req.params.id, deckPayload, {upsert:false}, function(err,doc) {
+                if(err) {
+                    console.log(err)
+                    res.json([err])
+                } else {
+                    console.log('DECK HAS BEEN UPDATED')
+                next()
+                    }
+                }).catch((error)=>{
+                    if (error) {
+                        // catch any other errors and pass errors to global error handler
+                        next(error);
+                    }
+                })
         }
     },
+
     (req, res, next) => {
+        console.log('line 483 deck has been added.')
         req.body.cards.map((card)=>{
             req.newCards = [];
             req.oldCards = []            
@@ -400,6 +502,7 @@ exports.deck_updateWithCards_put = [
         })    
             Card.insertMany(req.newCards)
             .then(cards => {
+                console.log('CARDS SUCCESSFULLY CREATED')
                 return res.status(201).json({status: 201});  
             })
             .catch(err => {
@@ -414,25 +517,44 @@ exports.deck_createWithCard_post = [
     check('title')
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('Title required'),
-      check('user')
+    check('user')
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('User not recognized. Please sign in again.'),
-      check('subject')
-      .exists({ checkNull: true, checkFalsy: true })
-      .isArray({min:1})
-      .withMessage('Subject required'),
-      check('cards.*.question')  
+    check('subject').custom(subject => {
+        if ((Array.isArray(subject) && subject.length > 0) || subject ===false ) {                        
+            return true
+        } else {
+            console.log('error happening in the subject')
+            throw new Error('subject required')
+        }
+    }),
+    check('otherSubjectValue').custom(otherSubjectValue => {
+        if (otherSubjectValue === false) {            
+            return true
+        } 
+        if ((typeof otherSubjectValue === 'string' && otherSubjectValue.length > 0)) {
+            return true
+        } else {
+            throw new Error('subject required')
+        }
+    }),
+    check('otherSubject')
+      .exists({ checkNull: false, checkFalsy: false })
+      .isBoolean(),
+    check('cards.*.question')  
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('A question is required for each card.'),
-      check('cards.*.answer')  
+    check('cards.*.answer')  
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('An answer is required for each card.'),
 
     sanitizeBody('title').escape(),
+    sanitizeBody('subject').escape(),
     sanitizeBody('cards.*.question').escape(),
     sanitizeBody('cards.*.answer').escape(),
+
+// Process request after validation and sanitization.
 (req, res, next) => {
-    console.log(req.body)
 const errors = validationResult(req);
 // If there are validation errors...
 if (!errors.isEmpty()) {
@@ -442,8 +564,55 @@ if (!errors.isEmpty()) {
     // Create custom error with 400 status code
     res.status(400);
     return res.json(errorMessages);
-} else {
-Deck.create(req.body)
+}  else  {
+        next();
+    }
+}, (req, res, next) => {
+    console.log(req.body)
+    if (req.body.otherSubject) {
+        console.log('create new subject section')
+              // Create a subject object with escaped and trimmed data.
+      var subject = new Subject(
+        { name: req.body.otherSubjectValue }
+      );
+        // Check if Subject with same name already exists.
+        Subject.findOne({ 'name': req.body.otherSubjectValue })
+          .exec( function(err, found_subject) {
+             if (err) { return next(err); }
+  
+             if (found_subject) {
+               // Subject exists, send message.
+               res.status(400);
+                    const errorMessages = [];
+                    errorMessages.push('Subject already exists')
+                    return res.json(errorMessages);
+             }
+             else {
+               subject.save(function (err) {
+                 if (err) { return next(err); }
+                 // Subject saved. Redirect to subject detail page.                 
+                 req.subjectId = subject._id;
+                 next()
+               });
+            }
+      });
+    } else {
+        console.log('this subject exists')
+        next();
+    }
+}, 
+
+(req, res, next) => {
+    console.log(req.subjectId !== undefined)
+    console.log('subjectId: ', req.subjectId)
+    if (req.subjectId !== undefined) {
+    const deckPayload = {
+        title: req.body.title,
+        user: req.body.user,
+        subject: [req.subjectId]
+    }
+    console.log('deckpayload: ', deckPayload);
+    Deck.create(deckPayload)
         .then((deck)=>{
             if (!deck) {
                 const errorMessages = [];
@@ -461,8 +630,32 @@ Deck.create(req.body)
                 next(error);
             }
         });
-    };
-}, 
+    } else {
+        const deckPayload = {
+            title: req.body.title,
+            user: req.body.user,
+            subject: req.body.subject
+        }
+        Deck.create(deckPayload)
+        .then((deck)=>{
+            if (!deck) {
+                const errorMessages = [];
+                errorMessages.push("There was a problem creating the deck")
+                return res.status(400).json(errorMessages);
+            } else {
+                // res.location(`/decks/${deck._id}`);    
+                console.log(`Deck ${deck.id} successfully created`)                    
+                req.deckId = deck.id;
+                next()
+            }
+        }).catch((error)=> {  // check for errors within body
+            if (error) {
+                // catch any other errors and pass errors to global error handler
+                next(error);
+            }
+        });
+    }
+},
 
 (req, res, next) => {
     console.log(req.deckId)

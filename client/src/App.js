@@ -11,7 +11,6 @@ import {
 import Header from './Components/Header';
 import Test from './Components/Test';
 import CreateDeckTest from './Components/CreateDeckTest';
-import Profile from './Components/Profile/Profile';
 import ProfileDetail from './Components/Profile/ProfileDetail';
 import Users from './Components/Users/Users';
 import UserDetail from './Components/Users/UserDetail';
@@ -43,7 +42,6 @@ const HeaderWithContext = withContext(Header);
 const UserSignInWithContext = withContext(UserSignIn);
 const UserSignUpWithContext = withContext(UserSignUp)
 const UserSignOutWithContext = withContext(UserSignOut);
-const ProfileWithContext = withContext(Profile);
 const ProfileDetailWithContext = withContext(ProfileDetail);
 const UsersWithContext = withContext(Users);
 const UserDetailWithContext = withContext(UserDetail);

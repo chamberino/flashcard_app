@@ -1,8 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Form from './Form';
-import createCardInputs from './CreateCardInputs'
-import CreateCardInputs from './CreateCardInputs';
-
 
 export default class CardForm extends React.Component {
 
@@ -67,9 +64,9 @@ export default class CardForm extends React.Component {
 
   render() {
     return (
-      <Form submit={this.handleSubmit} cancel={this.cancel}
-            errors={this.state.errors}
-            submit={this.handleSubmit}
+      <Form submit={this.handleSubmit} 
+            cancel={this.cancel}
+            errors={this.state.errors}            
             submitButtonText="Done"
             elements={() => (
               <React.Fragment>

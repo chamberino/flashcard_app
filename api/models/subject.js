@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 
 const SubjectSchema = new Schema({
   _id: {type: Schema.Types.ObjectId, required: false, auto: true},
-  name: {type: String, required: true, maxlength: 50}
+  name: {type: String, required: true, maxlength: 50},
+  isPrimarySubject: {type: Boolean, default: false, required: true}
 });
 
 // Virtual for Subject's URL

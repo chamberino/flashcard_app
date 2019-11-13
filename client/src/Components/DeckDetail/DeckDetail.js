@@ -39,7 +39,14 @@ export default class DeckDetail extends Component {
       loading: true,
       authenticatedUser: {},
       score: 0,
+      isFlipped: false,
     };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick = (e) => {
+    e.preventDefault();
+    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
   }
 
   nextCard = () => {
@@ -64,6 +71,7 @@ export default class DeckDetail extends Component {
 }
 
 flipCard = () => {
+  this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
   if (this.state.sideOfCard === 'question') {  
       this.setState( prevState => ({  
       sideOfCard: 'answer'
@@ -87,7 +95,7 @@ showHint = () => {
   }
 }
 
-componentDidMount() {
+componentWillMount() {
   // If user is signed in, set an authenticatedUser property with the users id. This will be sent to the 
   // DeckDetailContainer Component to determine which options will be available to the user.
   if (this.props.context.authenticatedUser) {
@@ -125,7 +133,9 @@ componentDidMount() {
                       score={this.state.score}
                       deckCreator={this.state.deckCreator}                  
                       deck={this.state.deck} 
-                      match={match}/> } />
+                      isFlipped={this.state.isFlipped}
+                      handleClick={this.handleClick}
+                      match={match}/> } />                      
           });
         }
       }).catch((error)=>{

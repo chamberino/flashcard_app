@@ -12,23 +12,26 @@ constructor(props) {
             deleteCard: props.context.actions.deleteCard, 
             deckId: props.match.params.id,  
             cards: [],
+            subject: '',
             subjects: [],
             subjectsArray: [],
-            select: [],
-            subject: '',
+            select: [],            
             preservedTitle: '',
             title: '',      
-            subjectsChecked: [],           
+            subjectsChecked: [], 
+            otherSubject: false,     
+            otherSubjectValue: '',        
             errors: [],
             searchText: '',
             nameError: {styling: '', message:''},
             subjectError: {styling: '', message:''},
-            questionErrors: [],
-            answerErrors: [],
+            questionErrors: [{styling: '', message:''}, {styling: '', message:''}],
+            answerErrors: [{styling: '', message:''}, {styling: '', message:''}],
             user: props.context.authenticatedUser.user.user.name,
             userId: props.context.authenticatedUser.user.user.id,
             credentials: props.context.authenticatedUser.user.token,
             deleteClass: 'svg-icon-disable',
+            dropdownClass: 'dropdown dropdown-enabled'
     };
 }
 
@@ -75,7 +78,7 @@ validatedSubject = () => {
 
 validatedQuestions = () => {
   this.setState({questionErrors: []})
-  this.state.cards.map((card) => {
+  this.state.cards.forEach((card) => {
     if (card.question === "") {
       this.setState( prevState => {
         return {
@@ -111,7 +114,7 @@ validatedQuestions = () => {
 
 validatedAnswers = () => {
   this.setState({answerErrors: []})
-  this.state.cards.map((card, index) => {
+  this.state.cards.forEach((card, index) => {
     if (card.answer === "") {
       this.setState( prevState => {
       return {
@@ -226,7 +229,7 @@ handleCardQuestionChange = idx => evt => {
             this.setState({
               deletedCardOrError: card,
             })
-            this.props.history.push(`/decks/${this.state.deckId}/updatedecktest`);
+            this.props.history.push(`/decks/${this.state.deckId}`);
         }).catch(()=>{
         // catch errors and push new route to History object
         this.props.history.push('/error');
@@ -255,7 +258,7 @@ componentDidMount() {
                     deleteClass: 'svg-icon',
                 })
             }
-            deck.cards.map((card)=>{
+            deck.cards.forEach((card)=>{
                 this.setState( prevState => {
                     return {
                       cards: [
@@ -295,6 +298,7 @@ componentDidMount() {
         arrayOfObjects.push({name: subject.name, value:subject._id, key:i,})
         subjectsArray.push({label: subject.name, value: subject._id})
       });
+      subjectsArray.unshift({label: this.state.deck.deck.subject[0].name, value: this.state.deck.deck.subject[0]._id})
       this.setState({
         subjects: arrayOfObjects,
         subjectsArray: subjectsArray,
@@ -316,9 +320,9 @@ componentDidMount() {
   render() {
     const {
       title,
+      otherSubjectValue,
       errors,
       userId,
-      deckCreator
     } = this.state;
 
     return (
@@ -338,42 +342,83 @@ componentDidMount() {
             errors={errors}
             submit={this.submit}
             submitButtonText="Update Deck"
+            formButtonsClass="form-buttons-create"
+            submitButtonClass="create-deck"
+            cancelButtonClass="cancel-deck"
             // elements prop is a function  which returns
             // the input fields to be used in each of the forms
             elements={() => (
                 <React.Fragment>
                 <div className="grid-66">
-                <div className="deck--header">
-                    <div>                    
-                        <label>   
-                        <div className="textArea">
-                            <textarea 
-                            maxLength="255"
-                            id="title" 
-                            name="title" 
-                            type="text" 
-                            className={this.state.nameError.styling}
-                            onChange={this.change} 
-                            placeholder="Subject, chapter, unit" 
-                            value={title}
-                            />
-                        </div>
-                        Title
-                        </label>
-                    <div className="errorMessage">{this.state.nameError.message}</div>
-                    <input 
-                        id="user" 
-                        name="user" 
-                        type="hidden" 
-                        className="input-title deck--title--input"                     
-                        value={userId}
-                        />  
-                    </div>
+                  <div className="deck--header">
+                    <div>    
+
+                      <label>   
+                      <div className="textArea">
+                          <textarea 
+                          maxLength="255"
+                          id="title" 
+                          name="title" 
+                          type="text" 
+                          className={this.state.nameError.styling}
+                          onChange={this.change} 
+                          placeholder="Subject, chapter, unit" 
+                          value={title}
+                          />
+                      </div>
+                      Title
+                      </label>
+
+                      <div className="errorMessage">{this.state.nameError.message}</div>
+                      <input 
+                          id="user" 
+                          name="user" 
+                          type="hidden" 
+                          className="input-title deck--title--input"                     
+                          value={userId}
+                          />  
+                      </div>
                     {/* <p>By {user}</p> */}
+                  </div>
                 </div>
+                <div>
+                {
+                  (this.state.otherSubject)
+                  ? <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder={this.state.subject} onChange={this.subjectChange}  className="dropdown dropdown-disabled"/ >  
+                  : <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder={this.state.subject} onChange={this.subjectChange} className="dropdown dropdown-enabled"/ >  
+                }
                 </div>
-                <Dropdown options={this.state.subjectsArray} value={this.state.subject} placeholder="this.state.subject" onChange={this.subjectChange}  className="dropdown"/ >  
+            
             <div className="deck--header2"><div className="errorMessage">{this.state.subjectError.message}</div></div>
+
+            {
+            (this.state.otherSubject)              
+          ? <div className="deck--header">
+                <div>
+                  
+                    <label>   
+                    <div className="textArea">
+                      <textarea 
+                        maxLength="255"
+                        id="subject" 
+                        name="otherSubjectValue" 
+                        type="text" 
+                        // className={this.state.nameError.styling}
+                        onChange={this.change} 
+                        placeholder="Subject" 
+                        value={otherSubjectValue}
+                      />
+                    </div>
+                     Subject
+                    </label>
+
+                  </div>
+                </div>
+           : null     
+          }
+
+          {/* <div className="errorMessage">{this.state.nameError.message}</div> */}
+
                 <div className="cards">
             {this.state.cards.map((card, idx) => (
             <div className="card" key={idx+1}>
@@ -421,9 +466,9 @@ componentDidMount() {
                 className="remove-card"
                 // key={idx+1}
                 >
-                <svg className={this.state.deleteClass}  viewBox="0 0 20 20">
-                                <path d="M17.114,3.923h-4.589V2.427c0-0.252-0.207-0.459-0.46-0.459H7.935c-0.252,0-0.459,0.207-0.459,0.459v1.496h-4.59c-0.252,0-0.459,0.205-0.459,0.459c0,0.252,0.207,0.459,0.459,0.459h1.51v12.732c0,0.252,0.207,0.459,0.459,0.459h10.29c0.254,0,0.459-0.207,0.459-0.459V4.841h1.511c0.252,0,0.459-0.207,0.459-0.459C17.573,4.127,17.366,3.923,17.114,3.923M8.394,2.886h3.214v0.918H8.394V2.886z M14.686,17.114H5.314V4.841h9.372V17.114z M12.525,7.306v7.344c0,0.252-0.207,0.459-0.46,0.459s-0.458-0.207-0.458-0.459V7.306c0-0.254,0.205-0.459,0.458-0.459S12.525,7.051,12.525,7.306M8.394,7.306v7.344c0,0.252-0.207,0.459-0.459,0.459s-0.459-0.207-0.459-0.459V7.306c0-0.254,0.207-0.459,0.459-0.459S8.394,7.051,8.394,7.306"></path>
-                            </svg>
+                  <svg className={this.state.deleteClass}  viewBox="0 0 20 20">
+                  <path d="M17.114,3.923h-4.589V2.427c0-0.252-0.207-0.459-0.46-0.459H7.935c-0.252,0-0.459,0.207-0.459,0.459v1.496h-4.59c-0.252,0-0.459,0.205-0.459,0.459c0,0.252,0.207,0.459,0.459,0.459h1.51v12.732c0,0.252,0.207,0.459,0.459,0.459h10.29c0.254,0,0.459-0.207,0.459-0.459V4.841h1.511c0.252,0,0.459-0.207,0.459-0.459C17.573,4.127,17.366,3.923,17.114,3.923M8.394,2.886h3.214v0.918H8.394V2.886z M14.686,17.114H5.314V4.841h9.372V17.114z M12.525,7.306v7.344c0,0.252-0.207,0.459-0.46,0.459s-0.458-0.207-0.458-0.459V7.306c0-0.254,0.205-0.459,0.458-0.459S12.525,7.051,12.525,7.306M8.394,7.306v7.344c0,0.252-0.207,0.459-0.459,0.459s-0.459-0.207-0.459-0.459V7.306c0-0.254,0.207-0.459,0.459-0.459S8.394,7.051,8.394,7.306"></path>
+                </svg>
                 </button>
             </div>
             ))}
@@ -433,7 +478,7 @@ componentDidMount() {
             onClick={this.handleAddCard}
             className="add-card"
             >
-            + Add Card
+            <span className="add-card-span">+ Add Card</span>
             </button>
             
             </div>
@@ -462,6 +507,33 @@ componentDidMount() {
         subject: value,      
       };
     });
+    if (value === true) {
+      this.setState(() => {
+        return {
+          otherSubject: value,      
+        };
+      });
+    } else {
+      this.setState(() => {
+        return {
+          otherSubject: false,      
+        };
+      });
+    }
+    if (this.state.otherSubject) {
+      this.setState(() => {
+        return {
+          dropdownClass: 'dropdown dropdown-disabled'      
+        };
+      });
+    }
+    if (!this.state.otherSubject) {
+      this.setState(() => {
+      return {
+        dropdownClass: 'dropdown dropdown-enabled'      
+      };
+    });
+    }
   }
 
   submit = () => {
@@ -477,7 +549,9 @@ componentDidMount() {
       userId,
       subject,
       cards,
-      deckId
+      deckId,
+      otherSubject,
+      otherSubjectValue
     } = this.state;
 
     this.setState({ preservedTitle: title, userId: userId });
@@ -493,6 +567,23 @@ componentDidMount() {
         subject: [subject],
         cards: cards
     }
+
+    // delete any empty hint properties in cards array
+    deckPayload.cards.forEach((card) => {
+      if (card.hint === "") {
+        delete card.hint
+      }
+    })
+
+    if (otherSubject) {
+        deckPayload.subject = !otherSubject;
+        deckPayload.otherSubjectValue = otherSubjectValue;
+        deckPayload.otherSubject = otherSubject;
+      } else {
+        deckPayload.subject = subject.split();
+        deckPayload.otherSubject = otherSubject;
+        deckPayload.otherSubjectValue = otherSubject;
+      }
 
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
@@ -517,14 +608,13 @@ componentDidMount() {
         console.log(response)
         // If API returns a response that is not 201, set the errors property in state to the response. 
         // The response will carry any error messages in an array. The title and description are then initialized.
-        if (response.status !== 204) {
+        if (response.status !== 201) {
           console.log(response.status)
           this.setState({ errors: response });
           this.setState({title: this.state.preservedTitle})
         } else {
           // response.headers.get('Location');
           // The errors property is set to the response, which should be empty. The user is sent to the decks list.
-          {/* this.setState({ errors: [] }); */}
           console.log('here')
           this.props.history.push(`/decks/` + deckId);
           return response

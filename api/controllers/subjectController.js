@@ -6,7 +6,7 @@ const validator = require('express-validator');
 
 // Display list of all Subjects.
 exports.subject_list = (req, res, next) => {
-    Subject.find()
+    Subject.find({isPrimarySubject: true})
     .sort([['name', 'ascending']])
     .exec(function (err, list_subjects) {
       if (err) { return next(err); }
@@ -80,7 +80,7 @@ exports.subject_create_post = [
              else {
                subject.save(function (err) {
                  if (err) { return next(err); }
-                 // Subject saved. Redirect to subject detail page.
+                 // Subject saved. Redirect to subject detail page.                 
                  res.redirect(subject.url);
                });
   

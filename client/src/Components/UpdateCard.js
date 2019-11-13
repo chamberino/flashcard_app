@@ -65,7 +65,7 @@ this.props.context.actions.getCard(this.state.cardId)
             cancel={this.cancel}
             errors={errors}
             submit={this.submit}
-            submitButtonText="Create Card"
+            submitButtonText="Update Card"
             // elements prop is a function  which returns
             // the input fields to be used in each of the forms
             elements={() => (

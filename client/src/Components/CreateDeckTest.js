@@ -8,7 +8,6 @@ export default class CreateDeckWithContext extends Component {
   constructor(props) {
     super(props);
   this.state= {
-
   cards: [{ question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}],
   subjects: [],
   subjectsArray: [],
@@ -16,7 +15,9 @@ export default class CreateDeckWithContext extends Component {
   subject: '',
   preservedTitle: '',
   title: '',      
-  subjectsChecked: [],           
+  subjectsChecked: [],   
+  otherSubject: false, 
+  otherSubjectValue: '',       
   errors: [],
   searchText: '',
   nameError: {styling: '', message:''},
@@ -25,7 +26,8 @@ export default class CreateDeckWithContext extends Component {
   answerErrors: [{styling: '', message:''}, {styling: '', message:''}],
   user: props.context.authenticatedUser.user.user.name,
   userId: props.context.authenticatedUser.user.user.id,
-  deleteClass: 'svg-icon-disable'
+  deleteClass: 'svg-icon-disable',
+  dropdownClass: 'dropdown dropdown-enabled'
   };
 }
 
@@ -56,11 +58,6 @@ validatedName = () => {
   }
 }
 
-sayHi = (event) => {
-  this.setState({subject: event.value})
-  console.log(this.state)
-}
-
 validatedSubject = () => {
   if (this.state.subject.length < 1) {
     this.setState( prevState => {
@@ -77,7 +74,7 @@ validatedSubject = () => {
 
 validatedQuestions = () => {
   this.setState({questionErrors: []})
-  this.state.cards.map((card) => {
+  this.state.cards.forEach((card) => {
     if (card.question === "") {
       this.setState( prevState => {
         return {
@@ -113,7 +110,7 @@ validatedQuestions = () => {
 
 validatedAnswers = () => {
   this.setState({answerErrors: []})
-  this.state.cards.map((card, index) => {
+  this.state.cards.forEach((card, index) => {
     if (card.answer === "") {
       this.setState( prevState => {
       return {
@@ -231,16 +228,16 @@ componentDidMount() {
   // Get all available subjects
     .then(subjects=>{
       let arrayOfObjects = [];
-      let subjectsArray = [];
+      let subjectsArray = [];      
       subjects.subject_list.forEach( (subject, i) => { 
         // For each subject returned from db, push to arrayOfObjects
         arrayOfObjects.push({name: subject.name, value:subject._id, key:i,})
         subjectsArray.push({label: subject.name, value: subject._id})
       });
+      // subjectsArray.push = [{label: "Other subject", value: 123}];
       this.setState({
         subjects: arrayOfObjects,
-        subjectsArray: subjectsArray,
-        loading: false
+        subjectsArray: subjectsArray
       })
 
     }).catch((error)=>{
@@ -252,6 +249,7 @@ componentDidMount() {
   render() {
     const {
       title,
+      otherSubjectValue,
       errors,
       userId,
     } = this.state;
@@ -269,8 +267,11 @@ componentDidMount() {
         <Form 
             cancel={this.cancel}
             errors={errors}
-            submit={this.submit}
+            submit={this.submit}            
             submitButtonText="Create Deck"
+            formButtonsClass="form-buttons-create"
+            submitButtonClass="create-deck"
+            cancelButtonClass="cancel-deck"
             // elements prop is a function  which returns
             // the input fields to be used in each of the forms
             elements={() => (
@@ -322,8 +323,43 @@ componentDidMount() {
                 
               </React.Fragment>
             </div>
-            <Dropdown options={this.state.subjectsArray} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange}  className="dropdown"/ >  
+            <div>
+            {
+              (this.state.otherSubject)
+              ? <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-disabled'/ >  
+              : <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-enabled'/ >  
+            }
+            </div>
+            
           <div className="deck--header2"><div className="errorMessage">{this.state.subjectError.message}</div></div>
+
+          {
+            (this.state.otherSubject)              
+          ? <div className="deck--header">
+                <div>
+                  
+                    <label>   
+                    <div className="textArea">
+                      <textarea 
+                        maxLength="255"
+                        id="subject" 
+                        name="otherSubjectValue" 
+                        type="text" 
+                        // className={this.state.nameError.styling}
+                        onChange={this.change} 
+                        placeholder="Subject" 
+                        value={otherSubjectValue}
+                      />
+                    </div>
+                     Subject
+                    </label>
+
+                  </div>
+                </div>
+           : null     
+          }
+
+                  {/* <div className="errorMessage">{this.state.nameError.message}</div> */}
             <div className="cards">
         {this.state.cards.map((card, idx) => (
           <div className="card" key={idx+1}>
@@ -377,14 +413,14 @@ componentDidMount() {
             </button>
           </div>
         ))}
-        
-        <button
-          type="button"
-          onClick={this.handleAddCard}
-          className="add-card"
-        >
-          + Add Card
-        </button>
+
+          <button
+            type="button"
+            onClick={this.handleAddCard}
+            className="add-card"
+          >
+            <span className="add-card-span">+ Add Card</span>
+          </button>
         
         </div>
         </React.Fragment>
@@ -405,13 +441,40 @@ componentDidMount() {
   }
 
   subjectChange = (event) => {
-    // Any changes made in the input fields will update it's corresponding property in state
+    // Any changes made in the input fields will update it's corresponding property in state    
     const value = event.value;
     this.setState(() => {
       return {
         subject: value,      
       };
     });
+    if (value === true) {
+      this.setState(() => {
+        return {
+          otherSubject: value,      
+        };
+      });
+    } else {
+      this.setState(() => {
+        return {
+          otherSubject: false,      
+        };
+      });
+    }
+    if (this.state.otherSubject) {
+      this.setState(() => {
+        return {
+          dropdownClass: 'dropdown dropdown-disabled'      
+        };
+      });
+    }
+    if (!this.state.otherSubject) {
+      this.setState(() => {
+      return {
+        dropdownClass: 'dropdown dropdown-enabled'      
+      };
+    });
+    }
   }
 
   submit = () => {
@@ -426,54 +489,70 @@ componentDidMount() {
       title,
       userId,
       subject,
-      cards
+      cards,
+      otherSubject,
+      otherSubjectValue
     } = this.state;
 
     this.setState({ preservedTitle: title, userId: userId });
     
     // Initialize a variable named deckPayload to an object 
     // containing the necessary data to make a call to the API to create a deck
+    
     const deckPayload = {
         title: title,
         user: userId,
         // convert checkedItemsIds map object into an array containing subject ids
-        // filter any items that are undefined
-        subject: [subject],
+        // filter any items that are undefined          
         cards: cards
     }
 
+    // delete any empty hint properties in cards array
+    deckPayload.cards.forEach((card) => {
+      if (card.hint === "") {
+        delete card.hint
+      }
+    })
+    
+    if (otherSubject) {
+        deckPayload.subject = !otherSubject;
+        deckPayload.otherSubjectValue = otherSubjectValue;
+        deckPayload.otherSubject = otherSubject;
+      } else {
+        deckPayload.subject = subject.split();
+        deckPayload.otherSubject = otherSubject;
+        deckPayload.otherSubjectValue = otherSubject;
+      }
+
+      console.log(deckPayload)
+
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
-
-    // Create deck by calling the create method made available through Context
-    // The deck data and users credentials are passed along.
-    console.log(deckPayload)
 
     // errorsExist returns a boolean depending on if there are any input errors
     // If true, individual validation functions run and update 'errors' in state so they
     // can be passed to the form component, mapped over, and outputted to the user. 
     if (this.errorsExist()) {
-      console.log(this.errorsExist(), this.state.errors)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       this.validatedName()
       this.validatedSubject()
       this.validatedQuestions()
       this.validatedAnswers()
     } else {
+    // Create deck by calling the createDeckWithCards method made available through Context
+    // The deck data and users credentials are passed along.
+    console.log(deckPayload)
       context.data.createDeckWithCards(deckPayload, credentials)
       .then((response) => {
-        console.log(response)
         // If API returns a response that is not 201, set the errors property in state to the response. 
         // The response will carry any error messages in an array. The title and description are then initialized.
         if (response.status !== 201) {
-          console.log(response.status)
+          console.log(response)
           this.setState({ errors: response });
           this.setState({title: this.state.preservedTitle})
         } else {
           // response.headers.get('Location');
           // The errors property is set to the response, which should be empty. The user is sent to the decks list.
-          {/* this.setState({ errors: [] }); */}
-          console.log('here')
           this.props.history.push(`/decks/` + response.id);
           return response
         }

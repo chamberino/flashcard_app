@@ -29,12 +29,11 @@ var subjects = []
 var decks = []
 var cards = []
 
-function userCreate(_id, first_name, last_name, email, password, cb) {
+function userCreate(_id, username, email, password, cb) {
   userdetail = {
     _id: _id, 
-    first_name: first_name , 
-    last_name: last_name, 
-    email: email, 
+    username: username, 
+    email: email,
     password: password 
   }
   

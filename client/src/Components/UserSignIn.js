@@ -9,14 +9,14 @@ import Form from './Form';
 export default class UserSignIn extends Component {
 
   state = {
-    email: '',
+    username: '',
     password: '',
     errors: [],
   }
 
   render() {
     const {
-      email,
+      username,
       password,
       errors,
     } = this.state;
@@ -33,12 +33,12 @@ export default class UserSignIn extends Component {
             elements={() => (
               <React.Fragment>
                 <input 
-                  id="email" 
-                  name="email" 
-                  type="email"
-                  value={email} 
+                  id="username" 
+                  name="username" 
+                  type="text"
+                  value={username} 
                   onChange={this.change} 
-                  placeholder="Email" />
+                  placeholder="Username" />
                 <input 
                   id="password" 
                   name="password"
@@ -76,11 +76,11 @@ export default class UserSignIn extends Component {
     // about the pathname an unauthenticated user redirected from (via this.props.location.state). 
     const { from } = this.props.location.state || { from: { pathname: '/decks' } };
     // unpack username and properties password from state
-    const { email, password } = this.state;
+    const { username, password } = this.state;
 
     // call the signIn() function, passing in the users credentials
     // signIn returns the users credentials or null if invalid 
-    context.actions.signIn(email, password)
+    context.actions.signIn(username, password)
       .then((errors) => {
         // if (user === null) {
         //   this.setState(() => {
@@ -91,7 +91,7 @@ export default class UserSignIn extends Component {
           this.setState({ errors })
         } else {
           this.props.history.push(from);
-          console.log(`SUCCESS! ${email} is now signed in!`);
+          console.log(`SUCCESS! ${username} is now signed in!`);
         }
       })
       .catch((err) => {

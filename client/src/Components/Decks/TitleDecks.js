@@ -15,7 +15,7 @@ Until the data is retreived and the component is successfully rendered, a loadin
 As long as this property is set to true, a loading message will be rendered. 
 */
 
-export default class Decks extends Component {
+export default class TitleDecks extends Component {
 // Constructor initializes state //
 
   constructor(props) {
@@ -29,8 +29,9 @@ export default class Decks extends Component {
   }
 
   componentDidMount() {
+      const { searchInput } = this.props.context;
       // Make a call to the API to get all the decks in the DB.
-      this.props.context.actions.getDecks()
+      this.props.context.actions.getTitleDecks(searchInput)
       // Set value of returned decks to the decks property in state. Change loading property to false.
       .then(decks=>{
         this.setState({
@@ -52,8 +53,8 @@ export default class Decks extends Component {
       {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
       {
         (this.state.loading)
-        ? <Route exact path="/decks" render= {() => <p>Loading...</p>  } />
-        : <Route exact path="/decks" render= {()=><DeckContainer data={this.state.decks}/> } />
+        ? <Route path="/decks/search" render= {() => <p>Loading...</p>  } />
+        : <Route path="/decks/search" render= {()=><DeckContainer data={this.state.decks}/> } />
       } 
       </Switch>
       {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}

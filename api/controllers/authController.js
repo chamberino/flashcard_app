@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const User = require('../models/user');
 
-const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+// const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 exports.user_logout = (req, res, next) => {
   // if (req.user) {
@@ -26,16 +26,19 @@ exports.user_logout = (req, res, next) => {
 // // Post route for creating a new user
 exports.user_create_post = [
     // Validate fields.
-    check('first_name')
+    // check('first_name')
+    //     .exists({ checkNull: true, checkFalsy: true })
+    //     .withMessage('First name must be specified.'),
+    //     // .isAlphanumeric()
+    //     // .withMessage('First name has non-alphanumeric characters.'),
+    // check('last_name')
+    //     .exists({ checkNull: true, checkFalsy: true })
+    //     .withMessage('Last name must be specified.'),
+    //     // .isAlphanumeric()
+    //     // .withMessage('Last name has non-alphanumeric characters.'),
+    check('username')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('First name must be specified.'),
-        // .isAlphanumeric()
-        // .withMessage('First name has non-alphanumeric characters.'),
-    check('last_name')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Last name must be specified.'),
-        // .isAlphanumeric()
-        // .withMessage('Last name has non-alphanumeric characters.'),
+        .withMessage('Please provide a valid username'),
     check('email')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a valid email'),
@@ -44,8 +47,9 @@ exports.user_create_post = [
         .withMessage('Please provide a password'),    
 
     // Sanitize fields.
-    sanitizeBody('first_name').escape(),
-    sanitizeBody('last_name').escape(),
+    // sanitizeBody('first_name').escape(),
+    // sanitizeBody('last_name').escape(),
+    sanitizeBody('username').escape(),
     sanitizeBody('email').escape(),
     sanitizeBody('password').escape(),
 
@@ -61,28 +65,30 @@ exports.user_create_post = [
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
             return res.json(errorMessages);
-        }
-        else if (!emailRegEx.test(req.body.email)) {
-            const error = ['Please enter a valid address. Example: foo@bar.com'];
-            res.status(400);
-            return res.json(error);
         } else {
-            User.findOne({ 'email': req.body.email })
+            User.findOne({ 'username': req.body.username })
             .exec( function(err, found_user) {
                if (err) { return next(err); }
     
                if (found_user) {
-                 // User exists, redirect to its detail page.
+                 // User exists.
                  res.status(400);
                  res.json('User already registered');
-               }
-               else {     
+               } else {
+                 User.findOne({ 'email': req.body.email})
+                 .exec( function(err, found_user) {
+                   if (err) { return next(err); }
+
+                   if (found_user) {
+                     // Email exists.
+                     res.status(400);
+                     res.json('Email already registered');
+                   } else {    
                     // Create a User object with escaped and trimmed data.
                     // Note that User model hashed the user password before persisting to the database
                     var user = new User(
                         {
-                            first_name: req.body.first_name,
-                            last_name: req.body.last_name,
+                            username: req.body.username,
                             email: req.body.email,
                             password: req.body.password
                         });
@@ -105,7 +111,7 @@ exports.user_create_post = [
                                 token,
                                 user: {
                                   id: user._id,
-                                  name: user.name,
+                                  username: user.username,
                                   email: user.email
                                 }
                               })
@@ -113,7 +119,9 @@ exports.user_create_post = [
                             )                            
                         }
                     })   
-               }    
+                 }
+                 });
+               }
             });
         }
     }

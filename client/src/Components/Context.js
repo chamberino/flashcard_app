@@ -10,7 +10,8 @@ export class Provider extends Component {
     // if a an 'authenticatedUser' cookie exists, then state is set to it's value
     // Otherwise the value of authenticatedUser is null and a user will have to sign-in to view
     // private routes
-    authenticatedUser: Cookies.getJSON('authenticatedUser') || null
+    authenticatedUser: Cookies.getJSON('authenticatedUser') || null,
+    searchResults: {}
   };
 
   constructor() {
@@ -23,9 +24,11 @@ export class Provider extends Component {
   // These methods are passed down through context.
 
   render() {
-    const { authenticatedUser } = this.state;
+    const { authenticatedUser, searchResults} = this.state;
     const value = {
       authenticatedUser,
+      searchResults,
+
       data: this.data,
 
       actions: {
@@ -40,10 +43,13 @@ export class Provider extends Component {
         getUsers: this.getUsers,
         getUserDecks: this.getUserDecks,
         getSubjectDecks: this.getSubjectDecks, 
+        getTitleDecks: this.getTitleDecks, 
         createCard: this.createCard,
         deleteCard: this.deleteCard,
         getAuthor: this.getAuthor,
-        getSubjects: this.getSubjects
+        getSubjects: this.getSubjects,
+        searchText: this.searchText,
+        getCriteria: this.getCriteria
       },
     };
     return (
@@ -53,12 +59,12 @@ export class Provider extends Component {
     );
   }
 
-  signIn = async (email, password) => {
+  signIn = async (username, password) => {
     // signIn takes a username and password credentials 
     // to call the getUser() method in Data.js
     // If credentials are valid the returned value will be an object 
     // containing the authenticated users data or will remain null upon failure
-    const user = await this.data.getUser(email, password);
+    const user = await this.data.getUser(username, password);
     if (user.token !== undefined) {
       this.setState(() => {
         return {
@@ -119,6 +125,16 @@ export class Provider extends Component {
     return decks;
   }
 
+  getTitleDecks = async (title) => {
+    const decks = await this.data.getTitleDecks(title);
+    this.setState(() => { 
+      return {
+        searchResults: decks
+      }
+    });
+    return decks;
+  }
+
   getUsers = async () => {
     const users = await this.data.getUsers();
     return users;
@@ -169,6 +185,21 @@ export class Provider extends Component {
     return decks;
   }
 
+  searchText = (input) => {
+    this.setState(() => { 
+      return {
+        searchInput: input
+      }
+    });
+  }
+
+  getCriteria = (input) => {
+    this.setState(() => { 
+      return {
+        searchCriteria: input
+      }
+    });
+  }
 }
 
 export const Consumer = Context.Consumer;

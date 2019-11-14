@@ -9,12 +9,12 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
-const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+// const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 // Display list of all users
 exports.user_list = (req, res) => {
     User.find()
-    .sort([['last_name', 'ascending']])
+    .sort([['username', 'ascending']])
     .exec(function (err, list_users) {
       if (err) { return next(err); }
       res.json({ title: 'User List', user_list: list_users });
@@ -45,7 +45,7 @@ exports.user_detail = (req, res, next) => {
           next(error)
         }
         else {
-        res.json({ user: results.user, userName: results.user.name, user_decks: results.user_decks } );
+        res.json({ user: results.user, username: results.user.username, user_decks: results.user_decks } );
         }
     });
 };
@@ -53,16 +53,19 @@ exports.user_detail = (req, res, next) => {
 // Handle User create on POST
 exports.user_create_post = [
     // Validate fields.
-    check('first_name')
+    // check('first_name')
+    //     .exists({ checkNull: true, checkFalsy: true })
+    //     .withMessage('First name must be specified.'),
+    //     // .isAlphanumeric()
+    //     // .withMessage('First name has non-alphanumeric characters.'),
+    // check('last_name')
+    //     .exists({ checkNull: true, checkFalsy: true })
+    //     .withMessage('Last name must be specified.'),
+    //     // .isAlphanumeric()
+    //     // .withMessage('Last name has non-alphanumeric characters.'),
+    check('username')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('First name must be specified.'),
-        // .isAlphanumeric()
-        // .withMessage('First name has non-alphanumeric characters.'),
-    check('last_name')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Last name must be specified.'),
-        // .isAlphanumeric()
-        // .withMessage('Last name has non-alphanumeric characters.'),
+        .withMessage('Please provide a valid username'),
     check('email')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a valid email'),
@@ -71,8 +74,9 @@ exports.user_create_post = [
         .withMessage('Please provide a password'),    
 
     // Sanitize fields.
-    sanitizeBody('first_name').escape(),
-    sanitizeBody('last_name').escape(),
+    // sanitizeBody('first_name').escape(),
+    // sanitizeBody('last_name').escape(),
+    sanitizeBody('username').escape(),
     sanitizeBody('email').escape(),
     sanitizeBody('password').escape(),
 
@@ -84,36 +88,37 @@ exports.user_create_post = [
         const errors = validationResult(req);
         // If there are validation errors...
         if (!errors.isEmpty()) {
+            // store errors in an array and send in response
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
             return res.json(errorMessages);
-        }
-        else if (!emailRegEx.test(req.body.email)) {
-            const error = ['Please enter a valid address. Example: foo@bar.com'];
-            res.status(400);
-            return res.json(error);
         } else {
-            User.findOne({ 'email': req.body.email })
+            User.findOne({ 'username': req.body.username })
             .exec( function(err, found_user) {
                if (err) { return next(err); }
     
                if (found_user) {
-                 // User exists, redirect to its detail page.
+                 // User exists.
                  res.status(400);
-                    const errorMessages = [];
-                    errorMessages.push('Email already registered')
-                    return res.json(errorMessages);
-               }
-               else {     
+                 res.json('User already registered');
+               } else {
+                 User.findOne({ 'email': req.body.email})
+                 .exec( function(err, found_user) {
+                   if (err) { return next(err); }
+
+                   if (found_user) {
+                     // Email exists.
+                     res.status(400);
+                     res.json('Email already registered');
+                   } else {    
                     // Create a User object with escaped and trimmed data.
+                    // Note that User model hashed the user password before persisting to the database
                     var user = new User(
                         {
-                            first_name: req.body.first_name,
-                            last_name: req.body.last_name,
+                            username: req.body.username,
                             email: req.body.email,
                             password: req.body.password
                         });
-                    // Users' password is hashed in the User model schema before persisting to the database.
                     User.create(user, (error, user) => {
                         if (error) {
                             return next(error)
@@ -128,11 +133,12 @@ exports.user_create_post = [
                               if(err) {
                                 res.json(err)
                               } 
-                              return res.status(201).json({
+                              req.session.token = token;
+                              res.json({
                                 token,
                                 user: {
                                   id: user._id,
-                                  name: user.name,
+                                  username: user.username,
                                   email: user.email
                                 }
                               })
@@ -140,7 +146,9 @@ exports.user_create_post = [
                             )                            
                         }
                     })   
-               }    
+                 }
+                 });
+               }
             });
         }
     }

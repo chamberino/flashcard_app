@@ -33,6 +33,7 @@ import UserSignOut from './Components/UserSignOut';
 import ErrorPage from './Components/Error';
 import Forbidden from './Components/Forbidden'
 import NotFound from './Components/NotFound';
+import TitleDecks from './Components/Decks/TitleDecks';
 
 // Connect the App Component to Context
 import withContext from './Components/Context';
@@ -51,6 +52,7 @@ const SubjectsWithContext = withContext(Subjects);
 const SubjectDetailWithContext = withContext(SubjectDetail);
 const DecksWithContext = withContext(Decks);
 const DeckDetailWithContext = withContext(DeckDetail);
+const TitleDecksWithContext = withContext(TitleDecks);
 
 const CreateDeckTestWithContext = withContext(CreateDeckTest);
 const CreateDeckWithContext = withContext(CreateDeck);
@@ -97,6 +99,7 @@ export default class App extends Component {
           <PrivateRoute path="/decks/:id/updatecard/" component={UpdateCardWithContext} />      
           <Route path="/decks/:id" component={DeckDetailWithContext} />
           <Route exact path="/decks/:id/:cardId" component={Card} />
+          <Route path="/decks/search/:title" component={TitleDecksWithContext} />
 
           <PrivateRoute exact path="/createDeckTest" component={CreateDeckTestWithContext} />
           <Route exact path="/test" component={Test} />

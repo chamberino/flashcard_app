@@ -9,8 +9,7 @@ import Form from './Form';
 export default class UserSignUp extends Component {
 
   state = {
-    first_name: '',
-    last_name: '',
+    username: '',
     email: '',
     password: '',
     errors: [],
@@ -18,8 +17,7 @@ export default class UserSignUp extends Component {
 
   render() {
     const {
-      first_name,
-      last_name,
+      username,
       email,
       password,
       errors,
@@ -35,25 +33,18 @@ export default class UserSignUp extends Component {
             submit={this.submit}
             submitButtonText="Sign Up"
             elements={() => (
-              <React.Fragment>
-              <input 
-                  id="first_name" 
-                  name="first_name" 
-                  type="text"
-                  value={first_name} 
-                  onChange={this.change} 
-                  placeholder="First Name" />
+              <React.Fragment>   
                 <input 
-                  id="last_name" 
-                  name="last_name" 
+                  id="username" 
+                  name="username" 
                   type="text"
-                  value={last_name} 
+                  value={username} 
                   onChange={this.change} 
-                  placeholder="Last Name" />   
+                  placeholder="Username" />
                 <input 
                   id="email" 
                   name="email" 
-                  type="email"
+                  type="text"
                   value={email} 
                   onChange={this.change} 
                   placeholder="Email" />
@@ -63,7 +54,7 @@ export default class UserSignUp extends Component {
                   type="password"
                   value={password} 
                   onChange={this.change} 
-                  placeholder="Password" />                
+                  placeholder="Password" />         
               </React.Fragment>
             )} />        
         </div>      
@@ -91,9 +82,9 @@ export default class UserSignUp extends Component {
     // {/* initialize context variable containing the context props  */}
     const { context } = this.props;
     // unpack username and properties password from state
-    const { first_name, last_name, email, password } = this.state;
+    const { username, email, password } = this.state;
 
-    const user = {first_name, last_name, email, password}
+    const user = {username, email, password}
 
     // call the signIn() function, passing in the users credentials
     // signIn returns the users credentials or null if invalid 
@@ -108,7 +99,7 @@ export default class UserSignUp extends Component {
           // if any error messages, set the error state to the value of the errors
           this.setState({ errors })
         } else {
-          context.actions.signIn(email, password)
+          context.actions.signIn(username, password)
             .then((errors) => {
               console.log(errors)
               if (errors.length) {
@@ -117,7 +108,7 @@ export default class UserSignUp extends Component {
               } else {
                 console.log('here')
                 this.props.history.push('/decks');
-                console.log(`SUCCESS! ${email} is now signed in!`);
+                console.log(`SUCCESS! ${username} is now signed in!`);
               }
             })
             .catch((err) => {

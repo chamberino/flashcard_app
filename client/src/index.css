@@ -412,3 +412,31 @@ a.header-links-2 {
   background-color: #3CCFCF;
   /* border: 1px solid tomato; */
 }
+
+.searchBar {
+  height: 40px;
+  width: 225px;
+  display: flex;
+}
+
+.search {
+  height: auto;
+  border: 1px solid #FFF;
+  border-left-width: 0.5px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+#criteria-select {
+  height: auto;
+  width: 75px;
+  border: 1px solid #FFF;
+  border-right-width: 0.5px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.searchIcon:hover,
+.closeIcon:hover  {
+  cursor: pointer;
+}

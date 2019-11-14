@@ -35,7 +35,7 @@ export default class UserDetail extends Component {
           return null; 
         } else {
           this.setState({
-            name: decks.userName,
+            name: decks.username,
             decks: decks.user_decks,
             loading: false
           })

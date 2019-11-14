@@ -5,18 +5,17 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   _id: {type: Schema.Types.ObjectId, required: false, auto: true},
-  first_name: {type: String, required: true, maxlength: 50, trim: true},
-  last_name: {type: String, required: true, maxlength: 50, trim: true},
+  username: {type: String, required: true, maxlength: 50, trim: true},
   email: {type: String, required: true, maxlength: 50, trim: true},
   password: {type: String, unique: true, required: true, minlength: 4}
 });
 
 // Virtual for user's full name
-UserSchema
-.virtual('name')
-.get(function() {
-    return this.first_name + ' ' + this.last_name;
-});
+// UserSchema
+// .virtual('name')
+// .get(function() {
+//     return this.first_name + ' ' + this.last_name;
+// });
 
 // Virtual for user's URL
 UserSchema
@@ -26,8 +25,8 @@ UserSchema
 });
 
 // authenticate input against database documents
-UserSchema.statics.authenticate = function(email, password, callback) {
-    User.findOne({ email: email })
+UserSchema.statics.authenticate = function(username, password, callback) {
+    User.findOne({ username: username })
         .exec( function(error, user) {
             if (error) {
                 return callback(error)

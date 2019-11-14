@@ -31,8 +31,8 @@ export default class Data {
   
     // getUser takes the users credentials and makes a GET request to the API
     // If successful the users data will be returned, otherwise the function will return null or any errors.
-    async getUser(email, password) {
-      const response = await this.api(`/user/login`, 'POST', { email, password }, false, null, 'http://localhost:4000');
+    async getUser(username, password) {
+      const response = await this.api(`/user/login`, 'POST', { username, password }, false, null, 'http://localhost:4000');
       if (response.status === 200) {
         return response.json().then(data => data);
       }
@@ -332,6 +332,24 @@ export default class Data {
       }
     }
     
+
+    // (path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000')
+    async getTitleDecks(title) {
+      const response = await this.api(`/decks/search/${title}`, 'GET', null, false);
+      // Send GET request to API to retrieve data for an user's decks
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const decks = await response.json();
+        return decks;
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
   }
   
   

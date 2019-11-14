@@ -36,8 +36,8 @@ exports.index = function(req, res) {
 
 // Display list of all decks.
 exports.deck_list = function(req, res, next) {
-    Deck.find({}, 'title user')
-    .populate('user', '_id first_name last_name')
+    Deck.find({}, 'title user subject')
+    .populate('user', '_id username')
     .exec(function (err, deck_list) {
       if (err) { 
             // Log error and set status code if there's a problem retrieving the decks
@@ -50,6 +50,21 @@ exports.deck_list = function(req, res, next) {
     });
 };
 
+exports.decks_title = function(req, res, next) {
+    // const title = mongoose.Types.ObjectId(req.params.title);
+    Deck.find({ title: { $regex: '.*' + req.params.title + '.*', $options: 'i' } }, 'title user subject')
+    .populate('user', '_id username')
+    .exec(function (err, deck_list) {
+      if (err) { 
+            // Log error and set status code if there's a problem retrieving the decks
+            const error = new Error('There was an error retrieving the decks'); //throw custom error    
+            error.status = 400;
+            next(error); // pass error along to global error handler
+       }
+      //Successful, so send data
+      res.json({deck_list});
+    });
+};
 // // Display detail page for a specific deck.
 // exports.deck_detail = function(req, res, next) {
 //         const id = mongoose.Types.ObjectId(req.params.id);
@@ -86,7 +101,7 @@ exports.deck_detail = [
         const id = mongoose.Types.ObjectId(req.params.id);
         try {
             const deck = await Deck.findById(id)
-            .populate('user', '_id first_name last_name')
+            .populate('user', '_id username')
             .populate('subject')
             if (deck == null) {
                 var err = new Error('Deck not found');

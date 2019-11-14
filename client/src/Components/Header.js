@@ -1,5 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Search from './Search';
+import withContext from './Context';
+
+const SearchWithContext = withContext(Search);
 
 /* 
 Header- Displays the top menu bar for the application and includes 
@@ -15,8 +19,9 @@ export default (props) => {
       <div className="bounds">
 
         <Link to="/decks"><h1 className="header--logo"><strong>Quiz</strong>Wiz™</h1></Link>
+        
         <nav>
-            
+          <SearchWithContext />
         {/* Ternary operator checks if authenticatedUser is set in props */}
         {(props.context.authenticatedUser)  ? (
             <React.Fragment>

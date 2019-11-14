@@ -95,9 +95,9 @@ app.post('/token', (req, res) => {
 // Tutorial on JWT (JSON Web Tokens)
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
 app.post('/user/login', [
-  check('email')
+  check('username')
     .exists({ checkNull: true, checkFalsy: true })
-    .withMessage('Email required'),
+    .withMessage('Username required'),
   check('password')
     .exists({ checkNull: true, checkFalsy: true })
     .withMessage('Password required'),
@@ -112,7 +112,7 @@ app.post('/user/login', [
         errors.array().forEach(error => errorMessages.push(error.msg))
         return res.json(errorMessages)
   } else {
-    User.findOne({email: req.body.email})
+    User.findOne({username: req.body.username})
     .then((user)=>{
       if (!user) {        
         const errorMessages = [];
@@ -141,7 +141,7 @@ app.post('/user/login', [
           //         user: {
           //           id: user._id,
           //           name: user.name,
-          //           email: user.email
+          //           username: user.username
           //         }
           //       })
           //     }
@@ -154,7 +154,7 @@ app.post('/user/login', [
                     user: {
                       id: user._id,
                       name: user.name,
-                      email: user.email
+                      username: user.username
                     }
                   })
           } else {

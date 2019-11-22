@@ -146,7 +146,7 @@ componentWillMount() {
 
   render() {
     return (    
-      <div>
+      <div class="main-content">
       {/* Provide a loading message or render the DeckDetailContainer Component.*/}
       <Switch>
         {

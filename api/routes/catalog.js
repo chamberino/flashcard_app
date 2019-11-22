@@ -75,6 +75,9 @@ router.get('/subject/:id', subject_controller.subject_detail);   ///****/
 // GET request for list of all Subject.
 router.get('/subjects', subject_controller.subject_list);     ///****/
 
+// GET request for list of subjects via req.params.id
+router.get('/subjects/search', subject_controller.subject_search);     ///****/
+
 /// CARD ROUTES ///
 
 // post route for creating card using decks id

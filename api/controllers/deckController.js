@@ -3,7 +3,7 @@ var User = require('../models/user');
 var Subject = require('../models/subject');
 var Card = require('../models/card');
 var mongoose = require('mongoose');
-const { check, checkIf, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 
 mongoose.Promise = global.Promise;
@@ -383,19 +383,8 @@ exports.deck_updateWithCards_put = [
             res.status(400);
             return res.json(errorMessages);
         }  else {
-            // Deck.findByIdAndUpdate(req.params.id, req.body, {upsert:false}, function(err,doc) {
-            //     if(err) {
-            //         res.json([err])
-            //     } else {
-                console.log('PASSED VALIDATION', req.body)
-                    next()
-            //     }
-            // }).catch((error)=>{
-            //     if (error) {
-            //         // catch any other errors and pass errors to global error handler
-            //         next(error);
-            //     }
-            // })
+            console.log('PASSED VALIDATION', req.body)
+            next()
         }
     },
 

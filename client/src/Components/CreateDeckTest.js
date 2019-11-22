@@ -9,6 +9,8 @@ export default class CreateDeckWithContext extends Component {
     super(props);
   this.state= {
   cards: [{ question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}],
+  allSubjects: [],
+  filteredSubjects: [],
   subjects: [],
   subjectsArray: [],
   select: [],
@@ -244,6 +246,26 @@ componentDidMount() {
       // catch errors and push new route to History object
       this.props.history.push('/error');
     })
+    
+    this.props.context.actions.getAllSubjects()
+    .then(subjects=>{
+      let arrayOfObjects = [];
+      let subjectsArray = [];      
+      subjects.subject_list.forEach( (subject, i) => { 
+        // For each subject returned from db, push to arrayOfObjects
+        arrayOfObjects.push({name: subject.name, value:subject._id, key:i,})
+        subjectsArray.push({label: subject.name, value: subject._id})
+      });
+      // subjectsArray.push = [{label: "Other subject", value: 123}];
+      this.setState({
+        allSubjects: arrayOfObjects,
+        allSubjectsArray: subjectsArray
+      })
+
+    }).catch((error)=>{
+      // catch errors and push new route to History object
+      this.props.history.push('/error');
+    })
 }
 
   render() {
@@ -329,6 +351,11 @@ componentDidMount() {
               ? <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-disabled'/ >  
               : <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-enabled'/ >  
             }
+            {
+              this.state.filteredSubjects.map((subject) => (
+                <p key={subject.key}>{subject.name}</p>
+              ))
+            }
             </div>
             
           <div className="deck--header2"><div className="errorMessage">{this.state.subjectError.message}</div></div>
@@ -373,7 +400,7 @@ componentDidMount() {
                 className={this.state.questionErrors[idx].styling}                
                 // key={idx+1}
               />
-              Term
+              TERM
             </label>
             <div className="errorMessage">{this.state.questionErrors[idx].message}</div>
             <label>
@@ -386,7 +413,7 @@ componentDidMount() {
               className={this.state.answerErrors[idx].styling}
               // key={idx+1}
             />
-            Definition
+            DEFINITION
             </label>
             <div className="errorMessage">{this.state.answerErrors[idx].message}</div>
             <label>
@@ -398,7 +425,7 @@ componentDidMount() {
               onChange={this.handleCardHintChange(idx)}
               // key={idx+1}
             />
-            Hint
+            HINT
             </label>
             <button
               type="button"
@@ -438,10 +465,11 @@ componentDidMount() {
         [name]: value,      
       };
     });
+    this.searchFilter(value)
   }
 
   subjectChange = (event) => {
-    // Any changes made in the input fields will update it's corresponding property in state    
+    // Any changes made in the input fields will update it's corresponding property in state   
     const value = event.value;
     this.setState(() => {
       return {
@@ -475,6 +503,23 @@ componentDidMount() {
       };
     });
     }
+  }
+
+  searchFilter = (value) => {
+    console.log(value)
+    let filteredSubjects = [];
+    this.state.allSubjects.forEach( (subject) => {
+        if (value.length > 1 && subject.name.toUpperCase().indexOf(value.toUpperCase()) > -1) {
+          filteredSubjects.push(subject)
+          this.setState(
+        {filteredSubjects: filteredSubjects}
+      )
+        } if (value.length <= 1) {
+          this.setState(
+        {filteredSubjects: []}
+      )
+        }
+      })
   }
 
   submit = () => {

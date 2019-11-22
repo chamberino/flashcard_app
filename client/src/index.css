@@ -153,8 +153,8 @@ textarea:focus {
 }
 
 label {
-  color: #636363;
-  font-size: 1em;
+  color: #97A5AA;
+  font-size: .9em;
   position: relative;
 }
 
@@ -167,8 +167,32 @@ label {
 
 .header {
   background-color: #5C71B5;
+  /* position: fixed; */
+  /* height: 3em; */
   display: flex;
+  width: 100%;
+  transition: .5s;
+  z-index: 100000;
+  opacity: 1;
+  padding: .5em 0px
 }
+
+.scrolled {
+  /* position: fixed; */
+  /* padding: 0; */
+}
+
+.main-content {
+  /* padding: 12px; */
+}
+
+.scrolled + .main-content {
+  /* padding-top: 50px; */
+}
+
+/* .main:nth-child(2) {
+  display: none;
+} */
 
 form {
   /* display: block; */
@@ -182,7 +206,7 @@ form {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 1em;
+  margin: .5em;
   width: 100%;
 }
 
@@ -220,7 +244,7 @@ a.header-links {
   background-color: #F0F0F0;
   padding: 1em 2em;
   padding-top: .25em;
-  padding-bottom: 0;
+  padding-bottom: 1em;
   margin-top: 2em;
 }
 
@@ -240,11 +264,16 @@ a.header-links {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  align-items: center;
+  /* align-items; */
+}
+
+.card--question, .card--hint {
+  align-self: center;
+  /* margin-top: 4em; */
 }
 
 .card--question {
-  /* align-self: center; */
+  align-self: center;
   /* margin-top: 4em; */
 }
 
@@ -255,6 +284,8 @@ a.header-links {
   padding-bottom: 2em;
   height: 6em;
   cursor: pointer;
+  border: 1px solid #e2e0e0;
+  border-radius: 4px;
 }
 
 input {
@@ -366,6 +397,13 @@ input {
   stroke-width: 1;
 }
 
+
+.svg-icon-hint path,
+.svg-icon-hint polygon,
+.svg-icon-hint rect {
+fill: #ffd400;
+}
+
 .trash {
   margin-top: .75em;
 }
@@ -469,7 +507,8 @@ a.deck--link {
   text-decoration: none;
 }
 
-.deck--title {
+.deck--title--play {
+  font-size: 1.5em;
   /* padding: 2em; */
   background-color: #fff;
 }
@@ -502,6 +541,34 @@ a.header-links-2 {
   padding: 1em 0;
 }
 
+.form-buttons-update {
+  display: none;
+  justify-content: flex-end;
+  font-size: .9em;
+  font-weight: bold;
+  /* width: 100%; */
+  margin-right: 1.8em;
+  /* padding: 1em 0; */
+}
+
+.form-buttons-update button {
+  width: 20%;
+  font-size: .9em;
+  margin: 0;
+  margin: 0 1em 0 .5em;
+}
+
+.form-buttons-update button:hover {
+  width: 20%;
+  font-size: .9em;
+  background-color: #2dbcbc;
+  color: #fff;
+}
+
+.form-buttons-hide {
+  display: none;
+}
+
 .button.create {
   width: 25%;
   margin-right: 3.2em;
@@ -512,17 +579,18 @@ a.header-links-2 {
 }
 
 .form-buttons-login {
-  font-size: .9em;
+  /* font-size: .9em; */
   font-weight: bold;
-  background-color: #fff;
-  padding: 1em 0;
+  /* background-color: #fff; */
+  /* padding: 1em 0; */
 }
 
 .form-buttons-login button:hover {
-  font-size: .9em;
+  /* font-size: .9em; */
   font-weight: bold;
-  background-color: #fff;
-  padding: 1em 0;
+  background-color: #4257b2;
+  color: #fff;
+  /* padding: 1em 0; */
 }
 
 .signup-login-input {
@@ -540,7 +608,8 @@ a.header-links-2 {
   color: #3CCFCF;
   border: 2px solid #3CCFCF;
   font-size: 1em;
-}
+} 
+
 
 .cancel-deck {
   display: none;
@@ -621,19 +690,31 @@ a.header-links-2 {
 
 .edit-card-options-container {
   padding: 0 2em; 
+
 }
 
 .edit-card-options {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: flex-end; */
+  align-items: center;
+  padding: 0 0 1em 0;
 }
 
 .edit-card-options a.button {
   font-size: .8em;
-  color: #fff;
-  padding: 1em;
-  background-color: #5C71B5; 
-  /* border: 2px solid #3CCFCF; */
+  font-weight: bold;
+  color: #455358;
+  transition: .25s;
+}
+
+.edit-card-options a.button:hover {
+  font-size: .8em;
+  font-weight: bold;
+  color: #FFCD1E;
+}
+
+.edit-card-options svg {
+ margin-bottom: -.5em;
 }
 
 .card-options {
@@ -641,11 +722,17 @@ a.header-links-2 {
   justify-content: center;
 }
 
-.hint-card {
+.edit-card-icons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* .hint-card {
   align-self: flex-end;
   margin-bottom: 3em;
   margin: 4em;
-}
+} */
 
 button.next-card,
 button.previous-card,
@@ -707,3 +794,126 @@ button.flip-card:hover {
   rotate: 100px;
 }
 
+.edit-card-options-container {
+  /* height: 10em; */
+  /* background-color: #f0f0f0; */
+}
+
+.author-link {
+  transition: .3s;
+  display: inline-block;
+  padding: 2em;
+  font-size: .9em;
+  font-weight: bold;
+  /* margin-top: 2em; */
+}
+
+.author-link:hover {
+  color: #ffcd1f;
+}
+
+.update-card input:disabled {
+  padding: .5em;
+  border: none;
+  pointer-events:none;
+}
+
+button.show-hint {
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+#question, #answer {
+  padding-top: 1em;
+}
+
+.update-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  align-items: flex-start;
+}
+
+.update-card input {
+  display: inline-block;
+}
+
+.svg-flex {
+  align-self: flex-end;
+}
+
+.svg-icon-edit {
+  width: 1.25em;
+  height: 1.25em; 
+  padding-left: 2em;
+}
+
+.svg-icon-edit path,
+.svg-icon-edit polygon,
+.svg-icon-edit rect {
+fill:#4691f6;
+}
+
+.svg-edit-inactive {
+  width: 1.25em;
+  height: 1.25em; 
+}
+
+.svg-edit-inactive path,
+.svg-edit-inactive polygon,
+.svg-edit-inavtice rect {
+width: 1.5em;
+height: 1.5em;  
+fill:#455358;
+transition: .25s
+}
+
+.svg-edit-inactive:hover path,
+.svg-edit-inactive:hover polygon,
+.svg-edit-inavtice:hover rect {
+width: 1.5em;
+height: 1.5em;  
+fill:#FFCD1E;
+}
+
+.svg-edit-active path,
+.svg-edit-active polygon,
+.svg-edit-active rect {
+  width: 1.5em;
+  height: 1.5em;  
+  fill: #FFCD1E;
+}
+
+.inputs {
+  width: 100%;
+}
+
+.svg-icon-menu {
+  width: 1.25em;
+  height: 1.25em; 
+  margin: 0 .5em -.25em .25em;
+}
+
+.svg-icon-menu path,
+.svg-icon-menu polygon,
+.svg-icon-menu rect {
+fill:#fff;
+transition: .5s
+}
+
+.svg-icon-menu:hover path,
+.svg-icon-menu:hover polygon,
+.svg-icon-menu:hover rect {
+fill:#969494;
+}
+
+
+.toolbar {
+  position: fixed;
+  width: 100%;
+  background: #521751;
+}
+
+.nav-items {
+
+}

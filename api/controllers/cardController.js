@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 var Deck = require('../models/deck');
 var mongoose = require('mongoose');
-const { body,validationResult } = require('express-validator');
+const { check, body,validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 
 // Display detail page for a specific Card.
@@ -113,12 +113,12 @@ exports.card_update_put = [
 
     // Validate fields.
     body('question', 'Question must be specified').isLength({ min: 1 }).trim(),
-    body('hint', 'Hint must be specified').isLength({ min: 1 }).trim(),
+    // body('hint', 'Hint must be specified').isLength({ min: 1 }).trim(),
     body('answer', 'Answer must be specified').isLength({ min: 1 }).trim(),
-    
+
     // Sanitize fields.
     sanitizeBody('question').escape(),
-    sanitizeBody('hint').escape(),
+    sanitizeBody('hint').trim().escape(),
     sanitizeBody('answer').trim().escape(),
     
     // Process request after validation and sanitization.
@@ -130,6 +130,7 @@ exports.card_update_put = [
         if (!errors.isEmpty()) {
             const errorMessages = errors.array().map(error => error.msg);
             res.status(400);
+            console.log(errorMessages)
             return res.json(errorMessages);
         }   else {
             const card =
@@ -139,10 +140,18 @@ exports.card_update_put = [
             hint: req.body.hint,
             answer: req.body.answer
            }
+           if (card.hint.length < 1 || card.hint === undefined) {
+            delete card.hint
+        }
+        console.log(card)
             Card.findByIdAndUpdate(req.params.id, card, {upsert:false}, function(err,doc) {
                 if(err) {
                     res.json([err])
                 } else {
+                    if (!card.hint) {
+                        doc.hint = undefined;
+                        doc.save();
+                    }
                     res.status(204).end();
                 }
             })

@@ -315,6 +315,23 @@ export default class Data {
       }
     }
 
+    async getAllSubjects() {
+      const response = await this.api(`/subjects/search`, 'GET', null, false);
+      // Send GET request to API to retrieve list of subjects in database
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const subjects = await response.json();
+        return subjects;
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
     async getSubjectDecks(id) {
       const response = await this.api(`/subject/${id}`, 'GET', null, false);
       // Send GET request to API to retrieve data for an user's decks

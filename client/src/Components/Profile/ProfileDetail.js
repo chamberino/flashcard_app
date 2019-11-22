@@ -50,7 +50,7 @@ export default class ProfileDetail extends Component {
   render() {
 
     return (         
-      <div className="deck-list-container">
+      <div className="deck-list-container main-content">
         <Switch>
         {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
         {

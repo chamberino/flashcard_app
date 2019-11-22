@@ -4,7 +4,7 @@ const async = require('async');
 const mongoose = require('mongoose');
 const validator = require('express-validator');
 
-// Display list of all Subjects.
+// Display list of all primary Subjects.
 exports.subject_list = (req, res, next) => {
     Subject.find({isPrimarySubject: true})
     .sort([['name', 'ascending']])
@@ -12,6 +12,16 @@ exports.subject_list = (req, res, next) => {
       if (err) { return next(err); }
       res.json({ title: 'Subject List', subject_list: list_subjects });
     });
+};
+
+// Display list of ALL Subjects.
+exports.subject_search = (req, res, next) => {
+  Subject.find()
+  .sort([['name', 'ascending']])
+  .exec(function (err, list_subjects) {
+    if (err) { return next(err); }
+    res.json({ title: 'Subject List', subject_list: list_subjects });
+  });
 };
 
 // Display detail page for a specific Subject.

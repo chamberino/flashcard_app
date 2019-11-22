@@ -43,7 +43,8 @@ export class Provider extends Component {
         createCard: this.createCard,
         deleteCard: this.deleteCard,
         getAuthor: this.getAuthor,
-        getSubjects: this.getSubjects
+        getSubjects: this.getSubjects,
+        getAllSubjects: this.getAllSubjects
       },
     };
     return (
@@ -161,6 +162,11 @@ export class Provider extends Component {
 
   getSubjects = async () => {
     const subjects = await this.data.getSubjects()
+    return subjects;
+  }
+
+  getAllSubjects = async () => {
+    const subjects = await this.data.getAllSubjects()
     return subjects;
   }
 

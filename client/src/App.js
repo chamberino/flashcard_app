@@ -9,6 +9,7 @@ import {
 
 // Import App Components
 import Header from './Components/Header';
+// import Toolbar from './Components/Toolbar';
 import Test from './Components/Test';
 import CreateDeckTest from './Components/CreateDeckTest';
 import ProfileDetail from './Components/Profile/ProfileDetail';
@@ -70,6 +71,7 @@ export default class App extends Component {
       <div className="main">
       <BrowserRouter>
         <HeaderWithContext />
+        {/* <Toolbar /> */}
         <Switch>     
           <Route exact path="/" render={ () => <Redirect to="/profile/" /> } />
 

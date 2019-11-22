@@ -46,19 +46,21 @@ export default class Decks extends Component {
   render() {
 
     return (         
-      <div className="deck-list-container">
-      <Route exact path="/decks/" render= {() => <NewDeckLink />} />
-      <Switch>
-      {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
-      {
-        (this.state.loading)
-        ? <Route exact path="/decks" render= {() => <p>Loading...</p>  } />
-        : <Route exact path="/decks" render= {()=><DeckContainer data={this.state.decks}/> } />
-      } 
-      </Switch>
-      {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}
-        <div className="main-content">
-        </div>  
+      <div className="main-content">
+        <div className="deck-list-container">
+        <Route exact path="/decks/" render= {() => <NewDeckLink />} />
+        <Switch>
+        {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
+        {
+          (this.state.loading)
+          ? <Route exact path="/decks" render= {() => <p>Loading...</p>  } />
+          : <Route exact path="/decks" render= {()=><DeckContainer data={this.state.decks}/> } />
+        } 
+        </Switch>
+        {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}
+          <div className="main-content">
+          </div>  
+        </div>
       </div>
     );
   }

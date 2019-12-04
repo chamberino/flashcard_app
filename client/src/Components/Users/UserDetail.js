@@ -35,7 +35,7 @@ export default class UserDetail extends Component {
           return null; 
         } else {
           this.setState({
-            name: decks.userName,
+            name: decks.username,
             decks: decks.user_decks,
             loading: false
           })
@@ -50,7 +50,7 @@ export default class UserDetail extends Component {
   render() {
 
     return (         
-      <div className="deck-list-container">
+      <div className="deck-list">
         <Switch>
         {/* Ternary operator determined whether to display loading message or render DeckContainer Component */}
         {

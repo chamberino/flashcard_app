@@ -10,7 +10,7 @@ for each user containing the respective data
 const ProfileContainer = (props) => {
     let users = props.data.map( (result) => { 
       // For each user received in props, return a User component with relevant data
-      return <User name={`${result.first_name} ${result.last_name}`} id={result._id} key={result._id}/>
+      return <User name={`${result.username}`} id={result._id} key={result._id}/>
     });
     return(
         <div className="user-list">

@@ -10,8 +10,13 @@ import { Link } from 'react-router-dom';
 const Deck = props => (
   <div>
     <Link className="deck--module deck--link" to={'/decks/' + props.id}>
-            <div className="deck"><h3 className="deck--title">{props.title}</h3></div>
+            <div className="deck"><h3 className="deck--title">{props.title}</h3>
+            <p className="deck--user" >{props.user}</p></div>
       </Link>
+      
+      {/* <Link className="deck--module deck--link" to={'/users/' + props.user}>
+            <div className="deck"><h3 className="deck--title">{props.user}</h3></div>
+      </Link> */}
   </div>
 );
 

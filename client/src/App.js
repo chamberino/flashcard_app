@@ -9,7 +9,7 @@ import {
 
 // Import App Components
 import Header from './Components/Header';
-// import Toolbar from './Components/Toolbar';
+// import Menu from './Components/Menu';
 import Test from './Components/Test';
 import CreateDeckTest from './Components/CreateDeckTest';
 import ProfileDetail from './Components/Profile/ProfileDetail';
@@ -19,6 +19,7 @@ import Subjects from './Components/Subjects/Subjects';
 import SubjectDetail from './Components/Subjects/SubjectDetail';
 import Decks from './Components/Decks/Decks';
 import DeckDetail from './Components/DeckDetail/DeckDetail';
+import DeckSearch from './Components/Decks/DeckSearch';
 import Card from './Components/Card';
 import CreateDeck from './Components/CreateDeck';
 import UpdateDeck from './Components/UpdateDeck';
@@ -46,6 +47,7 @@ const UserSignOutWithContext = withContext(UserSignOut);
 const ProfileDetailWithContext = withContext(ProfileDetail);
 const UsersWithContext = withContext(Users);
 const UserDetailWithContext = withContext(UserDetail);
+const DeckSearchWithContext = withContext(DeckSearch);
 const SubjectsWithContext = withContext(Subjects);
 const SubjectDetailWithContext = withContext(SubjectDetail);
 const DecksWithContext = withContext(Decks);
@@ -71,13 +73,16 @@ export default class App extends Component {
       <div className="main">
       <BrowserRouter>
         <HeaderWithContext />
-        {/* <Toolbar /> */}
+        {/* <Menu /> */}
         <Switch>     
           <Route exact path="/" render={ () => <Redirect to="/profile/" /> } />
 
           <Route path="/signin" component={UserSignInWithContext} />
           <Route path="/signup" component={UserSignUpWithContext} />
           <Route path="/signout" component={UserSignOutWithContext} />
+
+          <Route path="/decksearch/:category/:term" component={DeckSearchWithContext} />
+
 
           {/* <Route exact path="/profile" component={ProfileWithContext} /> */}
           <PrivateRoute exact path="/profile" component={ProfileDetailWithContext} />

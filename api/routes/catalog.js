@@ -24,6 +24,9 @@ const mid = require('../middleware/index');
 // GET home page. Gets a count of all the Models in our DB.
 router.get('/', deck_controller.index);
 
+// GET request for searching users, subjects, and decks
+router.get('/decksearch/:category/:term', deck_controller.deck_search)
+
 // GET request for list of all Deck items.
 router.get('/decks', deck_controller.deck_list);   ///****/
 

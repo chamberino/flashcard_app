@@ -34,10 +34,76 @@ exports.index = function(req, res) {
     });
 };
 
+exports.deck_search = function(req, res, next) {
+    const { category, term } = req.params;
+    let name = 'name';
+    if (category === 'user') {
+        name = 'username';
+    }
+
+    if (category !== 'title') {
+        const model = mongoose.model(category.replace(/^\w/, c => c.toUpperCase()));
+        model.find({ [name]: { $regex: '.*' + term + '.*', $options: 'i' } }, `_id ${name}`)
+        .exec( function (err, subject_list) {
+            if (err) {
+                // Log error and set status code if there's a problem retrieving the decks
+                const error = new Error('There was an error retrieving the decks'); //throw custom error    
+                error.status = 400;
+                next(error); // pass error along to global error handler
+            }
+            // Successful, so use subject ID's to query deck model
+            Deck.find({ [category]: { $in: subject_list.map(subject => subject._id)} 
+                }, 'title user subject')
+                .populate('user', '_id username')
+                .exec(function (err, deck_list) {
+                if (err) { 
+                        // Log error and set status code if there's a problem retrieving the decks
+                        const error = new Error('There was an error retrieving the decks'); //throw custom error    
+                        error.status = 400;
+                        next(error); // pass error along to global error handler
+                }
+                //Successful, so send data
+                res.json({deck_list});
+                });
+            });
+    } else {
+        Deck.find({ [category]: { $regex: '.*' + term + '.*', $options: 'i' } }, 'title user subject')
+            .populate('user', '_id username')
+            .exec(function (err, deck_list) {
+            if (err) { 
+                    // Log error and set status code if there's a problem retrieving the decks
+                    const error = new Error('There was an error retrieving the decks'); //throw custom error    
+                    error.status = 400;
+                    next(error); // pass error along to global error handler
+            }
+            //Successful, so send data
+            res.json({deck_list});
+            });
+    }
+}
+
+exports.userSearch = function(req, res, next) {
+    const {category, term} = req.params;
+
+    // const title = mongoose.Types.ObjectId(req.params.title);
+    User.find({ [category]: { $regex: '.*' + term + '.*', $options: 'i' } }, 'title user subject')
+    .populate('user', '_id username')
+    .exec(function (err, deck_list) {
+      if (err) { 
+            // Log error and set status code if there's a problem retrieving the decks
+            const error = new Error('There was an error retrieving the decks'); //throw custom error    
+            error.status = 400;
+            next(error); // pass error along to global error handler
+       }
+      //Successful, so send data
+      res.json({deck_list});
+    });
+};
+
 // Display list of all decks.
 exports.deck_list = function(req, res, next) {
     Deck.find({}, 'title user')
-    .populate('user', '_id first_name last_name')
+    .populate('user', '_id username')
     .exec(function (err, deck_list) {
       if (err) { 
             // Log error and set status code if there's a problem retrieving the decks
@@ -86,7 +152,7 @@ exports.deck_detail = [
         const id = mongoose.Types.ObjectId(req.params.id);
         try {
             const deck = await Deck.findById(id)
-            .populate('user', '_id first_name last_name')
+            .populate('user', '_id username')
             .populate('subject')
             if (deck == null) {
                 var err = new Error('Deck not found');
@@ -661,4 +727,8 @@ if (!errors.isEmpty()) {
         });
     }
 
+
+
 ]
+
+

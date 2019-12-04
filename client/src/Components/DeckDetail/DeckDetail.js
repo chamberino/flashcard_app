@@ -7,6 +7,9 @@ import withContext from '../Context';
 import DeckDetailContainer from './DeckDetailContainer';
 // import NotFound from '../NotFound';
 
+import { fadeInRight, fadeInLeft, flipInX, flipOutX } from 'react-animations';
+import Radium, {StyleRoot} from 'radium';
+
 const DeckDetailContainerWithContext = withContext(DeckDetailContainer);
 
 
@@ -30,6 +33,23 @@ export default class DeckDetail extends Component {
   // Super allows us to use the keyword 'this' inside the constructor within the context of the app class
     super();
     this.state= {
+      fade: {},
+      fadeInRight: {
+        animation: 'x 2s',
+        animationName: Radium.keyframes(fadeInRight, 'fadeInRight')
+      },
+      fadeInLeft: {
+        animation: 'x 2s',
+        animationName: Radium.keyframes(fadeInLeft, 'fadeInLeft')
+      },
+      flipInX: {
+        animation: 'x 2s',
+        animationName: Radium.keyframes(flipInX, 'flipInX')
+      },
+      flipOutX: {
+        animation: 'x 2s',
+        animationName: Radium.keyframes(flipOutX, 'flipOutX')
+      },
       sideOfCard: '',  
       hint: null,
       id: props.match.params.id,
@@ -51,8 +71,15 @@ export default class DeckDetail extends Component {
 
   nextCard = () => {
     if (this.state.score < this.state.amountOfCards-1) {  
-        
+      // document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running fadeInRight-radium-animation-2beba6ab";
+      document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running fadeInRight-radium-animation-2beba6ab";
+
+      setTimeout(() => { 
+        document.querySelector('.card-container').style.animation = null;
+    }, 500);
+
         this.setState( prevState => ({
+        fade: this.state.fadeInRight,  
         score: prevState.score + 1,
         sideOfCard: 'question',
         hint: null
@@ -62,7 +89,13 @@ export default class DeckDetail extends Component {
 
   previousCard = () => {
     if (this.state.score > 0) {  
+      document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running fadeInLeft-radium-animation-1685c3c6";
+      setTimeout(() => { 
+        document.querySelector('.card-container').style.animation = null;
+    }, 500);
+
         this.setState( prevState => ({  
+        fade: this.state.fadeInLeft,
         score: prevState.score - 1,
         sideOfCard: 'question',
         hint: null
@@ -73,12 +106,27 @@ export default class DeckDetail extends Component {
 flipCard = () => {
   this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
   if (this.state.sideOfCard === 'question') {  
+    document.querySelector('.card-container').style.animation = "2s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
+    setTimeout(() => { 
+      document.querySelector('.card-container').style.animation = null;
+  }, 500);
+
       this.setState( prevState => ({  
-      sideOfCard: 'answer'
+      sideOfCard: 'answer',
+      fade: this.state.flipInX,
       }));
   } else {
+    document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipOutX-radium-animation-2af0a5f5";
+    document.querySelector('.card--question').style.display = "none"
+    // document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
+    setTimeout(() => { 
+      document.querySelector('.card-container').style.animation = null;
+      document.querySelector('.card--question').style.display = ""
+  }, 500);
+
     this.setState( prevState => ({  
-      sideOfCard: 'question'
+      sideOfCard: 'question',
+      fade: this.state.flipOutX,
       }));
   }
 }
@@ -95,7 +143,7 @@ showHint = () => {
   }
 }
 
-componentWillMount() {
+componentDidMount() {
   // If user is signed in, set an authenticatedUser property with the users id. This will be sent to the 
   // DeckDetailContainer Component to determine which options will be available to the user.
   if (this.props.context.authenticatedUser) {
@@ -110,17 +158,21 @@ componentWillMount() {
           this.props.history.push(`/notfound`);
           return null;
         } else {
-          this.setState({
+          this.setState({              
               hint: null,
               sideOfCard: 'question',
               amountOfCards: deck.cards.length,
               deck: deck,
               authorId: deck.deck.user._id,
               deckTitle: deck.title,
-              deckCreator: deck.deck.user.first_name + ' ' + deck.deck.user.last_name,
+              deckCreator: deck.deck.user.username,
               loading: false,
               jsx: <Route exact path="/decks/:id" render = {({match})=> 
                   <DeckDetailContainerWithContext
+                      fade={this.state.fade}
+                      fadeInRight={this.state.fadeInRight}
+                      fadeInLeft={this.state.fadeInLeft}
+                      flipInX={this.state.flipInX}
                       authenticatedUserId={this.state.authenticatedUser} 
                       authorId={this.state.authorId}  
                       hint={this.state.hint}
@@ -146,7 +198,7 @@ componentWillMount() {
 
   render() {
     return (    
-      <div class="main-content">
+      <div className="main-content">
       {/* Provide a loading message or render the DeckDetailContainer Component.*/}
       <Switch>
         {

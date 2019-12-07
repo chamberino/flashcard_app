@@ -2,7 +2,7 @@
     "name": "flashcard-app",
     "version": "1.0.0",
     "scripts": {
-      "start": "cd api && nodemon && cd ../client && npm start",
+      "start": "node api/bin/www",
       "heroku-postbuild": "cd client && npm install --only=dev && npm run build && cd ../api && npm install"
     },
     "engines": {

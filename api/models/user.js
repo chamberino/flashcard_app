@@ -5,17 +5,9 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   _id: {type: Schema.Types.ObjectId, required: false, auto: true},
-  first_name: {type: String, required: true, maxlength: 50, trim: true},
-  last_name: {type: String, required: true, maxlength: 50, trim: true},
+  username: {type: String, required: true, maxlength: 50, trim: true},
   email: {type: String, required: true, maxlength: 50, trim: true},
   password: {type: String, unique: true, required: true, minlength: 4}
-});
-
-// Virtual for user's full name
-UserSchema
-.virtual('name')
-.get(function() {
-    return this.first_name + ' ' + this.last_name;
 });
 
 // Virtual for user's URL

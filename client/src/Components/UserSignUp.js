@@ -8,19 +8,19 @@ import Form from './Form';
 export default class UserSignUp extends Component {
 
   state = {
-    first_name: '',
-    last_name: '',
+    username: '',
     email: '',
     password: '',
     errors: [],
     serverErrors: [],
+    usernameError: {styling: '', message:''},
     emailError: {styling: '', message:''},
     passwordError: {styling: '', message:''},
   }
 
   errorsExist = () => {
     if 
-    (this.state.email.length < 1 || this.state.password.length < 1) 
+    (this.state.email.length < 1 || this.state.password.length < 1 || this.state.username.length < 1) 
       {return true}
   }
 
@@ -57,10 +57,25 @@ export default class UserSignUp extends Component {
     }
   }
 
+  validatedUsername = () => {
+    if (this.state.username.length < 1) {
+      this.setState( prevState => {
+      return {
+              errors: [
+                ...prevState.errors,
+                'Username required'
+              ],
+              usernameError: {styling: "error", message: "Username required"}
+        }
+      })
+    } else {
+      return null
+    }
+  }
+
   render() {
     const {
-      first_name,
-      last_name,
+      username,
       email,
       password,
       errors,
@@ -80,21 +95,18 @@ export default class UserSignUp extends Component {
               <React.Fragment>
                 <div className="signup-login-input-container"></div>
                 <textarea 
-                    id="first_name" 
-                    maxLength="50"                  
-                    name="first_name" 
+                    id="username" 
+                    maxLength="50"
+                    className={this.state.usernameError.styling}
+                    name="username"
                     type="text"
-                    value={first_name} 
+                    value={username} 
                     onChange={this.change} 
-                    placeholder="First Name" />
-                  <textarea 
-                    id="last_name" 
-                    maxLength="50"                  
-                    name="last_name" 
-                    type="text"
-                    value={last_name} 
-                    onChange={this.change} 
-                    placeholder="Last Name" />   
+                    placeholder="Username" />   
+                    {(!(this.state.usernameError.message === ""))
+                        ? <div className="errorMessage">{this.state.usernameError.message}</div> 
+                        : <div className="errorMessage">&nbsp;&nbsp;</div> 
+                    }             
                   <textarea
                     id="email" 
                     maxLength="50" 
@@ -144,14 +156,15 @@ export default class UserSignUp extends Component {
     // {/* initialize context variable containing the context props  */}
     const { context } = this.props;
     // unpack username and properties password from state
-    const { first_name, last_name, email, password } = this.state;
+    const { username, email, password } = this.state;
 
-    const user = {first_name, last_name, email, password}
+    const user = {username, email, password}
 
     if (this.errorsExist()) {
       // window.scrollTo({ top: 0, behavior: 'smooth' })
       this.validatedEmail();
       this.validatedPassword();
+      this.validatedUsername();
     } else {
 
     // call the signIn() function, passing in the users credentials

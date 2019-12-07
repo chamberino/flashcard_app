@@ -47,7 +47,7 @@ componentDidMount() {
     this.setState({
         deck: deck,
         deckCreatorId: deck.deck.user._id,
-        deckCreator: `${deck.deck.user.first_name} ${deck.deck.user.first_name}`,
+        deckCreator: `${deck.deck.user.username}`,
         foundDeck: true,
         title: deck.title,
         deckId: deck.deck._id,
@@ -95,6 +95,8 @@ componentDidMount() {
         (this.state.loading) 
         ? 'loading...'
         :
+        <React.Fragment>
+        <div><h3>Back to set</h3></div>
       <div className="bounds deck--detail">
         <h1>Update Deck</h1>
         <Form 
@@ -144,6 +146,7 @@ componentDidMount() {
         }
       </React.Fragment>
       </div>
+      </React.Fragment>
     );
   }
 

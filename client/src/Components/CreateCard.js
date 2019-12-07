@@ -35,7 +35,7 @@ this.props.context.actions.getDeck(this.state.deckId)
         amountOfCards: deck.cards.length,
         deck: deck,
         deckTitle: deck.title,
-        deckCreator: deck.deck.user.first_name + ' ' + deck.deck.user.last_name,
+        deckCreator: deck.deck.user.username,
         loading: false,
     })
   }

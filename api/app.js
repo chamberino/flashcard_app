@@ -4,6 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const compression = require('compression');
+const helmet = require('helmet');
 
 const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
 
@@ -12,6 +14,9 @@ const mid = require('./middleware/index');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+
+app.use(compression()); //Compress all routes
+app.use(helmet());
 
 //allow OPTIONS on all resources
 app.options('*', cors())

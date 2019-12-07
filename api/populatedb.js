@@ -29,15 +29,14 @@ var subjects = []
 var decks = []
 var cards = []
 
-function userCreate(_id, first_name, last_name, email, password, cb) {
+function userCreate(_id, username, email, password, cb) {
   userdetail = {
-    _id: _id, 
-    first_name: first_name , 
-    last_name: last_name, 
-    email: email, 
-    password: password 
+    _id: _id,
+    username: username,
+    email: email,
+    password: password
   }
-  
+ 
   var user = new User(userdetail);
        
   user.save(function (err) {
@@ -87,14 +86,14 @@ function deckCreate(_id=null, title, user, subject, cb) {
 
 
 function cardCreate(_id, deck, question, answer, hint, cb) {
-  cardDetail = { 
+  cardDetail = {
     _id: _id,
     deck: deck,
     question: question,
     answer: answer
   }    
   if (hint != false) cardDetail.hint = hint
-  
+ 
   var card = new Card(cardDetail);    
   card.save(function (err) {
     if (err) {
@@ -112,19 +111,19 @@ function cardCreate(_id, deck, question, answer, hint, cb) {
 function createSubjectUsers(cb) {
     async.series([
         function(callback) {
-          userCreate(mongoose.Types.ObjectId('5dbb595b45a2ef0e1752b843'),'Patrick', 'Rothfuss', 'p@r.com', 'pass', callback);
+          userCreate(mongoose.Types.ObjectId('5dbb595b45a2ef0e1752b843'),'pRothfuss', 'p@r.com', 'pass', callback);
         },
         function(callback) {
-          userCreate(mongoose.Types.ObjectId('5dbb59685570610e18cc5c45'), 'Ben', 'Bova', 'b@b.com', 'pass', callback);
+          userCreate(mongoose.Types.ObjectId('5dbb59685570610e18cc5c45'), 'bBova', 'b@b.com', 'pass', callback);
         },
         function(callback) {
-          userCreate(mongoose.Types.ObjectId('5dbb59c259c05f0e304059e0'), 'Isaac', 'Asimov', 'i@a.com', 'pass', callback);
+          userCreate(mongoose.Types.ObjectId('5dbb59c259c05f0e304059e0'), 'iAsimov', 'i@a.com', 'pass', callback);
         },
         function(callback) {
-          userCreate(mongoose.Types.ObjectId('5dbb59bc59c05f0e304059de'), 'Bob', 'Billings', 'b@bi.com', 'pass', callback);
+          userCreate(mongoose.Types.ObjectId('5dbb59bc59c05f0e304059de'), 'bBillings', 'b@bi.com', 'pass', callback);
         },
         function(callback) {
-          userCreate(mongoose.Types.ObjectId('5dbb59c259c05f0e304059df'), 'Jim', 'Jones', 'j@j.com', 'pass', callback);
+          userCreate(mongoose.Types.ObjectId('5dbb59c259c05f0e304059df'), 'jJones', 'j@j.com', 'pass', callback);
         },
         function(callback) {
           subjectCreate('5dbcd7d057c65b1ab2319329', 'JavaScript', false, callback);
@@ -345,7 +344,7 @@ function(err, results) {
     }
     else {
       console.log('Cards: '+ cards);
-      
+     
   }
     // All done, disconnect from database
     mongoose.connection.close();

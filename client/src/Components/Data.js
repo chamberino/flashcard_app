@@ -348,6 +348,24 @@ export default class Data {
         throw new Error();
       }
     }
+
+    async getDeckSearch(category, term) {
+      const response = await this.api(`/decksearch/${category}/${term}`, 'GET', null, false);
+      // Send GET request to API to retrieve data for an user's decks
+      if (response.status === 200) {
+        // If status is 200, return deck data
+        const decks = await response.json();
+        return decks;
+      }
+      // If there is a problem retrieving the decks, return the error data
+      else if (response.status !== 200) {
+        return response.json().then(data => data);
+      }
+      else {
+        throw new Error();
+      }
+    }
+
     
   }
   

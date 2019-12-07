@@ -14,7 +14,7 @@ const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+")
 // Display list of all users
 exports.user_list = (req, res) => {
     User.find()
-    .sort([['last_name', 'ascending']])
+    .sort([['username', 'ascending']])
     .exec(function (err, list_users) {
       if (err) { return next(err); }
       res.json({ title: 'User List', user_list: list_users });
@@ -34,7 +34,7 @@ exports.user_detail = (req, res, next) => {
         user_decks: function(callback) {
             console.log(id)
           Deck.find({ 'user': id },'title')
-            .populate('subject')
+            .populate('subject user')
             .exec(callback)
         },
     }, function(err, results) {
@@ -45,7 +45,7 @@ exports.user_detail = (req, res, next) => {
           next(error)
         }
         else {
-        res.json({ user: results.user, userName: results.user.name, user_decks: results.user_decks } );
+        res.json({ user: results.user, username: results.user.username, user_decks: results.user_decks } );
         }
     });
 };
@@ -53,16 +53,11 @@ exports.user_detail = (req, res, next) => {
 // Handle User create on POST
 exports.user_create_post = [
     // Validate fields.
-    check('first_name')
+    check('username')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('First name must be specified.'),
+        .withMessage('Username must be specified.'),
         // .isAlphanumeric()
         // .withMessage('First name has non-alphanumeric characters.'),
-    check('last_name')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Last name must be specified.'),
-        // .isAlphanumeric()
-        // .withMessage('Last name has non-alphanumeric characters.'),
     check('email')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a valid email'),
@@ -71,8 +66,7 @@ exports.user_create_post = [
         .withMessage('Please provide a password'),    
 
     // Sanitize fields.
-    sanitizeBody('first_name').escape(),
-    sanitizeBody('last_name').escape(),
+    sanitizeBody('username').escape(),
     sanitizeBody('email').escape(),
     sanitizeBody('password').escape(),
 
@@ -108,8 +102,7 @@ exports.user_create_post = [
                     // Create a User object with escaped and trimmed data.
                     var user = new User(
                         {
-                            first_name: req.body.first_name,
-                            last_name: req.body.last_name,
+                            username: req.body.username,
                             email: req.body.email,
                             password: req.body.password
                         });

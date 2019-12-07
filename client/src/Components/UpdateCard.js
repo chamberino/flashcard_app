@@ -196,6 +196,10 @@ cardFocus = (e) => {
     const credentials = this.props.context.authenticatedUser.user.token;
     // Create deck by calling the create method made available through Context
     // The deck data and users credentials are passed along.
+
+    if (userId !== this.state.cardCreatorId) {
+      console.log('invalid user')
+    }
     context.actions.update(`/card/${cardId}/update`, cardPayload, credentials)
     .then((response) => {
       // If API returns a response that is not 201, set the errors property in state to the response. 

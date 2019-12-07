@@ -277,7 +277,7 @@ componentDidMount() {
     } = this.state;
 
     return (      
-      <div className="bounds deck--detail">
+      <div className="bounds deck--detail main-content">
         <h1 className="title">Create a new study set</h1>
         <button
           type="button"

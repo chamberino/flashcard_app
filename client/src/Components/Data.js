@@ -5,7 +5,7 @@ export default class Data {
     // The api helper method makes a call to the Flashcard API and returns the value from the fetch.
     // The parameters specify the type of HTTP verb, body request object, 
     // whether authentication is required, and the users credentials if the page requires authentication.
-    api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'http://localhost:5000') {
+    api(path, method = 'GET', body = null, requiresAuth = false, credentials = null, server = 'https://flashcard-application.herokuapp.com/api') {
       const url = server + path;
       const options = {
         method,
@@ -32,7 +32,7 @@ export default class Data {
     // getUser takes the users credentials and makes a GET request to the API
     // If successful the users data will be returned, otherwise the function will return null or any errors.
     async getUser(email, password) {
-      const response = await this.api(`/user/login`, 'POST', { email, password }, false, null, 'http://localhost:4000');
+      const response = await this.api(`/user/login`, 'POST', { email, password }, false, null, 'https://flashcard-application.herokuapp.com/api');
       if (response.status === 200) {
         return response.json().then(data => data);
       }
@@ -197,7 +197,7 @@ export default class Data {
     }
 
     async logOut(credentials) {
-      const response = await this.api(`/user/logout`, 'GET', null, true, credentials, 'http://localhost:4000') 
+      const response = await this.api(`/user/logout`, 'GET', null, true, credentials, 'https://flashcard-application.herokuapp.com/api') 
       // If user is logged out and a 204 status is set, return empty array
       if (response.status === 204) {
         return response;
@@ -218,7 +218,7 @@ export default class Data {
     // Since this function returns a promise, the async keyword in front of the function
     async createUser(user) {
       // await the results returned from the api method 
-      const response = await this.api('/user/create', 'POST', user, false, null, 'http://localhost:4000');
+      const response = await this.api('/user/create', 'POST', user, false, null, 'https://flashcard-application.herokuapp.com/api');
       // If user is created and a 201 status is set, return empty array
       if (response.status === 201) {
         return [];

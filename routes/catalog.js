@@ -1,5 +1,11 @@
 var express = require('express');
+const { check,validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 var router = express.Router();
+const { sanitizeBody } = require('express-validator');
+const { auth } = require('../middleware/index');
+require('dotenv').config();
 
 var mongoose = require('mongoose');
 const User = require('../models/user');
@@ -321,8 +327,6 @@ router.get('/getcardids', [
 
 
 
-
-
 const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYTU0ZDFhOGQ3ODJhYTQ4NWEyNWYzZiIsImlhdCI6MTU3MjI5NjIzMn0.cG6Mq2BSC2f9OFSAhOGd7m1FFJej2MLaCcLbG6G7YBo','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
 
 router.post('/token', (req, res) => {
@@ -399,6 +403,7 @@ router.post('/user/login', [
           // )  
           req.session.refreshToken = refreshToken;
           console.log(req.session.refreshToken)
+          console.log('this works')
           res.json({token,
                     refreshToken: refreshToken,
                     test:'test',
@@ -422,9 +427,6 @@ router.post('/user/login', [
   };      
 });
 
-router.post('/user/create',  user_controller.user_create_post);
-
-router.get('/user/logout', auth_controller.user_logout);
 
 // Returns an access token which expires after 10 minutes
 function generateAccessToken(user) {
@@ -437,6 +439,134 @@ function generateRefreshToken(user) {
 }
 
 
+
+
+
+// const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+router.get('/logout', (req, res, next) => {
+  // if (req.user) {
+    console.log(req.user)
+    // delete session object
+    req.session.destroy( (err) => {
+      if (err) {
+        return next(err)
+      } else {
+        return res.status(204).json('User successfully logged out!')
+      }
+    })
+  // }
+})
+
+
+// // Post route for creating a new user
+router.post('/user/create', [
+    check('username')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a valid username'),
+    check('email')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a valid email'),
+    check('password')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a password'),    
+
+    // Sanitize fields.
+    sanitizeBody('username').escape(),
+    sanitizeBody('email').escape(),
+    sanitizeBody('password').escape(),
+
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        console.log('route works')
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+        // If there are validation errors...
+        if (!errors.isEmpty()) {
+            // store errors in an array and send in response
+            const errorMessages = errors.array().map(error => error.msg);
+            res.status(400);
+            return res.json(errorMessages);
+        } else {
+            User.findOne({ 'username': req.body.username })
+            .exec( function(err, found_user) {
+               if (err) { return next(err); }
+    
+               if (found_user) {
+                 // User exists.
+                 res.status(400);
+                 res.json('User already registered');
+               } else {
+                 User.findOne({ 'email': req.body.email})
+                 .exec( function(err, found_user) {
+                   if (err) { return next(err); }
+
+                   if (found_user) {
+                     // Email exists.
+                     res.status(400);
+                     res.json('Email already registered');
+                   } else {    
+                    // Create a User object with escaped and trimmed data.
+                    // Note that User model hashed the user password before persisting to the database
+                    var user = new User(
+                        {
+                            username: req.body.username,
+                            email: req.body.email,
+                            password: req.body.password
+                        });
+                    User.create(user, (error, user) => {
+                        if (error) {
+                            return next(error)
+                        } else {
+                            // return res.redirect('/')
+                            jwt.sign(
+                            { id: user._id },
+                            process.env.ACCESS_TOKEN_SECRET,
+                            { expiresIn: '45m' },
+                            // callback
+                            (err, token) => {
+                              if(err) {
+                                res.json(err)
+                              } 
+                              req.session.token = token;
+                              res.json({
+                                token,
+                                user: {
+                                  id: user._id,
+                                  username: user.username,
+                                  email: user.email
+                                }
+                              })
+                            }
+                            )                            
+                        }
+                    })   
+                 }
+                 });
+               }
+            });
+        }
+    }
+]);
+
+
+exports.getUser = (req, res) => {
+    User.findById(req.user.id)
+        .select('-password')
+        .then(user => res.json(user))
+}
+
+// Handle User delete on POST.
+exports.user_delete_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: User delete POST');
+};
+
+// Handle User update on POST.
+exports.user_update_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: User update POST');
+};
 
 
 module.exports = router;

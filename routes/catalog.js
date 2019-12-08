@@ -325,7 +325,7 @@ router.get('/getcardids', [
 
 const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYTU0ZDFhOGQ3ODJhYTQ4NWEyNWYzZiIsImlhdCI6MTU3MjI5NjIzMn0.cG6Mq2BSC2f9OFSAhOGd7m1FFJej2MLaCcLbG6G7YBo','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
 
-app.post('/token', (req, res) => {
+router.post('/token', (req, res) => {
     const refreshToken = req.body.token;
     if (refreshToken == null) {
         return res.sendStatus(401);
@@ -345,7 +345,7 @@ app.post('/token', (req, res) => {
 
 // Tutorial on JWT (JSON Web Tokens)
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-app.post('/user/login', [
+router.post('/user/login', [
   check('email')
     .exists({ checkNull: true, checkFalsy: true })
     .withMessage('Email required'),
@@ -422,9 +422,9 @@ app.post('/user/login', [
   };      
 });
 
-app.post('/user/create',  user_controller.user_create_post);
+router.post('/user/create',  user_controller.user_create_post);
 
-app.get('/user/logout', auth_controller.user_logout);
+router.get('/user/logout', auth_controller.user_logout);
 
 // Returns an access token which expires after 10 minutes
 function generateAccessToken(user) {

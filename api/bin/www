@@ -8,6 +8,8 @@ var app = require('../app');
 var auth = require('../authServer');
 var debug = require('debug')('flashcard-app:server');
 var http = require('http');
+var express = require('express');
+var path = require('path');
 
 /**
  * Get port from environment and store in Express.

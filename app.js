@@ -56,13 +56,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', catalogRouter);  // Adds catalog routes to middleware chain.
+app.use('/api', catalogRouter);  // Adds catalog routes to middleware chain.
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
 
   console.log('In production.');
-  
+
   // Set static folder
   app.use(express.static(path.join(__dirname, "client", "build")));
 

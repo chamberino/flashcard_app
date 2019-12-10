@@ -50,6 +50,96 @@ exports.user_detail = (req, res, next) => {
     });
 };
 
+
+// Returns an access token which expires after 10 minutes
+function generateAccessToken(user) {
+    //  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+  }
+
+  function generateRefreshToken(user) {
+    return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+  }
+  
+
+
+exports.user_login = [
+    check('email')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Email required'),
+    check('password')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Password required'),
+  ], (req, res, next) => {
+      // Attempt to get the validation result from the Request object.
+    const errors = validationResult(req);
+    // If there are validation errors...
+    if (!errors.isEmpty()) {
+      // Use the Array `forEach()` method to push a list of error messages received from 
+      // Mongoose validation to errorMessages array.
+      const errorMessages = [];
+          errors.array().forEach(error => errorMessages.push(error.msg))
+          return res.json(errorMessages)
+    } else {
+      User.findOne({email: req.body.email})
+      .then((user)=>{
+        if (!user) {        
+          const errorMessages = [];
+          errorMessages.push("User not found")
+          return res.json(errorMessages)
+        }
+        if (user) {
+          bcrypt.compare(req.body.password, user.password, function(error, result) {
+            if (result === true) {
+              token = generateAccessToken({ id: user._id })
+              refreshToken = generateRefreshToken({ id: user._id })
+            //   jwt.sign(
+            //     { id: user._id },
+            //     process.env.ACCESS_TOKEN_SECRET,
+            //     { expiresIn: '45m' },
+            //     // callback
+            //     (err, token) => {
+            //       if(err) {
+            //         res.json(err)
+            //       } 
+            //       // req.session.token = token;
+            //       res.json({                  
+            //         token,
+            //         refreshToken: refreshToken,
+            //         test:'test',
+            //         user: {
+            //           id: user._id,
+            //           name: user.name,
+            //           email: user.email
+            //         }
+            //       })
+            //     }
+            // )  
+            req.session.refreshToken = refreshToken;
+            console.log(req.session.refreshToken)
+            res.json({token,
+                      refreshToken: refreshToken,
+                      test:'test',
+                      user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email
+                      }
+                    })
+            } else {
+              const errorMessages = [];
+              errorMessages.push("Credentials don't match")
+              return res.json(errorMessages)
+            }
+        })
+        }
+      }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+    };      
+  };
+
 // Handle User create on POST
 exports.user_create_post = [
     // Validate fields.

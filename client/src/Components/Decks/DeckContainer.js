@@ -8,8 +8,8 @@ for each deck containing the respective data
 */
 
 const DeckContainer = (props) => {
-  console.log(props.data.length)
-  
+
+  if (props.data !== undefined && props.user !==undefined) {
     let decks = props.data.map( (result) => { 
       // For each deck received in props, return a Deck component with relevant data
       return <Deck title={result.title} id={result._id} history={props.history} key={result._id} user={result.user.username}/>
@@ -19,10 +19,32 @@ const DeckContainer = (props) => {
         {
           (props.data.length > 0)
               ? decks
-              : <h1>Sorry, we couldn't find any decks</h1>
+              : <h3>{props.user} doesn't have any decks.</h3>
         }
       </div>
     ); 
-  }
+  } else if (props.data !== undefined) {
+    console.log(props.data)
+      let decks = props.data.map( (result) => { 
+        // For each deck received in props, return a Deck component with relevant data
+        return <Deck title={result.title} id={result._id} history={props.history} key={result._id} user={result.user.username}/>
+      });
+      return(
+        <div className="deck-list">
+        {
+          (props.data.length > 0)
+              ? decks
+              : <h3>Sorry, we couldn't find any decks matching "{props.searchTerm}"</h3>
+        }
+        </div>
+    );
+} else {
+    return(
+      <div className="deck-list">
+        <h3>Sorry, we couldn't find any decks matching "{props.searchTerm}"</h3>
+      </div>
+    ); 
+  }
+}
 
   export default DeckContainer;

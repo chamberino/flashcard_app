@@ -4,7 +4,7 @@ import Dropdown from 'react-dropdown'
 import Icon from './SearchIcon';
 
 import { fadeIn, fadeOut } from 'react-animations';
-import Radium, {StyleRoot} from 'radium';
+import Radium from 'radium';
 
 import 'react-dropdown/style.css'
 
@@ -13,7 +13,6 @@ class Search extends Component {
   constructor (props) {
     super(props);
     this.state= {
-      searchOn: props.searchOpen,
       searchClick: props.searchClick,
       term: '',
       category: 'title',
@@ -28,15 +27,6 @@ class Search extends Component {
       }    
     };
   }
-
-  // searchClick = () => {
-    
-  //   this.setState(() => { 
-  //     return {
-  //       searchOn: !this.state.searchOn
-  //     }
-  //   });
-  // }
 
   onSearchChange = e => {
     this.setState({ term: e.target.value });
@@ -58,12 +48,13 @@ class Search extends Component {
 
   handleSubmit = e => {
     const { category, term } = this.state;
-
     e.preventDefault();
     // searchText(searchInput);
     // getCriteria(criteria);
-    this.props.history.push(`/decksearch/${category}/${term}`);
-    this.setState({term: ''});
+    if (this.state.term.length > 0) {
+      this.props.history.push(`/decksearch/${category}/${term}`);
+      this.setState({term: ''});
+    }
   }
 
   componentDidMount() {
@@ -76,7 +67,7 @@ class Search extends Component {
 
     // The header nav is conditionally rendered based on the authenticatedUser state
     render() {
-      const { searchOn, term, category, searchClick } = this.state;
+      const { term, category, searchClick } = this.state;
 
       return (
           <div id="searchBar">

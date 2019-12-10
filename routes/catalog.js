@@ -1,5 +1,11 @@
 var express = require('express');
+const { check,validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 var router = express.Router();
+const { sanitizeBody } = require('express-validator');
+const { auth } = require('../middleware/index');
+require('dotenv').config();
 
 var mongoose = require('mongoose');
 const User = require('../models/user');
@@ -316,6 +322,150 @@ router.get('/getcardids', [
         cardArray = req.cards.map(card=>card._id)
         res.json(cardArray)}
 ])
+
+
+
+
+
+const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYTU0ZDFhOGQ3ODJhYTQ4NWEyNWYzZiIsImlhdCI6MTU3MjI5NjIzMn0.cG6Mq2BSC2f9OFSAhOGd7m1FFJej2MLaCcLbG6G7YBo','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
+
+router.post('/token', (req, res) => {
+    const refreshToken = req.body.token;
+    if (refreshToken == null) {
+        return res.sendStatus(401);
+    }
+    if (!refreshTokens.includes(refreshToken)) {
+        return res.sendStatus(403);
+    }
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.sendStatus(403);
+        }
+        const accessToken = generateAccessToken( { id: user._id } );
+        res.json({ accessToken: accessToken });
+    })
+})
+
+
+// Tutorial on JWT (JSON Web Tokens)
+// https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
+router.post('/user/login', [
+    check('email')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Email required'),
+    check('password')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Password required'),
+  ], (req, res, next) => {
+      // Attempt to get the validation result from the Request object.
+    const errors = validationResult(req);
+    // If there are validation errors...
+    if (!errors.isEmpty()) {
+      // Use the Array `forEach()` method to push a list of error messages received from 
+      // Mongoose validation to errorMessages array.
+      const errorMessages = [];
+          errors.array().forEach(error => errorMessages.push(error.msg))
+          return res.json(errorMessages)
+    } else {
+      User.findOne({email: req.body.email})
+      .then((user)=>{
+        if (!user) {        
+          const errorMessages = [];
+          errorMessages.push("User not found")
+          return res.json(errorMessages)
+        }
+        if (user) {
+          bcrypt.compare(req.body.password, user.password, function(error, result) {
+            if (result === true) {
+              token = generateAccessToken({ id: user._id })
+              refreshToken = generateRefreshToken({ id: user._id })
+            //   jwt.sign(
+            //     { id: user._id },
+            //     process.env.ACCESS_TOKEN_SECRET,
+            //     { expiresIn: '45m' },
+            //     // callback
+            //     (err, token) => {
+            //       if(err) {
+            //         res.json(err)
+            //       } 
+            //       // req.session.token = token;
+            //       res.json({                  
+            //         token,
+            //         refreshToken: refreshToken,
+            //         test:'test',
+            //         user: {
+            //           id: user._id,
+            //           name: user.name,
+            //           email: user.email
+            //         }
+            //       })
+            //     }
+            // )  
+            req.session.refreshToken = refreshToken;
+            console.log(req.session.refreshToken)
+            res.json({token,
+                      refreshToken: refreshToken,
+                      test:'test',
+                      user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email
+                      }
+                    })
+            } else {
+              const errorMessages = [];
+              errorMessages.push("Credentials don't match")
+              return res.json(errorMessages)
+            }
+        })
+        }
+      }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+    };      
+  });
+
+
+// Returns an access token which expires after 10 minutes
+function generateAccessToken(user) {
+  //  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+}
+
+function generateRefreshToken(user) {
+  return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+}
+
+
+
+
+
+// const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+
+router.get('/logout', auth_controller.user_logout)
+
+// // Post route for creating a new user
+router.post('/user/create', user_controller.user_create_post);
+
+
+exports.getUser = (req, res) => {
+    User.findById(req.user.id)
+        .select('-password')
+        .then(user => res.json(user))
+}
+
+// Handle User delete on POST.
+exports.user_delete_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: User delete POST');
+};
+
+// Handle User update on POST.
+exports.user_update_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: User update POST');
+};
+
 
 module.exports = router;
 

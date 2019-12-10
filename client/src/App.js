@@ -109,7 +109,7 @@ export default class App extends Component {
           <Route exact path="/error" component={ErrorPage}/>
           <Route exact path="/forbidden" component={Forbidden}/>
 
-
+          <Route component={NotFound}/>
         </Switch>     
       </BrowserRouter>    
       </div> 

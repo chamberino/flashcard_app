@@ -10,17 +10,14 @@ const User = require('../models/user');
 // const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 exports.user_logout = (req, res, next) => {
-  // if (req.user) {
-    console.log(req.user)
-    // delete session object
-    req.session.destroy( (err) => {
-      if (err) {
-        return next(err)
-      } else {
-        return res.status(204).json('User successfully logged out!')
-      }
-    })
-  // }
+   // delete session object
+  req.session.destroy( (err) => {
+    if (err) {
+      return next(err)
+    } else {
+      return res.status(204).json('User successfully logged out!')
+    }
+  })
 }
 
 // // Post route for creating a new user

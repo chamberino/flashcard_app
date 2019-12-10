@@ -4,7 +4,7 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
-import NewDeckLink from '../NewDeckLink';
+// import NewDeckLink from '../NewDeckLink';
 import DeckContainer from './DeckContainer';
 
 /* 
@@ -69,7 +69,7 @@ export default class DeckSearch extends Component {
         {
           (this.state.loading)
           ? <Route exact path="/decksearch/:category/:term" render= {() => <p>Loading...</p>  } />
-          : <Route exact path="/decksearch/:category/:term" render= {()=><DeckContainer data={this.state.decks}/> } />
+          : <Route exact path="/decksearch/:category/:term" render= {()=><DeckContainer data={this.state.decks} searchTerm={this.props.match.params.term}/> } />
         } 
         </Switch>
         {/* The NewDeckLink is set outside Switch so that it will always render even if no decks are available */}

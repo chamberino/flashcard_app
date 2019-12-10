@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const { check,validationResult } = require('express-validator');
 const cors = require('cors');
 

@@ -82,6 +82,13 @@ input {
   color: #606060;
 } */
 
+/* clears X icon from search input */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+
+
 select, 
 input,
 textarea {
@@ -396,6 +403,18 @@ input {
   fill: #969494;
 }
 
+.svg-icon-delete {
+  width: 1.5em;
+  height: 1.2em;
+  padding-right: .25em;
+}
+
+.svg-icon-delete path,
+.svg-icon-delete polygon,
+.svg-icon-delete rect {
+  fill: #bb0000;
+}
+
 .svg-icon circle {
   stroke: #4691f6;
   stroke-width: 1;
@@ -419,7 +438,7 @@ input {
 
 .svg-icon-newDeck {
   width: 2em;
-  height: 2em;
+  height: 1.7em;
   margin-top: -1em;
 }
 
@@ -737,13 +756,12 @@ a.header-links-2 {
 
 .edit-card-options-container {
   padding: 0 2em; 
-
 }
 
 .edit-card-options {
   display: flex;
   /* justify-content: flex-end; */
-  align-items: center;
+  align-items: baseline;
   padding: 0 0 1em 0;
 }
 
@@ -762,6 +780,16 @@ a.header-links-2 {
 
 .edit-card-options svg {
  margin-bottom: -.5em;
+}
+
+svg.svg-icon-delete {
+  margin-bottom: -.3em;
+}
+
+.delete-deck-button, .edit-deck-button {
+  padding: .5em;
+  margin-right: 1em;
+  border: 1px solid #ccc;
 }
 
 .card-options {
@@ -975,7 +1003,7 @@ fill:#969494;
   /* width: 100%; */
 }
 
-div[data-radium] {
+.nav-items div[data-radium] {
   flex-grow: 2;
 }
 
@@ -1112,6 +1140,12 @@ div[data-radium] {
   padding-right: .5em;
   padding-top: .3em;
 }
+
+
+div.main-content.error {
+  flex: none;
+}
+
 
 @media(max-width: 550px) {
   .header-links {

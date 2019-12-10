@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
     "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
-    },
+  },
   "dependencies": {
     "async": "^3.1.0",
     "basic-auth": "^2.0.1",

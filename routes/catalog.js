@@ -350,82 +350,81 @@ router.post('/token', (req, res) => {
 // Tutorial on JWT (JSON Web Tokens)
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
 router.post('/user/login', [
-  check('email')
-    .exists({ checkNull: true, checkFalsy: true })
-    .withMessage('Email required'),
-  check('password')
-    .exists({ checkNull: true, checkFalsy: true })
-    .withMessage('Password required'),
-], (req, res, next) => {
-    // Attempt to get the validation result from the Request object.
-  const errors = validationResult(req);
-  // If there are validation errors...
-  if (!errors.isEmpty()) {
-    // Use the Array `forEach()` method to push a list of error messages received from 
-    // Mongoose validation to errorMessages array.
-    const errorMessages = [];
-        errors.array().forEach(error => errorMessages.push(error.msg))
-        return res.json(errorMessages)
-  } else {
-    User.findOne({email: req.body.email})
-    .then((user)=>{
-      if (!user) {        
-        const errorMessages = [];
-        errorMessages.push("User not found")
-        return res.json(errorMessages)
-      }
-      if (user) {
-        bcrypt.compare(req.body.password, user.password, function(error, result) {
-          if (result === true) {
-            token = generateAccessToken({ id: user._id })
-            refreshToken = generateRefreshToken({ id: user._id })
-          //   jwt.sign(
-          //     { id: user._id },
-          //     process.env.ACCESS_TOKEN_SECRET,
-          //     { expiresIn: '45m' },
-          //     // callback
-          //     (err, token) => {
-          //       if(err) {
-          //         res.json(err)
-          //       } 
-          //       // req.session.token = token;
-          //       res.json({                  
-          //         token,
-          //         refreshToken: refreshToken,
-          //         test:'test',
-          //         user: {
-          //           id: user._id,
-          //           name: user.name,
-          //           email: user.email
-          //         }
-          //       })
-          //     }
-          // )  
-          req.session.refreshToken = refreshToken;
-          console.log(req.session.refreshToken)
-          console.log('this works')
-          res.json({token,
-                    refreshToken: refreshToken,
-                    test:'test',
-                    user: {
-                      id: user._id,
-                      name: user.name,
-                      email: user.email
-                    }
-                  })
-          } else {
-            const errorMessages = [];
-            errorMessages.push("Credentials don't match")
-            return res.json(errorMessages)
-          }
-      })
-      }
-    }).catch((error) => {  
-      // catch any other errors and pass errors to global error handler
-      next(error);
+    check('email')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Email required'),
+    check('password')
+      .exists({ checkNull: true, checkFalsy: true })
+      .withMessage('Password required'),
+  ], (req, res, next) => {
+      // Attempt to get the validation result from the Request object.
+    const errors = validationResult(req);
+    // If there are validation errors...
+    if (!errors.isEmpty()) {
+      // Use the Array `forEach()` method to push a list of error messages received from 
+      // Mongoose validation to errorMessages array.
+      const errorMessages = [];
+          errors.array().forEach(error => errorMessages.push(error.msg))
+          return res.json(errorMessages)
+    } else {
+      User.findOne({email: req.body.email})
+      .then((user)=>{
+        if (!user) {        
+          const errorMessages = [];
+          errorMessages.push("User not found")
+          return res.json(errorMessages)
+        }
+        if (user) {
+          bcrypt.compare(req.body.password, user.password, function(error, result) {
+            if (result === true) {
+              token = generateAccessToken({ id: user._id })
+              refreshToken = generateRefreshToken({ id: user._id })
+            //   jwt.sign(
+            //     { id: user._id },
+            //     process.env.ACCESS_TOKEN_SECRET,
+            //     { expiresIn: '45m' },
+            //     // callback
+            //     (err, token) => {
+            //       if(err) {
+            //         res.json(err)
+            //       } 
+            //       // req.session.token = token;
+            //       res.json({                  
+            //         token,
+            //         refreshToken: refreshToken,
+            //         test:'test',
+            //         user: {
+            //           id: user._id,
+            //           name: user.name,
+            //           email: user.email
+            //         }
+            //       })
+            //     }
+            // )  
+            req.session.refreshToken = refreshToken;
+            console.log(req.session.refreshToken)
+            res.json({token,
+                      refreshToken: refreshToken,
+                      test:'test',
+                      user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email
+                      }
+                    })
+            } else {
+              const errorMessages = [];
+              errorMessages.push("Credentials don't match")
+              return res.json(errorMessages)
+            }
+        })
+        }
+      }).catch((error) => {  
+        // catch any other errors and pass errors to global error handler
+        next(error);
+    });
+    };      
   });
-  };      
-});
 
 
 // Returns an access token which expires after 10 minutes
@@ -444,112 +443,11 @@ function generateRefreshToken(user) {
 
 // const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-router.get('/logout', (req, res, next) => {
-  // if (req.user) {
-    console.log(req.user)
-    // delete session object
-    req.session.destroy( (err) => {
-      if (err) {
-        return next(err)
-      } else {
-        return res.status(204).json('User successfully logged out!')
-      }
-    })
-  // }
-})
 
+router.get('/logout', auth_controller.user_logout)
 
 // // Post route for creating a new user
-router.post('/user/create', [
-    check('username')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Please provide a valid username'),
-    check('email')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Please provide a valid email'),
-    check('password')
-        .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Please provide a password'),    
-
-    // Sanitize fields.
-    sanitizeBody('username').escape(),
-    sanitizeBody('email').escape(),
-    sanitizeBody('password').escape(),
-
-
-    // Process request after validation and sanitization.
-    (req, res, next) => {
-        console.log('route works')
-
-        // Extract the validation errors from a request.
-        const errors = validationResult(req);
-        // If there are validation errors...
-        if (!errors.isEmpty()) {
-            // store errors in an array and send in response
-            const errorMessages = errors.array().map(error => error.msg);
-            res.status(400);
-            return res.json(errorMessages);
-        } else {
-            User.findOne({ 'username': req.body.username })
-            .exec( function(err, found_user) {
-               if (err) { return next(err); }
-    
-               if (found_user) {
-                 // User exists.
-                 res.status(400);
-                 res.json('User already registered');
-               } else {
-                 User.findOne({ 'email': req.body.email})
-                 .exec( function(err, found_user) {
-                   if (err) { return next(err); }
-
-                   if (found_user) {
-                     // Email exists.
-                     res.status(400);
-                     res.json('Email already registered');
-                   } else {    
-                    // Create a User object with escaped and trimmed data.
-                    // Note that User model hashed the user password before persisting to the database
-                    var user = new User(
-                        {
-                            username: req.body.username,
-                            email: req.body.email,
-                            password: req.body.password
-                        });
-                    User.create(user, (error, user) => {
-                        if (error) {
-                            return next(error)
-                        } else {
-                            // return res.redirect('/')
-                            jwt.sign(
-                            { id: user._id },
-                            process.env.ACCESS_TOKEN_SECRET,
-                            { expiresIn: '45m' },
-                            // callback
-                            (err, token) => {
-                              if(err) {
-                                res.json(err)
-                              } 
-                              req.session.token = token;
-                              res.json({
-                                token,
-                                user: {
-                                  id: user._id,
-                                  username: user.username,
-                                  email: user.email
-                                }
-                              })
-                            }
-                            )                            
-                        }
-                    })   
-                 }
-                 });
-               }
-            });
-        }
-    }
-]);
+router.post('/user/create', user_controller.user_create_post);
 
 
 exports.getUser = (req, res) => {

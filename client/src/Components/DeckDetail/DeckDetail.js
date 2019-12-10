@@ -8,7 +8,7 @@ import DeckDetailContainer from './DeckDetailContainer';
 // import NotFound from '../NotFound';
 
 import { fadeInRight, fadeInLeft, flipInX, flipOutX } from 'react-animations';
-import Radium, {StyleRoot} from 'radium';
+import Radium from 'radium';
 
 const DeckDetailContainerWithContext = withContext(DeckDetailContainer);
 
@@ -103,31 +103,34 @@ export default class DeckDetail extends Component {
     }
 }
 
-flipCard = () => {
-  this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-  if (this.state.sideOfCard === 'question') {  
-    document.querySelector('.card-container').style.animation = "2s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
-    setTimeout(() => { 
-      document.querySelector('.card-container').style.animation = null;
-  }, 500);
+flipCard = (e) => {
+  if(e.target.className.baseVal !== "svg-icon-hint" && e.target.className !== "show-hint hint-card" && e.target.className.baseVal !== "svg-icon-edit") {
+    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+    if (this.state.sideOfCard === 'question') {  
+      document.querySelector('.card-container').style.animation = "2s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
+      setTimeout(() => { 
+        document.querySelector('.card-container').style.animation = null;
+    }, 500);
+
+        this.setState( prevState => ({  
+        sideOfCard: 'answer',
+        fade: this.state.flipInX,
+        hint: null
+        }));
+    } else {
+      document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipOutX-radium-animation-2af0a5f5";
+      document.querySelector('.card--question').style.display = "none"
+      // document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
+      setTimeout(() => { 
+        document.querySelector('.card-container').style.animation = null;
+        document.querySelector('.card--question').style.display = ""
+    }, 500);
 
       this.setState( prevState => ({  
-      sideOfCard: 'answer',
-      fade: this.state.flipInX,
-      }));
-  } else {
-    document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipOutX-radium-animation-2af0a5f5";
-    document.querySelector('.card--question').style.display = "none"
-    // document.querySelector('.card-container').style.animation = "0.5s ease 0s 1 normal none running flipInX-radium-animation-1b99838f"
-    setTimeout(() => { 
-      document.querySelector('.card-container').style.animation = null;
-      document.querySelector('.card--question').style.display = ""
-  }, 500);
-
-    this.setState( prevState => ({  
-      sideOfCard: 'question',
-      fade: this.state.flipOutX,
-      }));
+        sideOfCard: 'question',
+        fade: this.state.flipOutX,        
+        }));
+    }
   }
 }
 

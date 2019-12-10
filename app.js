@@ -111,120 +111,117 @@ app.use(function(err, req, res, next) {
 
 const refreshTokens = ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYTU0ZDFhOGQ3ODJhYTQ4NWEyNWYzZiIsImlhdCI6MTU3MjI5NjIzMn0.cG6Mq2BSC2f9OFSAhOGd7m1FFJej2MLaCcLbG6G7YBo','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAcC5jb20iLCJpYXQiOjE1NzEyOTgyNDF9.nCqkSAOus_GB3ulnmX2XCTpPT_Cv6m7WyBNsabOU2vw']
 
-app.post('/token', (req, res) => {
-    const refreshToken = req.body.token;
-    if (refreshToken == null) {
-        return res.sendStatus(401);
-    }
-    if (!refreshTokens.includes(refreshToken)) {
-        return res.sendStatus(403);
-    }
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if (err) {
-            return res.sendStatus(403);
-        }
-        const accessToken = generateAccessToken( { id: user._id } );
-        res.json({ accessToken: accessToken });
-    })
-})
+// app.post('/token', (req, res) => {
+//     const refreshToken = req.body.token;
+//     if (refreshToken == null) {
+//         return res.sendStatus(401);
+//     }
+//     if (!refreshTokens.includes(refreshToken)) {
+//         return res.sendStatus(403);
+//     }
+//     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+//         if (err) {
+//             return res.sendStatus(403);
+//         }
+//         const accessToken = generateAccessToken( { id: user._id } );
+//         res.json({ accessToken: accessToken });
+//     })
+// })
 
 
 // Tutorial on JWT (JSON Web Tokens)
 // https://www.youtube.com/watch?v=mbsmsi7l3r4&feature=youtu.be
-app.post('/user/login', [
-  check('email')
-    .exists({ checkNull: true, checkFalsy: true })
-    .withMessage('Email required'),
-  check('password')
-    .exists({ checkNull: true, checkFalsy: true })
-    .withMessage('Password required'),
-], (req, res, next) => {
-    // Attempt to get the validation result from the Request object.
-  const errors = validationResult(req);
-  // If there are validation errors...
-  if (!errors.isEmpty()) {
-    // Use the Array `forEach()` method to push a list of error messages received from 
-    // Mongoose validation to errorMessages array.
-    const errorMessages = [];
-        errors.array().forEach(error => errorMessages.push(error.msg))
-        return res.json(errorMessages)
-  } else {
-    User.findOne({email: req.body.email})
-    .then((user)=>{
-      if (!user) {        
-        const errorMessages = [];
-        errorMessages.push("User not found")
-        return res.json(errorMessages)
-      }
-      if (user) {
-        bcrypt.compare(req.body.password, user.password, function(error, result) {
-          if (result === true) {
-            token = generateAccessToken({ id: user._id })
-            refreshToken = generateRefreshToken({ id: user._id })
-          //   jwt.sign(
-          //     { id: user._id },
-          //     process.env.ACCESS_TOKEN_SECRET,
-          //     { expiresIn: '45m' },
-          //     // callback
-          //     (err, token) => {
-          //       if(err) {
-          //         res.json(err)
-          //       } 
-          //       // req.session.token = token;
-          //       res.json({                  
-          //         token,
-          //         refreshToken: refreshToken,
-          //         test:'test',
-          //         user: {
-          //           id: user._id,
-          //           name: user.name,
-          //           email: user.email
-          //         }
-          //       })
-          //     }
-          // )  
-          req.session.refreshToken = refreshToken;
-          console.log(req.session.refreshToken)
-          res.json({token,
-                    refreshToken: refreshToken,
-                    test:'test',
-                    user: {
-                      id: user._id,
-                      name: user.name,
-                      email: user.email
-                    }
-                  })
-          } else {
-            const errorMessages = [];
-            errorMessages.push("Credentials don't match")
-            return res.json(errorMessages)
-          }
-      })
-      }
-    }).catch((error) => {  
-      // catch any other errors and pass errors to global error handler
-      next(error);
-  });
-  };      
-});
+// app.post('/user/login', [
+//   check('email')
+//     .exists({ checkNull: true, checkFalsy: true })
+//     .withMessage('Email required'),
+//   check('password')
+//     .exists({ checkNull: true, checkFalsy: true })
+//     .withMessage('Password required'),
+// ], (req, res, next) => {
+//     // Attempt to get the validation result from the Request object.
+//   const errors = validationResult(req);
+//   // If there are validation errors...
+//   if (!errors.isEmpty()) {
+//     // Use the Array `forEach()` method to push a list of error messages received from 
+//     // Mongoose validation to errorMessages array.
+//     const errorMessages = [];
+//         errors.array().forEach(error => errorMessages.push(error.msg))
+//         return res.json(errorMessages)
+//   } else {
+//     User.findOne({email: req.body.email})
+//     .then((user)=>{
+//       if (!user) {        
+//         const errorMessages = [];
+//         errorMessages.push("User not found")
+//         return res.json(errorMessages)
+//       }
+//       if (user) {
+//         bcrypt.compare(req.body.password, user.password, function(error, result) {
+//           if (result === true) {
+//             token = generateAccessToken({ id: user._id })
+//             refreshToken = generateRefreshToken({ id: user._id })
+//           //   jwt.sign(
+//           //     { id: user._id },
+//           //     process.env.ACCESS_TOKEN_SECRET,
+//           //     { expiresIn: '45m' },
+//           //     // callback
+//           //     (err, token) => {
+//           //       if(err) {
+//           //         res.json(err)
+//           //       } 
+//           //       // req.session.token = token;
+//           //       res.json({                  
+//           //         token,
+//           //         refreshToken: refreshToken,
+//           //         test:'test',
+//           //         user: {
+//           //           id: user._id,
+//           //           name: user.name,
+//           //           email: user.email
+//           //         }
+//           //       })
+//           //     }
+//           // )  
+//           req.session.refreshToken = refreshToken;
+//           console.log(req.session.refreshToken)
+//           res.json({token,
+//                     refreshToken: refreshToken,
+//                     test:'test',
+//                     user: {
+//                       id: user._id,
+//                       name: user.name,
+//                       email: user.email
+//                     }
+//                   })
+//           } else {
+//             const errorMessages = [];
+//             errorMessages.push("Credentials don't match")
+//             return res.json(errorMessages)
+//           }
+//       })
+//       }
+//     }).catch((error) => {  
+//       // catch any other errors and pass errors to global error handler
+//       next(error);
+//   });
+//   };      
+// });
 
-app.post('/user/create',  user_controller.user_create_post);
+// app.post('/user/create',  user_controller.user_create_post);
 
-app.get('/user/logout', auth_controller.user_logout);
+// app.get('/user/logout', auth_controller.user_logout);
 
-// Returns an access token which expires after 10 minutes
-function generateAccessToken(user) {
-  //  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-}
+// // Returns an access token which expires after 10 minutes
+// function generateAccessToken(user) {
+//   //  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '45m'})
+//   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+// }
 
-function generateRefreshToken(user) {
-  return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-}
+// function generateRefreshToken(user) {
+//   return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+// }
 
-app.get('/api/testing', (req, res, next) => {
-  res.json('testing')
-})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

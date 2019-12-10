@@ -65,7 +65,7 @@ export default class ProfileDetail extends Component {
               </div>
               <h2>{`${this.state.name}`}</h2>
             </div>
-              <Route exact path="/profile" render= {()=><DeckContainer data={this.state.decks}/> } />
+              <Route exact path="/profile" render= {()=><DeckContainer data={this.state.decks} user={this.state.name}/> } />
               <div className="actions--bar">
                 <div className="bounds">
                     <div className="grid-100">

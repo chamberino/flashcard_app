@@ -394,7 +394,7 @@ componentDidMount() {
               <textarea 
                 maxLength="255"
                 type="text"
-                placeholder={`Enter term`}
+                // placeholder={`Enter term`}
                 value={card.question}
                 onChange={this.handleCardQuestionChange(idx)}
                 className={this.state.questionErrors[idx].styling}                
@@ -407,7 +407,7 @@ componentDidMount() {
             <textarea 
               maxLength="255"          
               type="text"
-              placeholder={`Enter definition`}
+              // placeholder={`Enter definition`}
               value={card.answer}
               onChange={this.handleCardAnswerChange(idx)}
               className={this.state.answerErrors[idx].styling}
@@ -420,7 +420,7 @@ componentDidMount() {
             <textarea 
               maxLength="255"
               type="text"
-              placeholder={`Enter hint`}
+              // placeholder={`Enter hint`}
               value={card.hint}
               onChange={this.handleCardHintChange(idx)}
               // key={idx+1}

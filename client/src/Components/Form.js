@@ -16,6 +16,7 @@ export default (props) => {
     submitButtonText,
     submitButtonClass,
     cancelButtonClass,
+    updateButtonClass,
     elements,
   } = props;
 
@@ -35,7 +36,7 @@ export default (props) => {
       <form onSubmit={handleSubmit}>
         { elements() }
         <div className={formButtonsClass}>
-          <button className={submitButtonClass} type="submit">{submitButtonText}</button>
+          <button className={`${submitButtonClass} ${updateButtonClass}`} type="submit">{submitButtonText}</button>
           <button className={cancelButtonClass} onClick={handleCancel}>Cancel</button>
         </div>
       </form>

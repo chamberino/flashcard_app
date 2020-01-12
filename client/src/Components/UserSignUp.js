@@ -82,7 +82,7 @@ export default class UserSignUp extends Component {
     } = this.state;
 
     return (
-      <div className="bounds">
+      <div className="login-bounds">
         <div className="section-title">
           <h1>Sign Up</h1>
           <Form 
@@ -152,7 +152,7 @@ export default class UserSignUp extends Component {
   }
 
   submit = () => {
-    this.setState({errors:[], emailError: {styling: '', message:''}, passwordError: {styling: '', message:''}})
+    this.setState({errors:[], emailError: {styling: '', message:''}, passwordError: {styling: '', message:''}, usernameError: {styling: '', message:''}})
     // {/* initialize context variable containing the context props  */}
     const { context } = this.props;
     // unpack username and properties password from state

@@ -64,7 +64,7 @@ export default class UserSignIn extends Component {
     } = this.state;
 
     return (
-      <div className="bounds">
+      <div className="login-bounds">
         {/* <div className="sign-in-up centered signin"> */}
         <div className="section-title">
           <h1>Sign In</h1>
@@ -134,7 +134,7 @@ export default class UserSignIn extends Component {
     const { context } = this.props;
     // The from variable passed to history.push(from) contains information 
     // about the pathname an unauthenticated user redirected from (via this.props.location.state). 
-    const { from } = this.props.location.state || { from: { pathname: '/decks' } };
+    const { from } = this.props.location.state || { from: { pathname: '/profile' } };
     // unpack username and properties password from state
     const { email, password } = this.state;
 

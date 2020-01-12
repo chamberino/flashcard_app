@@ -24,7 +24,6 @@ const DeckContainer = (props) => {
       </div>
     ); 
   } else if (props.data !== undefined) {
-    console.log(props.data)
       let decks = props.data.map( (result) => { 
         // For each deck received in props, return a Deck component with relevant data
         return <Deck title={result.title} id={result._id} history={props.history} key={result._id} user={result.user.username}/>

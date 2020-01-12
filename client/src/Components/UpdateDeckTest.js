@@ -245,11 +245,14 @@ handleCardQuestionChange = idx => evt => {
   scroll = () => { 
     const isTop = window.scrollY > 83;
     const backBanner = document.querySelector('.back')
+    const mainContent = document.querySelector('.main-content')
     if (isTop) {
-      backBanner.classList.add('scrolled')
+      backBanner.classList.add('scrolled');
+      mainContent.classList.add('mainContentFix')
     } else {
       if (backBanner !== null) {
       backBanner.classList.remove('scrolled')
+      mainContent.classList.remove('mainContentFix')
       }
     }
   }
@@ -360,7 +363,7 @@ componentWillUnmount() {
               >Update
               </button>
           </div>      
-        <div className="bounds deck--detail main-content">
+        <div className="bounds main-content">
             <h1 className="title">Update deck</h1>
             {/* <button
                 type="button"
@@ -393,11 +396,11 @@ componentWillUnmount() {
                           type="text" 
                           className={this.state.nameError.styling}
                           onChange={this.change} 
-                          placeholder="Subject, chapter, unit" 
+                          // placeholder="Subject, chapter, unit" 
                           value={title}
                           />
                       </div>
-                      Title
+                      TITLE
                       </label>
 
                       <div className="errorMessage">{this.state.nameError.message}</div>
@@ -436,11 +439,11 @@ componentWillUnmount() {
                         type="text" 
                         // className={this.state.nameError.styling}
                         onChange={this.change} 
-                        placeholder="Subject" 
+                        // placeholder="SUBJECT" 
                         value={otherSubjectValue}
                       />
                     </div>
-                     Subject
+                     SUBJECT
                     </label>
 
                   </div>
@@ -509,7 +512,7 @@ componentWillUnmount() {
             onClick={this.handleAddCard}
             className="add-card"
             >
-            <span className="add-card-span">+ Add Card</span>
+            <span className="add-card-span">+ ADD CARD</span>
             </button>
             
             </div>

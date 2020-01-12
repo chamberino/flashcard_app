@@ -37,12 +37,10 @@ export default class DeckDetailContainer extends Component {
     return (
         <div>
 
-            <div className="bounds deck--detail">
+            <div className="bounds--deck--title">
                 <div className="deck--header">
                 <h3 className="deck--title--play">{this.props.deck.title}</h3>
                 {/* <Link to={`/user/${props.authorId}`}>By {props.deckCreator}</Link> */}
-                </div>
-                <div className="deck--description">
                 </div>
             </div>
 

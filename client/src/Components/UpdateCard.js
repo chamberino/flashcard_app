@@ -37,10 +37,6 @@ export default class UpdateCardWithContext extends Component {
 componentDidMount() {
   const body = document.querySelector('BODY');
   body.addEventListener('click', this.inputBlur)
-
-  // setTimeout(() => { 
-  //     document.querySelector('.card-container').style.animation = null;
-  // }, 1000);
 }
 
 componentWillUnmount() {

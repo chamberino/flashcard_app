@@ -109,7 +109,7 @@ export default class CardForm extends React.Component {
           onClick={this.handleAddCard}
           className="small"
         >
-          + Add Card
+          + ADD CARD
         </button>
         </div>
         </React.Fragment>

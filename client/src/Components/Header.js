@@ -83,12 +83,28 @@ export default class Header extends Component {
 
   toggleMenu = () => {
     const mainContent = document.querySelector('.main-content');
+    const mainContentHidden = document.querySelector('.main-content-hidden');
     // const menuButton = document.querySelector('.svg-icon-menu');
     const menuNavigation = document.querySelector('.menu-navigation');
     // const menu = document.querySelector('.menu');
         mainContent.classList.toggle("main-content-hidden")
+
+        // mainContent.style.display = "none";
         // menu.classList.toggle("menu-shown");
         menuNavigation.classList.toggle("menu-nav-shown");
+
+        if (mainContentHidden) {
+          mainContent.style.opacity = 0;
+          mainContent.style.display = "";
+          setTimeout(() => { 
+            mainContent.style.opacity = 1;
+        }, 100);
+        } else {
+          mainContent.style.opacity = 0;
+          setTimeout(() => { 
+            mainContent.style.display = "none";
+        }, 300);
+        }
   }
 
   render() {
@@ -107,12 +123,14 @@ export default class Header extends Component {
             {/* Ternary operator checks if authenticatedUser is set in props */}
             {(this.props.context.authenticatedUser)  ? (
                 <React.Fragment>
-                  <svg onClick={this.toggleMenu} className="svg-icon-menu" viewBox="0 0 20 20">
-                  <path fill="none" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314
+                  <div className="menuIcon">
+                    <svg onClick={this.toggleMenu} className="svg-icon-menu" viewBox="0 0 20 20">
+                      <path fill="none" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314
                     c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743
                     s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314
                     c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
-                </svg>
+                    </svg>
+                </div>
                 </React.Fragment>
               ) : (
                 <React.Fragment>
@@ -134,12 +152,14 @@ export default class Header extends Component {
               {/* <span>Welcome, {props.context.authenticatedUser.user.user.name}!</span> */}
               <Link className="header-links" to={`/profile`}>Profile</Link>
               <Link className="header-links" to="/signout">Sign Out</Link>
+              <div className="menuIcon">
               <svg onClick={this.toggleMenu} className="svg-icon-menu" viewBox="0 0 20 20">
 							<path fill="none" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314
 								c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743
 								s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314
 								c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
 						</svg>
+            </div>
             </React.Fragment>
           ) : (
             <React.Fragment>

@@ -483,13 +483,12 @@ exports.deck_updateWithCards_put = [
                 }
           });
         } else {
-            console.log('THE SUBJECT EXISTS')
+            console.log('User chose an existing subject')
             next();
         }
     },
 
     (req, res, next) => {
-        console.log('req.subjectId is equal to undefined: ' , req.subjectId !== undefined)
         console.log('subjectId: ', req.subjectId)
         if (req.subjectId !== undefined) {
             const deckPayload = {
@@ -537,10 +536,14 @@ exports.deck_updateWithCards_put = [
     },
 
     (req, res, next) => {
-        console.log('line 483 deck has been added.')
-        req.body.cards.map((card)=>{
-            req.newCards = [];
-            req.oldCards = []            
+        console.log('deck has been added.')
+        // create newCards and oldCards properties in request object to store
+        // and separate incoming cards. If a card has an id attached to it already
+        // that means it is an old card and needs to be updated. Cards without id's
+        // need to be created.
+        req.newCards = [];
+        req.oldCards = [];        
+        req.body.cards.map((card)=>{                     
             card.deck = req.params.id;
             if (card.id === undefined) {
                 req.newCards.push(card)
@@ -557,7 +560,7 @@ exports.deck_updateWithCards_put = [
         })    
             Card.insertMany(req.newCards)
             .then(cards => {
-                console.log('CARDS SUCCESSFULLY CREATED')
+                console.log('UPDATED CARDS SUCCESSFULLY CREATED: ', req.newCards)
                 return res.status(201).json({status: 201});  
             })
             .catch(err => {

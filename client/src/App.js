@@ -31,6 +31,7 @@ import UpdateCard from './Components/UpdateCard';
 import UserSignUp from './Components/UserSignUp';
 import UserSignIn from './Components/UserSignIn';
 import UserSignOut from './Components/UserSignOut';
+import Main from './Components/Main';
 import ErrorPage from './Components/Error';
 import Forbidden from './Components/Forbidden'
 import NotFound from './Components/NotFound';
@@ -75,7 +76,9 @@ export default class App extends Component {
         <HeaderWithContext />
         {/* <Menu /> */}
         <Switch>     
-          <Route exact path="/" render={ () => <Redirect to="/profile/" /> } />
+          {/* <Route exact path="/" render={ () => <Redirect to="/profile/" /> } /> */}
+          <Route exact path="/" component={Main} /> } />
+
 
           <Route path="/signin" component={UserSignInWithContext} />
           <Route path="/signup" component={UserSignUpWithContext} />

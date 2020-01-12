@@ -7,8 +7,9 @@ export default class CreateDeckWithContext extends Component {
 
   constructor(props) {
     super(props);
+    this._button = [];
   this.state= {
-  cards: [{ question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}],
+  cards: [{ question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}, { question: "", answer: "" , hint: ""}],
   allSubjects: [],
   filteredSubjects: [],
   subjects: [],
@@ -24,11 +25,11 @@ export default class CreateDeckWithContext extends Component {
   searchText: '',
   nameError: {styling: '', message:''},
   subjectError: {styling: '', message:''},
-  questionErrors: [{styling: '', message:''}, {styling: '', message:''}],
-  answerErrors: [{styling: '', message:''}, {styling: '', message:''}],
+  questionErrors: [{styling: '', message:''}, {styling: '', message:''}, {styling: '', message:''}, {styling: '', message:''}],
+  answerErrors: [{styling: '', message:''}, {styling: '', message:''}, {styling: '', message:''}, {styling: '', message:''}],
   user: props.context.authenticatedUser.user.user.name,
   userId: props.context.authenticatedUser.user.user.id,
-  deleteClass: 'svg-icon-disable',
+  deleteClass: 'svg-icon',
   dropdownClass: 'dropdown dropdown-enabled'
   };
 }
@@ -210,7 +211,7 @@ handleCardQuestionChange = idx => evt => {
       })  
   };
 
-  handleRemoveCard = idx => () => {
+  handleRemoveCard = idx => (e) => {
     if (this.state.cards.length > 2) {
       this.setState({
         cards: this.state.cards.filter((c, cidx) => idx !== cidx)
@@ -223,6 +224,22 @@ handleCardQuestionChange = idx => evt => {
     });
   };
 
+  mouseEnterCreate = (e) => {
+    e.target.classList.add("add-card-active")
+  };
+
+  mouseLeaveCreate = (e) => {
+    console.log(e.target)
+    e.target.classList.remove("add-card-active")
+  };
+
+  mouseEnterRemoveCard = idx => (e) => {
+    this._button[idx].lastChild.classList.add("speech-bubble-active");
+  };
+
+  mouseLeaveRemoveCard = idx => (e) => {
+    this._button[idx].lastChild.classList.remove("speech-bubble-active");
+  };
 
 componentDidMount() {  
   // Make a call to the API to get all the decks in the DB.
@@ -276,8 +293,10 @@ componentDidMount() {
       userId,
     } = this.state;
 
+    // let self = this;
+
     return (      
-      <div className="bounds deck--detail main-content">
+      <div className="bounds main-content">
         <h1 className="title">Create a new study set</h1>
         <button
           type="button"
@@ -311,11 +330,11 @@ componentDidMount() {
                         type="text" 
                         className={this.state.nameError.styling}
                         onChange={this.change} 
-                        placeholder="Subject, chapter, unit" 
+                        // placeholder="Chapter, unit" 
                         value={title}
                       />
                     </div>
-                     Title
+                     TITLE
                     </label>
 
                   <div className="errorMessage">{this.state.nameError.message}</div>
@@ -351,11 +370,12 @@ componentDidMount() {
               ? <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-disabled'/ >  
               : <Dropdown options={[{label: "Other Subject...", value:true}, ...this.state.subjectsArray]} value={this.state.subject} placeholder="Choose a subject" onChange={this.subjectChange} className='dropdown dropdown-enabled'/ >  
             }
-            {
+            {/* The code below shows subjects that exist in the database that match the current input value for other subject */}
+            {/* {
               this.state.filteredSubjects.map((subject) => (
                 <p key={subject.key}>{subject.name}</p>
               ))
-            }
+            } */}
             </div>
             
           <div className="deck--header2"><div className="errorMessage">{this.state.subjectError.message}</div></div>
@@ -374,11 +394,11 @@ componentDidMount() {
                         type="text" 
                         // className={this.state.nameError.styling}
                         onChange={this.change} 
-                        placeholder="Subject" 
+                        // placeholder="SUBJECT" 
                         value={otherSubjectValue}
                       />
                     </div>
-                     Subject
+                     SUBJECT
                     </label>
 
                   </div>
@@ -427,26 +447,39 @@ componentDidMount() {
             />
             HINT
             </label>
-            <button
-              type="button"
-              disabled={this.state.cards.length<2}
-              onClick={this.handleRemoveCard(idx)}
-              className="remove-card"
-              // key={idx+1}
-            >
-              <svg className={this.state.deleteClass}  viewBox="0 0 20 20">
-							<path d="M17.114,3.923h-4.589V2.427c0-0.252-0.207-0.459-0.46-0.459H7.935c-0.252,0-0.459,0.207-0.459,0.459v1.496h-4.59c-0.252,0-0.459,0.205-0.459,0.459c0,0.252,0.207,0.459,0.459,0.459h1.51v12.732c0,0.252,0.207,0.459,0.459,0.459h10.29c0.254,0,0.459-0.207,0.459-0.459V4.841h1.511c0.252,0,0.459-0.207,0.459-0.459C17.573,4.127,17.366,3.923,17.114,3.923M8.394,2.886h3.214v0.918H8.394V2.886z M14.686,17.114H5.314V4.841h9.372V17.114z M12.525,7.306v7.344c0,0.252-0.207,0.459-0.46,0.459s-0.458-0.207-0.458-0.459V7.306c0-0.254,0.205-0.459,0.458-0.459S12.525,7.051,12.525,7.306M8.394,7.306v7.344c0,0.252-0.207,0.459-0.459,0.459s-0.459-0.207-0.459-0.459V7.306c0-0.254,0.207-0.459,0.459-0.459S8.394,7.051,8.394,7.306"></path>
-						</svg>
-            </button>
+            <div className="card-remove">
+              <h3>{idx+1}</h3>
+              <button            
+                type="button"
+                disabled={this.state.cards.length<2}
+                onClick={this.handleRemoveCard(idx)}
+                onMouseEnter={this.mouseEnterRemoveCard(idx)}
+                onMouseLeave={this.mouseLeaveRemoveCard(idx)}
+                ref={ 
+                  (button) => {
+                    this._button[idx] = button;
+                  }
+                }
+                className="remove-card"
+                // key={idx+1}
+              >
+                <svg className={this.state.deleteClass}  viewBox="0 0 20 20">
+                <path d="M17.114,3.923h-4.589V2.427c0-0.252-0.207-0.459-0.46-0.459H7.935c-0.252,0-0.459,0.207-0.459,0.459v1.496h-4.59c-0.252,0-0.459,0.205-0.459,0.459c0,0.252,0.207,0.459,0.459,0.459h1.51v12.732c0,0.252,0.207,0.459,0.459,0.459h10.29c0.254,0,0.459-0.207,0.459-0.459V4.841h1.511c0.252,0,0.459-0.207,0.459-0.459C17.573,4.127,17.366,3.923,17.114,3.923M8.394,2.886h3.214v0.918H8.394V2.886z M14.686,17.114H5.314V4.841h9.372V17.114z M12.525,7.306v7.344c0,0.252-0.207,0.459-0.46,0.459s-0.458-0.207-0.458-0.459V7.306c0-0.254,0.205-0.459,0.458-0.459S12.525,7.051,12.525,7.306M8.394,7.306v7.344c0,0.252-0.207,0.459-0.459,0.459s-0.459-0.207-0.459-0.459V7.306c0-0.254,0.207-0.459,0.459-0.459S8.394,7.051,8.394,7.306"></path>
+              </svg>
+              <span className="speech-bubble"><p>Delete this card</p></span>
+              </button>              
+            </div>
           </div>
         ))}
 
           <button
             type="button"
             onClick={this.handleAddCard}
+            // onMouseEnter={this.mouseEnterCreate}
+            // onMouseLeave={this.mouseLeaveCreate}
             className="add-card"
           >
-            <span className="add-card-span">+ Add Card</span>
+            <span className="add-card-span">+ ADD CARD</span>
           </button>
         
         </div>
@@ -569,8 +602,6 @@ componentDidMount() {
         deckPayload.otherSubjectValue = otherSubject;
       }
 
-      console.log(deckPayload)
-
     // Store the users credentials in an object so it can be passed along to the API to authenticate the user
     const credentials = this.props.context.authenticatedUser.user.token;
 
@@ -586,13 +617,11 @@ componentDidMount() {
     } else {
     // Create deck by calling the createDeckWithCards method made available through Context
     // The deck data and users credentials are passed along.
-    console.log(deckPayload)
       context.data.createDeckWithCards(deckPayload, credentials)
       .then((response) => {
         // If API returns a response that is not 201, set the errors property in state to the response. 
         // The response will carry any error messages in an array. The title and description are then initialized.
         if (response.status !== 201) {
-          console.log(response)
           this.setState({ errors: response });
           this.setState({title: this.state.preservedTitle})
         } else {

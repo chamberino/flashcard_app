@@ -29,7 +29,6 @@ export default class UserDetail extends Component {
     this.props.context.actions.getUserDecks(this.props.match.params.id)
     // Set value of returned decks to the decks property in state. Change loading property to false.
       .then(decks=>{
-        console.log(decks)
         if (decks.errorStatus || decks.message) {
           this.props.history.push(`/notfound`);
           return null; 
